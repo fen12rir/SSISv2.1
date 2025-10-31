@@ -22,6 +22,10 @@
                     <img src="../../assets/imgs/a-plus.png" alt="grade-students" class="bi">
                     <span class="menu-title"> <a href="./teacher_grades.php"> Grade Students </a> </span>
                 </div>
+                <div class="menu border-100sb" id="locker">
+                    <img src="../../assets/imgs/subjects-logo.png" alt="locker" class="bi">
+                    <span class="menu-title"> <a href="./teacher_locker.php"> Locker </a> </span>
+                </div>
                 <?php
                     $teacherIsAnAdviser->displayAdvisoryHyperLink();
                 ?>

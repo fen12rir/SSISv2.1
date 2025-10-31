@@ -8,6 +8,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadingState = document.getElementById('loading-state');
     const emptyState = document.getElementById('empty-state');
     const searchInput = document.getElementById('search-files');
+    const previewModal = document.getElementById('preview-modal');
+    const closePreviewModal = document.getElementById('close-preview-modal');
+    const previewContent = document.getElementById('preview-content');
+    const previewFileName = document.getElementById('preview-file-name');
+    const downloadFromPreview = document.getElementById('download-from-preview');
 
     let allFiles = [];
 
@@ -33,6 +38,14 @@ document.addEventListener('DOMContentLoaded', function() {
             uploadModal.style.display = 'none';
             uploadForm.reset();
         }
+        if (e.target === previewModal) {
+            previewModal.style.display = 'none';
+        }
+    });
+
+    // Close preview modal
+    closePreviewModal.addEventListener('click', () => {
+        previewModal.style.display = 'none';
     });
 
     // Handle file upload
@@ -167,6 +180,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 ${file.Description ? `<p class="file-description">${escapeHtml(file.Description)}</p>` : ''}
             </div>
             <div class="file-actions">
+                <button class="action-btn preview-btn" data-file-id="${file.Locker_File_Id}" data-file-name="${escapeHtml(file.Original_File_Name)}" title="Preview">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
                 <button class="action-btn download-btn" data-file-id="${file.Locker_File_Id}" title="Download">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -183,13 +202,29 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 
+        // Preview button - make file card clickable
+        const previewBtn = card.querySelector('.preview-btn');
+        const fileInfo = card.querySelector('.file-info');
+        
+        previewBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showPreview(file);
+        });
+        
+        // Also make the file card clickable (except action buttons)
+        fileInfo.addEventListener('click', () => {
+            showPreview(file);
+        });
+
         // Download button
-        card.querySelector('.download-btn').addEventListener('click', () => {
+        card.querySelector('.download-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
             window.location.href = `../../../BackEnd/api/teacher/getLockerDownload.php?fileId=${file.Locker_File_Id}`;
         });
 
         // Delete button
-        card.querySelector('.delete-btn').addEventListener('click', () => {
+        card.querySelector('.delete-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
             if (confirm('Are you sure you want to delete this file?')) {
                 deleteFile(file.Locker_File_Id);
             }
@@ -236,6 +271,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 title: 'Error',
                 message: error.message || 'An unexpected error occurred'
             });
+        }
+    }
+
+    // Preview file
+    function showPreview(file) {
+        const ext = file.Original_File_Name.split('.').pop().toLowerCase();
+        const previewUrl = `../../../BackEnd/api/teacher/getLockerPreview.php?fileId=${file.Locker_File_Id}`;
+        
+        previewFileName.textContent = file.Original_File_Name;
+        previewModal.style.display = 'block';
+        previewContent.innerHTML = '<div class="preview-loading">Loading preview...</div>';
+        
+        // Set download button
+        downloadFromPreview.onclick = () => {
+            window.location.href = `../../../BackEnd/api/teacher/getLockerDownload.php?fileId=${file.Locker_File_Id}`;
+        };
+        
+        // Handle different file types
+        if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
+            // Images
+            previewContent.innerHTML = `<img src="${previewUrl}" alt="${escapeHtml(file.Original_File_Name)}" class="preview-image">`;
+        } else if (ext === 'pdf') {
+            // PDFs
+            previewContent.innerHTML = `<iframe src="${previewUrl}" class="preview-iframe" type="application/pdf"></iframe>`;
+        } else if (ext === 'txt') {
+            // Text files
+            fetch(previewUrl)
+                .then(response => response.text())
+                .then(text => {
+                    previewContent.innerHTML = `<pre class="preview-text">${escapeHtml(text)}</pre>`;
+                })
+                .catch(error => {
+                    previewContent.innerHTML = `<p class="preview-error">Cannot preview this file type. Please download to view.</p>`;
+                });
+        } else {
+            // Other file types
+            previewContent.innerHTML = `
+                <div class="preview-unavailable">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    <p>Preview not available for this file type.</p>
+                    <p>Please download to view the file.</p>
+                </div>
+            `;
         }
     }
 

@@ -60,6 +60,22 @@ ob_start();
         </div>
     </div>
 
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="modal preview-modal">
+        <div class="modal-content preview-modal-content">
+            <div class="modal-header">
+                <h2 id="preview-file-name">File Preview</h2>
+                <span class="close" id="close-preview-modal">&times;</span>
+            </div>
+            <div id="preview-content" class="preview-content">
+                <!-- Preview content will be inserted here -->
+            </div>
+            <div class="preview-actions">
+                <button class="action-btn download-from-preview" id="download-from-preview">Download</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading State -->
     <div id="loading-state" class="loading-container">
         <div class="spinner"></div>

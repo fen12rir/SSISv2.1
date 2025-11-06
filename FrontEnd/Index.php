@@ -15,7 +15,8 @@
         <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-        />       
+        />
+        <script src="./assets/js/announcements.js" defer></script>
     </head>
     <body>
         <!-- Header Section -->
@@ -130,6 +131,24 @@
         <div class="quote">
             <img src = "assets/imgs/quote-school.png" alt = "quote-school">
         </div>
+        <br>
+        
+        <!-- Announcements Section -->
+        <section class="announcements-section">
+            <div class="container">
+                <h2 class="section-title">Announcements</h2>
+                <div id="announcements-loading" class="announcements-loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Loading announcements...</p>
+                </div>
+                <div id="announcements-container" class="announcements-grid">
+                    <!-- Announcements will be loaded here -->
+                </div>
+                <div id="announcements-empty" class="announcements-empty" style="display: none;">
+                    <p>No announcements at this time.</p>
+                </div>
+            </div>
+        </section>
         <br>
             
         <!-- calendar events -->

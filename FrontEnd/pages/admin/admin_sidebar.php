@@ -45,6 +45,11 @@
                             <img src="../../assets/imgs/subjects-logo.png" class="bi">
                             <span id="locker-spn" class="menu-title"> <a href="./admin_locker.php" class="admin-nav-links"> Locker</a></span>
                         </div>
+                        <!--ANNOUNCEMENTS-->
+                        <div class="menu border-100sb">
+                            <img src="../../assets/imgs/subjects-logo.png" class="bi">
+                            <span id="announcements-spn" class="menu-title"> <a href="./admin_announcements.php" class="admin-nav-links"> Announcements</a></span>
+                        </div>
                     </nav>
                     <!--TEACHERS-->
                     <div class="menu border-100sb" id="teachers">

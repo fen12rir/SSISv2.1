@@ -17,6 +17,62 @@ document.addEventListener('DOMContentLoaded', function() {
             modalContent.innerHTML += data;
             close(modal);
 
+            // Initialize student selection after form is loaded
+            setTimeout(() => {
+                if (typeof window.initializeStudentSelection === 'function') {
+                    window.initializeStudentSelection();
+                } else {
+                    // Fallback: manually initialize if function not available
+                    const checkboxes = document.querySelectorAll('.student-checkbox');
+                    const selectedCount = document.getElementById('selected-count');
+                    const searchInput = document.getElementById('student-search');
+                    const studentItems = document.querySelectorAll('.student-checkbox-item');
+                    
+                    function updateCount() {
+                        const checked = document.querySelectorAll('.student-checkbox:checked').length;
+                        if (selectedCount) selectedCount.textContent = checked;
+                    }
+                    
+                    // Initialize count
+                    updateCount();
+                    
+                    // Add event listeners
+                    checkboxes.forEach(checkbox => {
+                        checkbox.addEventListener('change', function() {
+                            const item = this.closest('.student-checkbox-item');
+                            if (this.checked) {
+                                if (item) item.classList.add('selected');
+                            } else {
+                                if (item) item.classList.remove('selected');
+                            }
+                            updateCount();
+                        });
+                        
+                        // Initialize selected state
+                        const item = checkbox.closest('.student-checkbox-item');
+                        if (checkbox.checked && item) {
+                            item.classList.add('selected');
+                        }
+                    });
+                    
+                    // Search functionality
+                    if(searchInput && studentItems.length > 0) {
+                        searchInput.addEventListener('input', function(e) {
+                            const searchTerm = e.target.value.toLowerCase().trim();
+                            
+                            studentItems.forEach(item => {
+                                const searchText = item.getAttribute('data-search') || '';
+                                if(searchTerm === '' || searchText.includes(searchTerm)) {
+                                    item.classList.remove('hidden');
+                                } else {
+                                    item.classList.add('hidden');
+                                }
+                            });
+                        });
+                    }
+                }
+            }, 100);
+
             const form = document.getElementById('edit-section-details');
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -25,8 +81,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 formData.append('section-id', formSectionId);
 
                 const formButton = form.querySelector('button[type="submit"]');
-                formButton.style.backgroundColor = 'gray';
+                const cancelButton = form.querySelector('.btn-cancel');
+                
+                // Show loading state
+                formButton.classList.add('loading');
                 formButton.disabled = true;
+                if (cancelButton) cancelButton.disabled = true;
                 
                 postEditSectionDetails(formData)
                 .then(data=> {
@@ -39,9 +99,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     else if(!data.success) {
                         alert(data.message);
-                        form.reset();
-                        formButton.style.backgroundColor = '#007bff';
+                        // Remove loading state
+                        formButton.classList.remove('loading');
                         formButton.disabled = false;
+                        if (cancelButton) cancelButton.disabled = false;
                     }
                     else {
                         alert(data.message);
@@ -53,6 +114,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 .catch(error=>{
                     alert(error);
                     console.log(error);
+                    // Remove loading state on error
+                    formButton.classList.remove('loading');
+                    formButton.disabled = false;
+                    if (cancelButton) cancelButton.disabled = false;
                 })
             });
 

@@ -1,602 +1,474 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
 :root {
-    --main-color: #123b69;
-    --secondary-color: #F1BD22;
-    --wrapper-bg-color: #fffdfdf5;
-    --accent-color: #3e9ec4;
-    --title-font-color: white;
+  --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --card-bg: rgba(255, 255, 255, 0.08);
+  --card-border: rgba(255, 255, 255, 0.2);
+  --text-color: #f5f5f5;
+  --accent-color: #00b4d8;
+  --hover-accent: #48cae4;
+  --border-radius: 1rem;
+  --transition: all 0.3s ease;
+  --font-main: "Poppins", "Segoe UI", sans-serif;
 }
 
-.section-details-container {
-    padding: 1rem; /* Base for 1440px */
-    background-color: white;
-    border-radius: 5px;
-    box-shadow: -.1px -1px 5px .1px #d0caca;
-    min-height: 100vh;
-    height: 100%;
-}
-
-.students-list-container, .subject-details-container {
-    margin-top: 1rem; /* Base for 1440px */
-}
-
-.students-list-title, .subject-details-title {
-    font-weight: 700;
-    margin: 1.5rem 1rem; /* Base for 1440px */
-    text-transform: uppercase;
-    border-left: 5px solid #18ce13;
-    padding-left: 0.8rem; /* Base for 1440px */
-    font-family: "Poppins", "Segoe UI", sans-serif;
-}
-
-.students-list, .subject-details-list {
-    margin-top: 1rem; /* Base for 1440px */
-    font-family: "Poppins", "Segoe UI", sans-serif;
-    overflow-x: auto;
-}
-
-.section-name {
-    font-size: 1.2em; /* Base for 1440px */
-    font-weight: bold;
-    color: var(--main-color);
-    font-family: "Poppins", "Segoe UI", sans-serif;
-}
-
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    border-radius: 1em;
-    overflow: hidden;
-    background-color: white;
-    box-shadow: -.1px -1px 5px .1px #d0caca;
-}
-
-th, td {
-    padding: 1rem; /* Base for 1440px */
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-}
-
-th {
-    color: #002c54;
-    font-weight: bold;
-    background: rgb(21 182 255 / 27%);
-}
-
-tr:nth-child(odd) {
-    background-color: #ffffff;
-}
-
-tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-tr:hover {
-    background-color: #f5f5f5;
+/* ========== PAGE BASE ========== */
+body {
+  font-family: var(--font-main);
+  background: var(--bg-gradient);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
 .admin-view-section-content {
-    background: var(--wrapper-bg-color);
-    margin: 1.5rem; /* Base for 1440px */
+  padding: 2rem;
+  transition: margin-left 0.3s ease;
+  background-image: url("../../imgs/paper.jpg");
+  min-height: 100vh;
 }
 
-.three-container {
-    background-color: var(--accent-color);
-    background-color: #3e9ec4;
-    padding: 1.1rem; /* Base for 1440px */
-    border-radius: 1.5rem; /* Base for 1440px */
-    box-shadow: 0 2px 20px -14px #000000;
+.sidebar.active ~ .admin-view-section-content {
+  margin-left: 90px;
 }
 
-.section-name, .adviser-name {
-    margin-bottom: 1rem; /* Base for 1440px */
-    font-weight: bold;
-    color: var(--title-font-color);
+/* ========== HEADER SECTION ========== */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #3e9ec4;
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(15px) saturate(180%);
+  -webkit-backdrop-filter: blur(15px) saturate(180%);
+  border-radius: var(--border-radius);
+  box-shadow: 0 8px 30px rgb(0 0 0 / 14%);
 }
 
-.adviser-name {
-    font-size: 1.2rem; /* Base for 1440px */
-    margin-bottom: 1.5rem; /* Base for 1440px */
-    font-family: "Poppins", "Segoe UI", sans-serif;
-}
-.section-name{
-    font-size: 2.3rem; /* Base for 1440px */
+.header-left {
+  flex: 1;
 }
 
-.subject-details-body tr:nth-child(even) td {
-    background: rgb(71 168 255 / 8%);
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #e9f1ff;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: 1px;
 }
 
-.section-name-container,
-.adviser-name-container {
-    text-align: center;
+.section-adviser {
+  font-size: 1rem;
+  color: rgba(233, 241, 255, 0.9);
+  margin: 0;
+  font-weight: 400;
 }
 
-.button-container {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem; /* Base for 1440px */
-    margin-bottom: 1rem; /* Base for 1440px */
-    font-family: "Poppins", "Segoe UI", sans-serif;
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
-.edit-section, .back-btn {
-    color: white;
-    padding: 0.7rem 11.2px 1rem; /* Base for 1440px */
-    cursor: pointer;
-    background: #00b4d8;
-    font-weight: 500;
-    border-radius: 0.6rem; /* Base for 1440px */
-    transition: all .3s ease;
-    font-size: 0.95rem; /* Base for 1440px */
-    border: 1px solid #ffffff47;
+.edit-section-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
 }
 
-.edit-section:hover, .back-btn:hover {
-    background: #48cae4;
-    box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
-    transform: translateY(-3px);
-    transition: 0.3s ease;
+.edit-section-btn:hover {
+  background: var(--hover-accent);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
 }
 
-/*No students design*/
-.no-students-container {
-    text-align: center;
-    font-size: 1.5rem; /* Base for 1440px */
+.edit-section-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
-.no-students-container h1 {
-    color: #333;
-
+.back-btn {
+  display: inline-block;
+  padding: 0.7rem 1.4rem;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: var(--transition);
 }
 
-.no-students-container a {
-    color: blue;
-    text-decoration: underline;
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-3px);
 }
 
-.no-students-container a:hover {
-    color: #007bff;
-    cursor: pointer;
+/* ========== STATS CARDS ========== */
+.stats-section {
+  margin-bottom: 2rem;
 }
 
-/*edit section form*/
-.edit-section-details {
-    display: flex;
-    flex-direction: column;
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.edit-section-details input[type="checkbox"] {
-    appearance: none;
-    -webkit-appearance: none;
-    background-color: #fff;
-    border: 2px solid #007bff;
-    width: 1.2em; /* Base for 1440px */
-    height: 1.2em; /* Base for 1440px */
-    border-radius: 0.3em;
-    display: inline-block;
-    position: relative;
-    margin-right: 0.5em;
-    vertical-align: middle;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    cursor: pointer;
+.stat-card {
+  background: rgb(21 182 255 / 27%);
+  border: 1px solid var(--card-border);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  backdrop-filter: blur(15px) saturate(180%);
+  -webkit-backdrop-filter: blur(15px) saturate(180%);
+  box-shadow: 0 8px 30px rgb(0 0 0 / 14%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: var(--transition);
 }
 
-.edit-section-details input[type="checkbox"]:checked {
-    border-color: #0056b3;
-    background-color: #007bff;
+.stat-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent-color);
+  box-shadow: 0 7px 15px rgba(0, 180, 216, 0.3);
 }
 
-.edit-section-details input[type="checkbox"]:checked::after {
-    content: '';
-    display: block;
-    width: 0.4em;
-    height: 0.8em;
-    border: solid #fff;
-    border-width: 0 0.2em 0.2em 0;
-    position: absolute;
-    left: 0.35em;
-    top: 0.1em;
-    transform: rotate(45deg);
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: 1rem;
 }
 
-.edit-section-details input[type="text"] {
-    width: 30%;
-    padding: 0.5em; /* Base for 1440px */
-    margin-bottom: 1em; /* Base for 1440px */
-    border: 1px solid #ccc;
-    border-radius: 0.5em;
-    font-size: 1em; /* Base for 1440px */
-    box-sizing: border-box;
+.students-icon {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
 }
 
-.edit-section-details select {
-    padding: 0.5em; /* Base for 1440px */
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    width: 30%;
+.students-icon::before {
+  content: '👥';
+  font-size: 2rem;
 }
 
-.edit-section-details button[type="submit"] {
-    margin: 0.3rem; /* Base for 1440px */
-    background-color: #4caf50;
-    padding: 0.5rem 0.8rem; /* Base for 1440px */
-    border-radius: 0.3rem;
-    width: fit-content;
-    cursor: pointer;
+.boys-icon {
+  background: #fef3c7;
 }
 
-.cancel-btn {
-    margin: 0.3rem; /* Base for 1440px */
-    background-color: #f44336;
-    padding: 0.5rem 0.8rem; /* Base for 1440px */
-    border-radius: 0.3rem;
-    width: fit-content;
-    cursor: pointer;
+.girls-icon {
+  background: #fed7aa;
 }
 
+.subjects-icon {
+  background: #d1fae5;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: rgba(245, 245, 245, 0.8);
+  font-weight: 500;
+}
+
+/* ========== MAIN CONTENT GRID ========== */
+.main-content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.students-panel,
+.subjects-panel {
+  background: rgb(21 182 255 / 27%);
+  border: 1px solid var(--card-border);
+  border-radius: var(--border-radius);
+  backdrop-filter: blur(15px) saturate(180%);
+  -webkit-backdrop-filter: blur(15px) saturate(180%);
+  box-shadow: 0 8px 30px rgb(0 0 0 / 14%);
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.students-panel:hover,
+.subjects-panel:hover {
+  border-color: var(--accent-color);
+  box-shadow: 0 7px 15px rgba(0, 180, 216, 0.3);
+}
+
+.panel-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(62, 158, 196, 0.2);
+}
+
+.panel-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--hover-accent);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.panel-title svg {
+  color: var(--accent-color);
+}
+
+.panel-content {
+  padding: 1.5rem;
+}
+
+/* ========== STUDENTS TABLE ========== */
+.students-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.students-table thead {
+  background: rgba(62, 158, 196, 0.3);
+}
+
+.students-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--hover-accent);
+  font-size: 0.95rem;
+  border-bottom: 2px solid rgba(0, 180, 216, 0.3);
+}
+
+.students-table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.students-table tbody tr {
+  transition: var(--transition);
+}
+
+.students-table tbody tr:hover {
+  background: rgba(0, 180, 216, 0.15);
+}
+
+.students-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ===== Status Badges ===== */
+.status-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  display: inline-block;
+}
+
+.status-active {
+  background: rgba(68, 208, 123, 0.15);
+  color: #44d07b;
+  border: 1px solid #44d07b;
+}
+
+.status-inactive {
+  background: rgba(255, 204, 0, 0.15);
+  color: #ffcc00;
+  border: 1px solid #ffcc00;
+}
+
+.status-dropped {
+  background: rgba(255, 95, 95, 0.15);
+  color: #ff5f5f;
+  border: 1px solid #ff5f5f;
+}
+
+.status-unknown {
+  background: rgba(255, 95, 95, 0.15);
+  color: #ff5f5f;
+  border: 1px solid #ff5f5f;
+}
+
+.students-summary {
+  margin-top: 1rem;
+  color: rgba(245, 245, 245, 0.8);
+  font-size: 0.9rem;
+}
+
+/* ========== SUBJECTS TABLE ========== */
+.subject-details-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.subject-details-table thead {
+  background: rgba(62, 158, 196, 0.3);
+}
+
+.subject-details-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--hover-accent);
+  font-size: 0.95rem;
+  border-bottom: 2px solid rgba(0, 180, 216, 0.3);
+}
+
+.subject-details-table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.subject-details-table tbody tr {
+  transition: var(--transition);
+}
+
+.subject-details-table tbody tr:hover {
+  background: rgba(0, 180, 216, 0.15);
+}
+
+.subject-details-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.subjects-summary {
+  margin-top: 1rem;
+  color: rgba(245, 245, 245, 0.8);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ========== UTILITY CLASSES ========== */
+.no-data {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(245, 245, 245, 0.7);
+  font-style: italic;
+}
+
+/* ========== MODAL ========== */
 .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    padding-top: 20px;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  padding-top: 20px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(5px);
+}
+
+.modal.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-content {
-    background-color: white;
-    margin: 5% auto;
-    padding: 20px; /* Base for 1440px */
-    border-radius: 8px; /* Base for 1440px */
-    width: 80%;
-    max-width: 600px; /* Base for 1440px */
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    font-family: var(--main-fonts);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  margin: 5% auto;
+  padding: 0;
+  border-radius: var(--border-radius);
+  width: 80%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  color: var(--text-color);
+  overflow: hidden;
 }
 
-/*====================================*/
-/* VIEW SECTION RESPONSIVE DESIGN PC  */
-/*====================================*/
+.modal-content > * {
+  flex-shrink: 0;
+}
 
-/* 2500px and above - Larger screens */
-@media (min-width: 2500px) {
-  .section-details-container {
-    padding: 1.4rem;
-    border-radius: 7px;
+.modal-content .edit-section-details-form {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1024px) {
+  .main-content-grid {
+    grid-template-columns: 1fr;
   }
   
-  .students-list-container, .subject-details-container {
-    margin-top: 1.4rem;
+  .stats-cards {
+    grid-template-columns: repeat(2, 1fr);
   }
-  
-  .students-list-title, .subject-details-title {
-    margin: 2rem 1.4rem;
-    border-left-width: 7px;
-    padding-left: 1.1rem;
-    font-size: 1.3rem;
-  }
-  
-  .students-list, .subject-details-list {
-    margin-top: 1.4rem;
-  }
-  
-  .section-name {
-    font-size: 3.1rem;
-  }
-  
-  th, td {
-    padding: 1.4rem;
-    font-size: 1.15rem;
-  }
-  
-  th {
-    font-size: 1.2rem;
-  }
-  
+}
+
+@media (max-width: 768px) {
   .admin-view-section-content {
-    margin: 2rem;
+    margin-left: 90px;
+    padding: 1rem;
   }
   
-  .three-container {
-    padding: 1.5rem;
-    border-radius: 2rem;
+  .section-header {
+    flex-direction: column;
+    gap: 1rem;
   }
   
-  .section-name, .adviser-name {
-    margin-bottom: 1.4rem;
+  .section-title {
+    font-size: 1.5rem;
   }
   
-  .adviser-name {
-    font-size: 1.65rem;
-    margin-bottom: 2rem;
+  .stats-cards {
+    grid-template-columns: 1fr;
   }
   
-  .button-container {
-    gap: 1.4rem;
-    margin-bottom: 1.4rem;
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
   }
   
-  .edit-section, .back-btn {
-    padding: 0.95rem 15px 1.35rem;
-    border-radius: 0.8rem;
-    font-size: 1.25rem;
-  }
-  
-  .no-students-container {
-    font-size: 2rem;
-  }
-  
-  .edit-section-details input[type="checkbox"] {
-    width: 1.65em;
-    height: 1.65em;
-    border-radius: 0.4em;
-    margin-right: 0.7em;
-  }
-  
-  .edit-section-details input[type="text"] {
-    padding: 0.7em;
-    margin-bottom: 1.4em;
-    border-radius: 0.7em;
-    font-size: 1.3em;
-  }
-  
-  .edit-section-details select {
-    padding: 0.7em;
-    border-radius: 6px;
-    font-size: 1.2em;
-  }
-  
-  .edit-section-details button[type="submit"] {
-    margin: 0.4rem;
-    padding: 0.7rem 1.1rem;
-    border-radius: 0.4rem;
-    font-size: 1.15rem;
-  }
-  
-  .cancel-btn {
-    margin: 0.4rem;
-    padding: 0.7rem 1.1rem;
-    border-radius: 0.4rem;
-    font-size: 1.15rem;
-  }
-  
-  .modal-content {
-    padding: 28px;
-    border-radius: 11px;
-    max-width: 820px;
+  .edit-section-btn,
+  .back-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
-
-/* 1920px - Full HD */
-@media (min-width: 1920px) and (max-width: 2499px) {
-  .section-details-container {
-    padding: 1.2rem;
-    border-radius: 6px;
-  }
-  
-  .students-list-container, .subject-details-container {
-    margin-top: 1.2rem;
-  }
-  
-  .students-list-title, .subject-details-title {
-    margin: 1.8rem 1.2rem;
-    border-left-width: 6px;
-    padding-left: 1rem;
-    font-size: 1.15rem;
-  }
-  
-  .students-list, .subject-details-list {
-    margin-top: 1.2rem;
-  }
-  
-  .section-name {
-    font-size: 2.7rem;
-  }
-  
-  th, td {
-    padding: 1.2rem;
-    font-size: 1.05rem;
-  }
-  
-  th {
-    font-size: 1.1rem;
-  }
-  
-  .admin-view-section-content {
-    margin: 1.8rem;
-  }
-  
-  .three-container {
-    padding: 1.3rem;
-    border-radius: 1.8rem;
-  }
-  
-  .section-name, .adviser-name {
-    margin-bottom: 1.2rem;
-  }
-  
-  .adviser-name {
-    font-size: 1.45rem;
-    margin-bottom: 1.8rem;
-  }
-  
-  .button-container {
-    gap: 1.2rem;
-    margin-bottom: 1.2rem;
-  }
-  
-  .edit-section, .back-btn {
-    padding: 0.85rem 13px 1.2rem;
-    border-radius: 0.7rem;
-    font-size: 1.1rem;
-  }
-  
-  .no-students-container {
-    font-size: 1.8rem;
-  }
-  
-  .edit-section-details input[type="checkbox"] {
-    width: 1.45em;
-    height: 1.45em;
-    border-radius: 0.35em;
-    margin-right: 0.6em;
-  }
-  
-  .edit-section-details input[type="text"] {
-    padding: 0.6em;
-    margin-bottom: 1.2em;
-    border-radius: 0.6em;
-    font-size: 1.15em;
-  }
-  
-  .edit-section-details select {
-    padding: 0.6em;
-    border-radius: 5px;
-    font-size: 1.1em;
-  }
-  
-  .edit-section-details button[type="submit"] {
-    margin: 0.35rem;
-    padding: 0.6rem 1rem;
-    border-radius: 0.35rem;
-    font-size: 1.05rem;
-  }
-  
-  .cancel-btn {
-    margin: 0.35rem;
-    padding: 0.6rem 1rem;
-    border-radius: 0.35rem;
-    font-size: 1.05rem;
-  }
-  
-  .modal-content {
-    padding: 24px;
-    border-radius: 10px;
-    max-width: 720px;
-  }
-}
-
-/* 1440px - Default (already set above, this is just for clarity) */
-@media (min-width: 1441px) and (max-width: 1919px) {
-  /* Default styles apply - no changes needed */
-}
-
-/* 1024px - Smaller desktop */
-@media (min-width: 1024px) and (max-width: 1440px) {
-    .section-details-container {
-        padding: 0.75rem;
-        border-radius: 4px;
-    }
-    
-    .students-list-container, .subject-details-container {
-        margin-top: 0.75rem;
-    }
-    
-    .students-list-title, .subject-details-title {
-        margin: 1.15rem 0.75rem;
-        border-left-width: 3.5px;
-        padding-left: 0.62rem;
-        font-size: 0.88rem;
-    }
-    
-    .students-list, .subject-details-list {
-        margin-top: 0.75rem;
-    }
-    
-    .section-name {
-        font-size: 1.85rem;
-    }
-    
-    th, td {
-        padding: 0.75rem;
-        font-size: 0.83rem;
-    }
-    
-    th {
-        font-size: 0.88rem;
-    }
-    
-    .admin-view-section-content {
-        margin: 1.15rem;
-    }
-    
-    .three-container {
-        padding: 0.85rem;
-        border-radius: 1.15rem;
-    }
-    
-    .section-name, .adviser-name {
-        margin-bottom: 0.75rem;
-    }
-    
-    .adviser-name {
-        font-size: 0.98rem;
-        margin-bottom: 1.15rem;
-    }
-    
-    .button-container {
-        gap: 0.75rem;
-        margin-bottom: 0.75rem;
-    }
-    
-    .edit-section, .back-btn {
-        padding: 0.58rem 8.5px 0.83rem;
-        border-radius: 0.48rem;
-        font-size: 0.83rem;
-    }
-    
-    .no-students-container {
-        font-size: 1.18rem;
-    }
-    
-    .edit-section-details input[type="checkbox"] {
-        width: 0.98em;
-        height: 0.98em;
-        border-radius: 0.23em;
-        margin-right: 0.38em;
-    }
-    
-    .edit-section-details input[type="text"] {
-        padding: 0.38em;
-        margin-bottom: 0.75em;
-        border-radius: 0.38em;
-        font-size: 0.88em;
-    }
-    
-    .edit-section-details select {
-        padding: 0.38em;
-        border-radius: 3px;
-        font-size: 0.88em;
-    }
-    
-    .edit-section-details button[type="submit"] {
-        margin: 0.23rem;
-        padding: 0.38rem 0.62rem;
-        border-radius: 0.23rem;
-        font-size: 0.83rem;
-    }
-    
-    .cancel-btn {
-        margin: 0.23rem;
-        padding: 0.38rem 0.62rem;
-        border-radius: 0.23rem;
-        font-size: 0.83rem;
-    }
-    
-    .modal-content {
-        padding: 15px;
-        border-radius: 6px;
-        max-width: 480px;
-    }
-}
-
-/*====================================*/
-/* END VIEW SECTION RESPONSIVE PC     */
-/*====================================*/

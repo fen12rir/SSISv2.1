@@ -10,10 +10,10 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 $sectionName = $_POST['section-name'] ?? null;
-$adviserId = isset($_POST['select-adviser']) ? (int)$_POST['select-adviser']  : null;
+$adviserId = isset($_POST['select-adviser']) && $_POST['select-adviser'] !== '' ? (int)$_POST['select-adviser'] : null;
 
-$sectionId = (int)$_POST['section-id'] ?? null;
-$studentIds = $_POST['students'] ?? [];
+$sectionId = isset($_POST['section-id']) ? (int)$_POST['section-id'] : null;
+$studentIds = isset($_POST['students']) ? $_POST['students'] : [];
 
 $controller = new adminViewSectionController();
 $response = $controller->apiPostEditSectionDetails($sectionName, $adviserId, $sectionId, $studentIds);

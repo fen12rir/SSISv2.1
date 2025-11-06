@@ -13,7 +13,7 @@ class adminViewSectionController {
         $this->sectionsModel = new adminSectionsModel();
     }
     //API
-    public function apiPostEditSectionDetails(string $sectionName, int $adviserId, int $sectionId, array $studentIds) : array {      
+    public function apiPostEditSectionDetails(?string $sectionName, ?int $adviserId, int $sectionId, array $studentIds) : array {      
         try {
             $section = $this->updateSectionName($sectionName, $sectionId);
             $adviser = $this->updateAdviserName($sectionId, $adviserId);
@@ -126,9 +126,9 @@ class adminViewSectionController {
             ];
         }
     }
-    private function updateAdviserName(int $sectionId, int $adviserId) : array {
+    private function updateAdviserName(int $sectionId, ?int $adviserId) : array {
         try {
-            if(empty($adviserId)) {
+            if($adviserId === null || $adviserId <= 0) {
                 return [
                     'success'=> false,
                     'message'=> 'No adviser ID selected'

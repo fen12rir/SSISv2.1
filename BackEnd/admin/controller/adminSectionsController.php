@@ -124,6 +124,73 @@ class adminSectionsController {
             ];
         }
     }
+    
+    public function apiGetSectionsByGradeLevel() : array {
+        try {
+            $data = $this->sectionsModel->getSectionsByGradeLevelWithCounts();
+
+            if(empty($data)) {
+                return [
+                    'httpcode'=> 200,
+                    'success'=> false,
+                    'message'=> 'No sections found',
+                    'data'=> []
+                ];
+            }
+            
+            // Group data by grade level
+            $grouped = [];
+            foreach($data as $row) {
+                $gradeLevelId = $row['Grade_Level_Id'];
+                if(!isset($grouped[$gradeLevelId])) {
+                    $grouped[$gradeLevelId] = [
+                        'Grade_Level_Id' => $gradeLevelId,
+                        'Grade_Level' => $row['Grade_Level'],
+                        'Sections' => []
+                    ];
+                }
+                
+                // Only add section if Section_Id is not null
+                if($row['Section_Id'] !== null) {
+                    $adviserName = ($row['Staff_Id'] !== null && $row['Staff_First_Name'] !== null)
+                        ? trim($row['Staff_Last_Name'] . ', ' . $row['Staff_First_Name'] . ' ' . ($row['Staff_Middle_Name'] ?? ''))
+                        : 'No Adviser yet';
+                    
+                    $grouped[$gradeLevelId]['Sections'][] = [
+                        'Section_Id' => $row['Section_Id'],
+                        'Section_Name' => $row['Section_Name'],
+                        'Adviser' => $adviserName,
+                        'Boys' => (int)$row['Boys'],
+                        'Girls' => (int)$row['Girls'],
+                        'Total' => (int)$row['Total']
+                    ];
+                }
+            }
+            
+            return [
+                'httpcode'=> 200,
+                'success'=> true,
+                'message'=> 'Sections by grade level successfully fetched',
+                'data'=> array_values($grouped)
+            ];
+        }
+        catch(DatabaseException $e) {
+            return [
+                'httpcode'=> 500,
+                'success'=> false,
+                'message'=>'Database error: ' .$e->getMessage(),
+                'data'=>[]
+            ];
+        }
+        catch(Exception $e) {
+            return [
+                'httpcode'=>400,
+                'success'=> false,
+                'message'=> 'Error: '.$e->getMessage(),
+                'data'=>[]
+            ];
+        }
+    }
     //VIEW
     public function viewSectionName(int $sectionId) : array {
         try {
@@ -245,6 +312,80 @@ class adminSectionsController {
         catch(Exception $e) {
             return [
                 'httpcode'=>400,
+                'success'=> false,
+                'message'=> 'Error: '.$e->getMessage(),
+                'data'=>[]
+            ];
+        }
+    }
+    
+    public function viewSectionAllStudents(int $sectionId) : array {
+        try {
+            if(!is_numeric($sectionId)) {
+                throw new Exception('Invalid section ID');
+            }
+            $data = $this->sectionsModel->getSectionAllStudents($sectionId);
+            
+            if(empty($data)) {
+                return [
+                    'success'=> false,
+                    'message'=> 'No students found',
+                    'data'=> []
+                ];
+            }
+            
+            return [
+                'success'=> true,
+                'message'=> 'Students successfully fetched',
+                'data'=> $data
+            ];
+        }
+        catch(DatabaseException $e) {
+            return [
+                'success'=> false,
+                'message'=>'Database error: ' .$e->getMessage(),
+                'data'=>[]
+            ];
+        }
+        catch(Exception $e) {
+            return [
+                'success'=> false,
+                'message'=> 'Error: '.$e->getMessage(),
+                'data'=>[]
+            ];
+        }
+    }
+    
+    public function viewSectionStats(int $sectionId) : array {
+        try {
+            if(!is_numeric($sectionId)) {
+                throw new Exception('Invalid section ID');
+            }
+            $data = $this->sectionsModel->getSectionStats($sectionId);
+            
+            if(empty($data)) {
+                return [
+                    'success'=> false,
+                    'message'=> 'No stats found',
+                    'data'=> []
+                ];
+            }
+            
+            return [
+                'success'=> true,
+                'message'=> 'Stats successfully fetched',
+                'data'=> $data
+            ];
+        }
+        catch(DatabaseException $e) {
+            return [
+                'success'=> false,
+                'message'=>'Database error: ' .$e->getMessage(),
+                'data'=>[]
+            ];
+        }
+        catch(Exception $e) {
+            return [
                 'success'=> false,
                 'message'=> 'Error: '.$e->getMessage(),
                 'data'=>[]

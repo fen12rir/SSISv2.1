@@ -23,7 +23,9 @@ class TableCreator {
         $html .= '<thead>';
         $html .= is_null($rowName) ? '<tr>' : '<tr class="'.$rowName.'">';
         foreach($titles as $rows) {
-            $html .= '<th> ' .htmlspecialchars($rows) . '</th>';
+            // Convert to string if it's not already
+            $rowValue = is_numeric($rows) ? (string)$rows : (is_string($rows) ? $rows : '');
+            $html .= '<th> ' .htmlspecialchars($rowValue) . '</th>';
         }
         $html .= '</tr>';
         $html .= '</thead>';

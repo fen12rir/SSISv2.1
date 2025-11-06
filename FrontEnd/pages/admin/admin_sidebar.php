@@ -20,10 +20,10 @@
                             <img src="../../assets/imgs/student.svg" class="bi">
                             <span id="students-spn" class="menu-title"> <a href="./admin_all_students.php" class="admin-nav-links">Students </a></span> 
                         </div>    
-                        <!--SECTIONS-->
+                        <!--GRADE LEVELS-->
                         <div class="menu border-100sb">
                             <img src="../../assets/imgs/sections-logo.png" class="bi">
-                            <span id="sections-spn" class="menu-title"> <a href="./admin_sections.php" class="admin-nav-links"> Sections </a></span>
+                            <span id="grade-levels-spn" class="menu-title"> <a href="./admin_grade_levels.php" class="admin-nav-links"> Grade Levels </a></span>
                         </div>
 
                         <!--SUBJECTS-->

@@ -1,97 +1,91 @@
-document.addEventListener('DOMContentLoaded', function(){
-    const form = document.getElementById("registration-form");
+document.addEventListener('DOMContentLoaded', function() {
+    // Get form elements
     const contactNumber = document.getElementById("contact-number");
     const guardianLname = document.getElementById("guardian-last-name");
     const guardianMname = document.getElementById("guardian-middle-name");
     const guardianFname = document.getElementById("guardian-first-name");
 
-    const charRegex = /^[A-Za-z0-9\s.,'-]{3,100}$/;
-    const notNumber = "This field must be a number";
+    // Array of name input fields
+    const nameFields = [guardianLname, guardianMname, guardianFname];
 
-    const allTBox = [
-        {element: guardianLname, error: "em-guardian-last-name"},
-        {element: guardianMname, error: "em-guardian-middle-name"},
-        {element: guardianFname, error: "em-guardian-first-name"}
-    ];
-    function isEmpty(element) {
-        return !element.value.trim();
-    }
-    function errorMessages(errorElement, message, childElement) {
-        document.querySelector("."+errorElement).classList.add("show");
-        childElement.style.border = "1px solid red";
-        document.querySelector("."+errorElement).innerHTML = message;
-    }
-      function clearError(errorElement, childElement) {
-        const errorField = document.querySelector("." + errorElement);
-        errorField.classList.remove("show");
-        errorField.innerHTML = "";
-        childElement.style.border = "1px solid #616161";
-    }
-      function checkEmptyFocus(element, errorElement) {
-        element.addEventListener('blur', ()=> clearError(errorElement, element));
-    }
-    
-    function validateTextBox(element, errorElement, e) {
-        if(isEmpty(element)) {
-            errorMessages(errorElement, emptyError, element);
-            checkEmptyFocus(element, errorElement);
-        }
-        else if(element.value.length >= 20 && e.key !== "Backspace") {
-            errorMessages(errorElement, "Must be at least 3 and no more than 50 characters", element);
-            checkEmptyFocus(element, errorElement);
-            e.preventDefault();
-        }
-        else if (!charRegex.test(element.value)) {
-            errorMessages(errorElement, invalidChar, element);
-        }
-        else {
-            clearError(errorElement, element);
-        }
-    }
+    // ===== NAME FIELDS VALIDATION (Letters and spaces only) =====
+    nameFields.forEach(field => {
+        if (!field) return;
 
-    function validateContactNumber(e) {
-        const key = e.key;
-        const currentLength = contactNumber.value.length;
-        
-        const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
-        if (allowedKeys.includes(key)) {
-            clearError("em-contact-number", contactNumber);
-            return;
-        }
-        
-        if(isNaN(key) || key === ' ') {
-            e.preventDefault();
-            errorMessages("em-contact-number", notNumber, contactNumber);
-            checkEmptyFocus(contactNumber, "em-contact-number");
-            return;
-        }
-        
-        if(currentLength >= 11) {
-            e.preventDefault();
-            errorMessages("em-contact-number", "Phone number must be exactly 11 digits", contactNumber);
-            checkEmptyFocus(contactNumber, "em-contact-number");
-            return;
-        }
-        
-        clearError("em-contact-number", contactNumber);
-    }
-    
-    contactNumber.addEventListener('input', function(e) {
-        this.value = this.value.replace(/[^0-9]/g, '');
-        
-        if (this.value.length > 11) {
-            this.value = this.value.slice(0, 11);
-        }
-    });
-    
-    allTBox.forEach(({element}) => {
-        element.addEventListener('input', function(e) {
+        // Prevent non-letter characters on keydown
+        field.addEventListener('keydown', function(e) {
+            const key = e.key;
+            
+            // Allow control keys
+            const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End', ' '];
+            if (allowedKeys.includes(key)) {
+                return;
+            }
+            
+            // Only allow letters (a-z, A-Z)
+            if (!/^[a-zA-Z]$/.test(key)) {
+                e.preventDefault();
+            }
+        });
+
+        // Clean input on input event (catches paste, etc.)
+        field.addEventListener('input', function() {
+            // Remove any characters that are not letters or spaces
             this.value = this.value.replace(/[^A-Za-z\s]/g, '');
+            
+            // Remove multiple consecutive spaces
+            this.value = this.value.replace(/\s{2,}/g, ' ');
+        });
+
+        // Trim spaces on blur
+        field.addEventListener('blur', function() {
+            this.value = this.value.trim();
         });
     });
-    
-    allTBox.forEach(({element,error}) =>{
-        element.addEventListener('keydown', (e)=> validateTextBox(element, error, e));
-    });
-    contactNumber.addEventListener('keydown', (e)=> validateContactNumber(e));
+
+    // ===== CONTACT NUMBER VALIDATION (Numbers only, max 11 digits) =====
+    if (contactNumber) {
+        // Prevent non-number characters on keydown
+        contactNumber.addEventListener('keydown', function(e) {
+            const key = e.key;
+            const currentLength = this.value.length;
+            
+            // Allow control keys
+            const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
+            if (allowedKeys.includes(key)) {
+                return;
+            }
+            
+            // Prevent non-number input
+            if (isNaN(key) || key === ' ') {
+                e.preventDefault();
+                return;
+            }
+            
+            // Prevent input if already 11 digits
+            if (currentLength >= 11) {
+                e.preventDefault();
+                return;
+            }
+        });
+
+        // Clean input on input event (catches paste, etc.)
+        contactNumber.addEventListener('input', function() {
+            // Remove any non-digit characters
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // Limit to 11 digits
+            if (this.value.length > 11) {
+                this.value = this.value.slice(0, 11);
+            }
+        });
+
+        // Prevent paste of non-numeric content
+        contactNumber.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedData = e.clipboardData.getData('text');
+            const numericOnly = pastedData.replace(/[^0-9]/g, '').slice(0, 11);
+            this.value = numericOnly;
+        });
+    }
 });

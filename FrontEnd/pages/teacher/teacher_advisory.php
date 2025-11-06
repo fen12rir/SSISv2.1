@@ -4,7 +4,7 @@
     $teacherAdvisoryView = new teacherAdvisoryView();
     $pageTitle = 'Advisory';
     $pageCss = '<link rel="stylesheet" href="../../assets/css/teacher/teacher-advisory.css">';
-    $pageJs = '<script src="../../assets/js/teacher/teacher-advisory.js" defer></script>';
+    $pageJs = '<script type="module" src="../../assets/js/teacher/teacher-advisory.js" defer></script>';
 ?>
 <div class="teacher-advisory-content">
     <div class="advisory-wrapper">

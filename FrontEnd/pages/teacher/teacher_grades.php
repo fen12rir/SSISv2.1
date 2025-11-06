@@ -16,6 +16,12 @@ $pageCss = '<link rel="stylesheet" href="../../assets/css/teacher/teacher-grades
             $view->displaySubjectsToGrade();
         ?>
     </div>
+    
+    <!-- Modal Structure -->
+    <div class="modal" style="display: none;">
+        <div class="modal-content">
+        </div>
+    </div>
 </div>
 <?php
     $pageContent = ob_get_clean();

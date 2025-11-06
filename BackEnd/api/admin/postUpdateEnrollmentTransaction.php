@@ -1,33 +1,24 @@
 <?php
 declare(strict_types =1);
+require_once __DIR__ . '/../../admin/controller/adminUnprocessedEnrollmentsController.php';
 header('Content-Type: application/json');
+try {
+    if($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        echo json_encode(['success'=> false, 'message' => 'Invalid Request method']);
+        exit(); 
+    }    
+    $transactionStatus= isset($_POST['transaction-status']) ? (int) $_POST['transaction-status']:null; 
+    $transactionId = isset($_POST['transaction-id'])? (int)$_POST['transaction-id']:null;
+    $status = isset($_POST['enrollment-status']) ? (int)$_POST['enrollment-status'] : null;
+    $enrolleeId = isset($_POST['enrollee-id']) ? (int)$_POST['enrollee-id'] : null;
 
-require_once __DIR__ . '/../../admin/models/adminEnrollmentTransactionsModel.php';
-require_once __DIR__ . '/../../admin/models/adminEnrolleesModel.php';
-
-$transactionType = (int)$_POST['transactionType']; 
-$id = (int)$_POST['id'];
-$enrolleeId = (int)$_POST['enrolleeId'];
-$status = (int)$_POST['status'];
-$adminEnrolleesModel = new adminEnrolleesModel();
-$adminTransactionsModel = new adminEnrollmentTransactionsModel();
-if($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success'=> false, 'message' => 'Wrong method']);
+    $controller = new adminUnprocessedEnrollmentsController();
+    $response = $controller->apiPostUpdateEnrollmentTransaction($transactionStatus,$status, $transactionId,$enrolleeId);
+    http_response_code($response['httpcode']);
+    echo json_encode($response);
     exit();
 }
-if(!isset($isResubmit) && !isset($enrolleeId) && !isset($id)) {
-    echo json_encode(['success'=> false, 'message' => 'No status or id found']);
-    exit();
-}
-$update = $adminTransactionsModel->updateNeededAction($id, $transactionType);
-
-if(!$update) {
-    echo json_encode(['success'=> false, 'message' => 'Update failed']);
-    exit();
-}
-$updateEnrollee = $adminEnrolleesModel->updateEnrollee($enrolleeId, $status);
-
-if($updateEnrollee) {
-    echo json_encode($update);
+catch(IdNotFounException $e) {
+    echo json_encode(['success'=> false,'message'=> $e->getMessage()]);
     exit();
 }

@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html>
 <?php
 require_once __DIR__ . '/../session_init.php';
 require_once __DIR__ . '/../../../BackEnd/common/UserTypeView.php';
@@ -10,6 +8,8 @@ if (!isset($_SESSION['User']['User-Id']) || !isset($_SESSION['User']['Registrati
 $extraCss1 = isset($pageCss2) ? $pageCss2 : '';
 $extraCss2 = isset($pageCss3) ? $pageCss3 : '';
 ?>
+<!DOCTYPE html>
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

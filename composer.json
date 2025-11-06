@@ -2,7 +2,7 @@
     "name": "zenturi/fcking-enrollment-system",
     "autoload": {
         "psr-4": {
-            "Zenturi\\FckingEnrollmentSystem\\": "src/"
+            "app\\": "app/"
         }
     },
     "authors": [

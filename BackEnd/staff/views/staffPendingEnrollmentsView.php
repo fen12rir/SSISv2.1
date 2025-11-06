@@ -26,10 +26,12 @@ class staffPendingEnrollmentsView {
                 foreach($data['data'] as $rows) {
                     $middleName = !is_null($rows['Student_Middle_Name']) ? $rows['Student_Middle_Name'] : '';
                     $fullName = $rows['Student_Last_Name'] . ', ' .$rows['Student_First_Name'].' '.$middleName;
+                    $age = !is_null($rows['Age']) ? $rows['Age'] : 'No Age available';
+                    $sex = !empty($rows['Sex']) ? $rows['Sex'] : 'No Biological Sex provided';
                     $lrn = !is_null($rows['Learner_Reference_Number']) ? $rows['Learner_Reference_Number'] : 'No LRN';
                     $button = new safeHTML('<button class="view-button" data-id="' . $rows['Enrollee_Id'] . '"> <img src="../../assets/imgs/edit-white.png" loading="lazy" alt="edit"></button>');
                     echo $this->tableTemplate->returnHorizontalRows([
-                        $lrn, $fullName,$rows['Age'],$rows['Birth_Date'],$rows['Sex'],$button
+                        $lrn, $fullName,$age,$rows['Birth_Date'],$sex,$button
                     ]);
                 }
                 echo '</tbody></table>';

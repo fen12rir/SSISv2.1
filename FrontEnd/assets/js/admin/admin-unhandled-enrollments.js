@@ -1,16 +1,6 @@
+import {close,loadingText,modalHeader} from '../utils.js';
 document.addEventListener('DOMContentLoaded', function() {
-
-    function attachCloseButton(modal) {
-        const closeBtn = modal.querySelector('.close');
-        console.log(closeBtn);
-        closeBtn.addEventListener('click', function() {
-            modal.style.display = 'none';
-        })
-    }
-    function closeModal(modal) {
-        modal.style.display = 'none';
-    } 
-    // Style status cells
+     // Style status cells
     const rows = document.querySelectorAll('.denied-followup-row');
     rows.forEach(row => {
         const status = row.querySelector('td:nth-child(5)');
@@ -19,206 +9,331 @@ document.addEventListener('DOMContentLoaded', function() {
             status.innerHTML = `<span class="status-cell status-${statusValue}"> ${statusValue.toUpperCase()} </span>`;
         }
     });
-
+    //INIT MODAL
+    const modal = document.getElementById('enrolleeModal');
+    const modalContent = document.getElementById('enrollee-modal-content');
     // Handle view resubmission and view reason buttons
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', async function(e) {
+        if(!e.target.classList.contains('view-resubmission') && !e.target.classList.contains('view-reason')) {return};
         if (e.target.classList.contains('view-resubmission')) {
-            const enrolleeModal = document.getElementById('enrolleeModal');
-            const enrolleeId = e.target.getAttribute('data-id');
-            const content = document.getElementById('enrollee-modal-content');
-            
-            enrolleeModal.style.display = 'block';
-            content.innerHTML = '<p>Loading...</p>';
-
-            fetch('../../../BackEnd/templates/admin/fetchEnrolleeInfo.php?id=' + encodeURIComponent(enrolleeId))
-                .then(response => response.text())
-                .then(data => {
-                    content.innerHTML = `
-                        <div id="modal-body">
-                            ${data}
-                            <div class="action-buttons">
-                                <button data-id="${enrolleeId}" class="resubmission accept-btn" data-id="${enrolleeId}">Accept</button>
-                                <button data-id="${enrolleeId}" class="resubmission deny-btn" data-id="${enrolleeId}">Deny</button>
-                            </div>
-                        </div>
-                    `;
-                    attachCloseButton(enrolleeModal);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    content.innerHTML = '<p>Error loading data. Please try again.</p>';
-                    attachCloseButton(enrolleeModal);
-                });
-        } 
-         
+            const enrolleeId = e.target.getAttribute('data-enrollee');
+            if(enrolleeId === null) return;
+            modal.style.display = 'block';
+            modalContent.innerHTML = loadingText;
+            const result = await fetchEnrolleeInfo(enrolleeId);
+            if(!result.success) {
+                modalContent.innerHTML = modalHeader();
+                modalContent.innerHTML += result.message;
+                close(modal);
+            }
+            else {
+                modalContent.innerHTML = modalHeader();
+                modalContent.innerHTML += result.data;
+                modalContent.innerHTML += `
+                <div class="action-buttons">
+                        <button data-action="enroll" class="resubmission accept-btn" data-enrollee="${enrolleeId}">Accept</button>
+                        <button data-action="deny" class="resubmission deny-btn" data-enrollee="${enrolleeId}">Deny</button>
+                </div>`;
+                close(modal);
+            }
+        }
+        //MODAL FOR REMARKS
         else if (e.target.classList.contains('view-reason')) {
-            const enrolleeId = e.target.getAttribute('data-id');
-            const content = document.getElementById('reason-modal-content');
-            const reasonModal = document.getElementById('reasonModal');
-            let enrollmentStatus = '';
-            
-            // Show modal and loading message
-            reasonModal.style.display = 'block';
-            content.innerHTML = '<p>Loading reasons...</p>';
-
-            fetch('../../../BackEnd/api/admin/fetchEnrolleeTransactions.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'id=' + enrolleeId
-            })
-            .then(response => response.json())
-            .then(response => {
-                console.log('Response:', response); // Debug log
-                
-                content.innerHTML = `<span class="close"> &times; </span>`;
-                content.innerHTML += response.data[0].Remarks;
-                enrollmentStatus = parseInt(response.data[0].Enrollment_Status);
-                const transactionId = parseInt(response.data[0].Enrollment_Transaction_Id);
-
+            const enrolleeId = e.target.getAttribute('data-enrollee');
+            if(enrolleeId === null) return; 
+            modal.style.display = 'block';
+            modalContent.innerHTML = loadingText;
+            const result = await fetchEnrolleeRemarks(enrolleeId);
+            if(!result.success) {
+                modalContent.innerHTML = modalHeader();
+                modalContent.innerHTML += result.message;
+                close(modal);
+            }
+            else {
+                const enrollmentStatus = parseInt(result.data.Enrollment_Status);
+                const transactionId = parseInt(result.data.Enrollment_Transaction_Id);
+                let statusText = ``;
+                //CUSTOMIZE BUTTON BASED ON STATUS GIVEN
                 if (enrollmentStatus == 1) {
-                    content.innerHTML+= `<div class="unhandled-buttons">
-                                        <button data-id="${transactionId}" data-enrollee="${enrolleeId}" data-action="enroll" class="remarks accept-btn">Finalize Enrollment</button>
-                                        <button data-id="${transactionId}" data-enrollee="${enrolleeId}" data-action="deny" class="remarks deny-btn">Deny</button>
-                                        <button data-id="${transactionId}" data-enrollee="${enrolleeId}" data-action="toFollow" class="remarks to-follow-btn">To Follow</button></div>`;    
+                statusText = `<div class="unhandled-buttons">
+                                    <button data-id="${transactionId}" data-enrollee="${enrolleeId}" data-action="enroll" class="remarks accept-btn">Finalize Enrollment</button>
+                                    <button data-id="${transactionId}" data-enrollee="${enrolleeId}" data-action="deny" class="remarks deny-btn">Deny</button>
+                                    <button data-id="${transactionId}" data-enrollee="${enrolleeId}" data-action="toFollow" class="remarks to-follow-btn">To Follow</button></div>`;    
                 }
                 else if (enrollmentStatus == 4) {
-                    const transactionStatus = parseInt(response.data[0].Transaction_Status);
-                    const isConsultationDisabled = transactionStatus == 2? 'disabled' : '';
-                    const isResubmissionDisabled = transactionStatus == 1 ? 'disabled' : '';
-                    content.innerHTML+= `<div><button data-id="${transactionId}" data-enrollee="${enrolleeId}" data-action="enroll" class="remarks accept-btn ${isResubmissionDisabled}" ${isResubmissionDisabled}>Enroll</button>
+                    const transactionStatus = parseInt(result.data.Transaction_Status);
+                    const isConsultationDisabled = transactionStatus === 2 ? 'disabled' : '';
+                    const isResubmissionDisabled = (transactionStatus === 1 || transactionStatus === 3)? 'disabled' : '';
+                    statusText = `<div><button data-id="${transactionId}" data-enrollee="${enrolleeId}" data-action="enroll" class="remarks accept-btn ${isResubmissionDisabled}" ${isResubmissionDisabled}>Enroll</button>
                                         <button data-id="${transactionId}" data-enrollee="${enrolleeId}" data-action="resubmit" class="remarks resubmission-btn ${isResubmissionDisabled}" ${isResubmissionDisabled}>Allow Resubmission</button>
                                         <button data-id="${transactionId}" data-enrollee="${enrolleeId}" data-action="consult" class="remarks consultation-btn ${isConsultationDisabled}"${isConsultationDisabled}> Needs Consultation </button>
                                         </div>`;    
                 }
                 else if (enrollmentStatus == 2) {
-                    content.innerHTML+= `<div><button data-id="${transactionId}" data-enrollee="${enrolleeId}" data-action="deny" class="remarks deny-btn">Finalize Denial</button>
+                    statusText = `<div><button data-id="${transactionId}" data-enrollee="${enrolleeId}" data-action="deny" class="remarks deny-btn">Finalize Denial</button>
                                         <button data-id="${transactionId}" data-enrollee="${enrolleeId}" data-action="toFollow" class="remarks to-follow-btn">To Follow</button></div>`;    
                 }
-                attachCloseButton(reasonModal);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                content.innerHTML = '<p>Error fetching data. Please try again later.</p>';
-            });
-        }
-    // Close modals when clicking outside
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                closeModal(event.target);
+                modalContent.innerHTML = modalHeader();
+                modalContent.innerHTML +=`
+                    <div id="modal-body">
+                        <h3>Enrollee Reasons</h3>
+                        ${result.data.Remarks}
+                        <div class="action-buttons">
+                            ${statusText}
+                        </div>
+                    </div>
+                `;
+                close(modal);
             }
         }
+
     });
-    reasonModal.addEventListener('click', function(e) {
-        /*NOTE: unhandled enrollments are still not reflected to the users, it needs to be approved or handled by the admin 
-          before reflecting to the user*/ 
-      
-          //TODO:  Add post handlers for all action buttons for remarks and update the enrollee table accordingly
-          //TODO: Handle enrolled status whether accepted, denied or to follow
-          //TODO: Handle resubmission checks to avoid double resubmission, and allow enrollment and  
-          //TODO: handle denied status, finalize denial or update into to follow
-      if(e.target.classList.contains('accept-btn') || e.target.classList.contains('consultation-btn') 
-    || e.target.classList.contains('resubmission-btn') || e.target.classList.contains('deny-btn') || e.target.classList.contains('to-follow-btn') ) {
-        const enrolleeId = e.target.getAttribute('data-enrollee');
-        const transactionId = e.target.getAttribute('data-id');  
+    let isSubmitting = false;
+    modal.addEventListener('click', async function(e) {
+        //RETURN IF IS SUBMITTING == TRUE BEFORE SUBMISSION
+        if(isSubmitting) return;
         const action = e.target.getAttribute('data-action');
-          let actionNumber = 0;
-
-          if(action == "enroll") {
-            actionNumber = 1; 
-          }
-          else if(action == "deny") {
-            actionNumber = 2;
-          }
-          else if(action == "toFollow") {
-            actionNumber = 4
-          }
-          else if(action == "resubmit") {
-            actionNumber = 5;
-          }
-          else if(action == "consult") {
-            actionNumber = 6;
-          }  
-
-          if (actionNumber == 1 || actionNumber == 2 || actionNumber == 4) {
-            console.log(actionNumber);
-            console.log(transactionId);
-            
-            fetch(`../../../BackEnd/api/admin/postUpdateEnrollee.php`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                    'status': actionNumber,
-                    'id' : enrolleeId
-                })
-            })
-            .then(response => {
-                if(!response.ok) {
-                    throw new Error(`HTTP ERROR! status ${response.status}`)
-                }
-                return response.json()
-            })
-            .then(data=>{
-                if(data.success) {
-                    alert('Update success');
-
-                    window.location = '/admin_unhandled_enrollments.php';
-                }
-                else {
-                    alert(data.message);
-                }
-            })
-            .catch(error=>{
-                alert(error);
-            })
-          }
-          else {
-            //initialize transactionFlag 1 if resubmit(5) 2 if cosultation(6) 
-            let transactionType = 0;
-            const status = 4;
-            if(actionNumber == 5) {
-                transactionType = 1;
+        //EARLY RETURN ON NON-BUTTON CLICKS
+        const validActions = ["enroll","deny","toFollow","resubmit","consult"];
+        if(!validActions.includes(action)) return;
+        //EARLY RETURN IF BUTTON DOES NOT EXIST
+        const button = e.target;
+        if(!button) return;
+        //DISABLED CLICK WHEN SUBMITTING
+        isSubmitting = true;
+        button.disabled = true;
+        button.style.backgroundColor = 'gray';
+        let status, bgColor;
+        //ENROLLEE AND ENROLLMENT TRANSACTION ID
+        const enrolleeId = e.target.getAttribute('data-enrollee');
+        const transactionId = e.target.getAttribute('data-id');
+        //DIRECT ENROLLMENT STATUS OPS  
+        if(action==="enroll" || action==="deny" || action==="toFollow") {
+            status = {
+                "enroll" : 1,
+                "deny" : 2,
+                "toFollow" : 4
+            }[action];
+            const result = await postUpdateEnrollee(status,enrolleeId);
+            if(!result.success) {
+                alert(result.message);
+                bgColor = {
+                    1 : '#4CAF50',
+                    2 : '#F44336',
+                    4: '#AF9A4C'
+                }[status];
+                isSubmitting = false;
+                button.disabled = false;
+                button.style.backgroundColor = bgColor;
             }
-            else if(actionNumber == 6) {
-                transactionType = 2;
+            else {
+                alert(result.message);
+                window.location.reload();
             }
-            console.log(isResubmit);
-            console.log(isConsult);
-            fetch(`../../../BackEnd/api/admin/postUpdateEnrollmentTransaction.php`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                    'transactionType': transactionType,
-                    'id' : transactionId,
-                    'status' : status,
-                    'enrolleeId' : enrolleeId 
-                })
-            })
-            .then(response => {
-                if(!response.ok) {
-                    throw new Error(`HTTP ERROR! status ${response.status}`)
-                }
-                return response.json()
-            })
-            .then(data=>{
-                if(data.success) {
-                    alert('Update success');
-
-                    window.location = '../admin_unhandled_enrollments.php';
-                }
-                else {
-                    alert(data.message);
-                }
-            })
-            .catch(error=>{
-                alert(error);
-            })
-          }
-      } 
+        }
+        //ENROLLMENT TRANSACTION OPS
+        else if(action==="resubmit" || action==="consult"){
+            status = 4;
+            const transactionStatus = {
+                "resubmit" : 1,
+                "consult" : 2
+            }[action];
+            const result = await postUpdateEnrollmentTransaction(transactionStatus,transactionId,enrolleeId,status);
+            if(!result.success) {
+                alert(result.message);
+                bgColor = {
+                    1 : '#AF714C',
+                    2: '#4C69AF'
+                }[transactionStatus];
+                isSubmitting = false;
+                button.disabled = false;
+                button.style.backgroundColor = bgColor;
+            }
+            else {
+                alert(result.message);
+                window.location.reload();
+            }
+        }
     });
 });
+//TIME BEFORE ABORT 10S
+const TIME_OUT = 100000;
+async function postUpdateEnrollmentTransaction(transactionNumber,transactionId,enrolleeId,status,) { 
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(()=>controller.abort(),TIME_OUT);
+        const response = await fetch(`../../../BackEnd/api/admin/postUpdateEnrollmentTransaction.php`, {
+            signal: controller.signal,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                'transaction-status': transactionNumber,
+                'transaction-id' : transactionId,
+                'enrollment-status' : status,
+                'enrollee-id' : enrolleeId
+            })
+        });
+        clearTimeout(timeoutId);
+        let data;
+        try {
+            data = await response.json();
+        }
+        catch{
+            throw new Error('Invalid Response');
+        }
+        if(!response.ok) {
+            return {
+                success: false,
+                message: data.message || `HTTP ERROR: ${response.status}`,
+                data: null
+            };
+        }
+        return data;
+    }
+    catch(error){
+        if(error.name === "AbortError") {
+           return {
+                success: false,
+                message: `Request timeout: Server took too long to respond`,
+                data: nul
+           }
+        }
+        return {
+            success: false,
+            message: error.message || `Something went wrong`,
+            data: null
+        };
+    }
+}
+async function postUpdateEnrollee(status, enrolleeId) {
+    const TIME_OUT = 10000;
+    try {
+        const  controller = new AbortController();
+        const timeoutId = setTimeout(()=>{controller.abort()},TIME_OUT);
+        const response = await fetch(`../../../BackEnd/api/admin/postUpdateEnrollee.php`, {
+            signal: controller.signal,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                'enrollment-status': status,
+                'enrollee-id' : enrolleeId
+            })
+        });
+        clearTimeout(timeoutId);
+        let data;
+        try {
+            data = await response.json();
+        }
+        catch{
+            throw new Error('Invalid Response');
+        }
+        if(!response.ok) {
+            return {
+                success: false,
+                message: data.message || `HTTP ERROR: ${response.status}`,
+                data: null
+            };
+        }
+        return data;
+    }
+    catch(error){
+        if(error.name === "AbortError") {
+           return {
+                success: false,
+                message: `Request timeout: Server took too long to respond`,
+                data: nul
+           }
+        }
+        return {
+            success: false,
+            message: error.message || `Something went wrong`,
+            data: null
+        };
+    }
+}
+async function fetchEnrolleeRemarks(enrolleeId) {
+    const TIME_OUT = 10000;
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(()=> controller.abort(), TIME_OUT);
+        const response = await fetch(`../../../BackEnd/api/admin/fetchEnrolleeTransactions.php?id=${encodeURIComponent(enrolleeId)}`,{
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        let data;
+        try {
+            data = await response.json();
+        }
+        catch{
+            throw new Error('Invalid response');
+        }
+        if(!response.ok) {
+            return {
+                success: false,
+                message: data.message || `There was a problem with the response: ${response.status}`,
+                data: null
+            };
+        }
+        return data;
+    }
+    catch(error) {
+        console.error(error.message);
+        if (error.name === 'AbortError') {
+            return {
+                success: false,
+                message: `Request timeout: Server took too long to respond`,
+                data: null
+            };
+        }
+        return {
+            success: false,
+            message: `An error occured. Failed to fetch`,
+            data: null
+        };
+    }
+}
+async function fetchEnrolleeInfo(enrolleeId) {
+    const TIME_OUT = 10000;
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(()=>controller.abort(),TIME_OUT);
+        const response = await fetch(`../../../BackEnd/templates/admin/fetchEnrolleeInfo.php?id=${encodeURIComponent(enrolleeId)}`,{
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        let data;
+        try {
+            data = await response.text();
+        }
+        catch{
+            throw new Error('Invalid response');
+        }
+        if(!response.ok) {
+            return {
+                success: false,
+                message: data.message || `There was a problem with the response: ${response.status}`,
+                data: null
+            };
+        }
+        return {
+            success: true, 
+            message: `Enrollee Info successfully fetched`, 
+            data: data
+        };
+    }
+    catch(error) {
+        console.error(error);
+        if(error.name === 'AbortError') {
+            return {
+                success: false,
+                message: `Request timeout: Server took too long to response`,
+                data: null
+            };
+        }
+        return {success: false, message: error.message || `Something went wrong`, data: null};
+    }
+}

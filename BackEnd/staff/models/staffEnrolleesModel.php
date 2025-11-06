@@ -25,20 +25,4 @@ class staffEnrolleesModel {
     }
     //HELPERS
     //OPERATIONS
-    public function setIsHandledStatus($id, $status):bool { //F 4.3.2
-        try {
-            $sql = "UPDATE enrollee SET Is_Handled = :status WHERE Enrollee_Id = :id";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':status', $status);
-            $stmt->bindParam(':id', $id);
-            $result = $stmt->execute();
-            if($stmt->rowCount() === 0) {
-                return false;
-            }
-            return true;
-        }
-        catch(PDOException $e) {
-            throw new DatabaseException('Failed to set is handled status',432,$e);
-        } 
-    }
 }

@@ -25,13 +25,13 @@ body {
 }
 
 .admin-all-students-content {
-  padding: 2rem;
+  padding: 2rem; /* Base padding for 1440px */
   transition: margin-left 0.3s ease;
   background-image: url("../../imgs/paper.jpg");
 }
 
 .sidebar.active ~ .admin-all-students-content {
-  margin-left: 80px; /* Adjusts on sidebar collapse */
+  margin-left: 80px; 
 }
 
 /* ===== Header Section ===== */
@@ -42,14 +42,14 @@ body {
   backdrop-filter: blur(12px);
   background: #3e9ec4;
   border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  padding: 1rem 1.5rem;
+  border-radius: 20px; /* Base for 1440px */
+  padding: 1rem 1.5rem; /* Base for 1440px */
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem; /* Base for 1440px */
 }
 
 .table-title h2 {
-  font-size: 1.8rem;
+  font-size: 1.8rem; /* Base for 1440px */
   font-weight: 700;
   letter-spacing: 1px;
 }
@@ -57,12 +57,12 @@ body {
 .add-student-btn {
   background: var(--accent-color);
   border: none;
-  border-radius: 12px;
-  padding: 0.6rem;
+  border-radius: 12px; /* Base for 1440px */
+  padding: 0.6rem; /* Base for 1440px */
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 0 12px rgba(0, 188, 212, 0.4);
-  width: 35px;
+  width: 35px; /* Base for 1440px */
 }
 
 .add-student-btn:hover {
@@ -74,7 +74,7 @@ body {
 .table-title-right {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.75rem; /* Base for 1440px */
   flex-wrap: wrap;
 }
 
@@ -82,10 +82,10 @@ body {
 .search-box {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid var(--glass-border);
-  border-radius: 10px;
+  border-radius: 10px; /* Base for 1440px */
   color: #164c8c;
-  padding: 0.45rem 0.8rem;
-  font-size: 0.95rem;
+  padding: 0.45rem 0.8rem; /* Base for 1440px */
+  font-size: 0.95rem; /* Base for 1440px */
   outline: none;
   transition: 0.2s ease;
 }
@@ -104,16 +104,13 @@ body {
   background: rgb(36 186 255 / 28%);
   backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
-  border-radius: 20px;
+  border-radius: 20px; /* Base for 1440px */
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
-  padding: 1.5rem;
   
-  /* Add fixed dimensions */
   width: 100%;
-  height: 70vh;
-  min-height: 400px;
+  height: 70vh; /* Base for 1440px */
+  min-height: 400px; /* Base for 1440px */
   
-  /* Add scrolling behavior */
   overflow: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(62, 158, 196, 0.5) transparent;
@@ -145,7 +142,7 @@ body {
   width: 100%;
   border-collapse: collapse;
   color: var(--text-color);
-  font-size: 0.95rem;
+  font-size: 0.95rem; /* Base for 1440px */
 }
 
 .students thead {
@@ -154,7 +151,7 @@ body {
 }
 
 .students th {
-    padding: 1rem;
+    padding: 1rem; /* Base for 1440px */
     font-weight: 600;
     letter-spacing: 0.4px;
     background: rgb(97 206 255);
@@ -163,7 +160,7 @@ body {
 }
 
 .students td {
-  padding: 1rem;
+  padding: 1rem; /* Base for 1440px */
   border-top: 1px solid rgba(63, 166, 210, 0.897);
   vertical-align: middle;
   color: black;
@@ -188,10 +185,10 @@ body {
 
 /* ===== Status Badges ===== */
 .status {
-  padding: 0.4rem 0.8rem;
-  border-radius: 20px;
+  padding: 0.4rem 0.8rem; /* Base for 1440px */
+  border-radius: 20px; /* Base for 1440px */
   font-weight: 500;
-  font-size: 0.85rem;
+  font-size: 0.85rem; /* Base for 1440px */
 }
 
 .statusActive {
@@ -216,11 +213,11 @@ body {
 .students td button {
   border: none;
   cursor: pointer;
-  margin-right: 6px;
+  margin-right: 6px; /* Base for 1440px */
   transition: 0.25s ease;
-  border-radius: 8px;
-  padding: 4px;
-  width: 31px;
+  border-radius: 8px; /* Base for 1440px */
+  padding: 4px; /* Base for 1440px */
+  width: 31px; /* Base for 1440px */
 }
 
 .students td button:hover {
@@ -243,9 +240,9 @@ body {
 
 .modal-content {
   background-color: white;
-  padding: 20px;
+  padding: 20px; /* Base for 1440px */
   border-radius: 5px;
-  width: 500px;
+  width: 500px; /* Base for 1440px */
   max-width: 90%;
 }
 
@@ -276,12 +273,246 @@ body {
   background: #d93636;
 }
 
-/* ===== Responsive Design ===== */
-@media (max-width: 1024px) {
+/*====================================*/
+/*  ALL STUDENTS RESPONSIVE DESIGN    */
+/*====================================*/
+
+/* 2500px and above - Larger screens */
+@media (min-width: 2500px) {
   .admin-all-students-content {
-    margin-left: 200px;
+    padding: 2.8rem;
+  }
+  
+  .table-title {
+    border-radius: 26px;
+    padding: 1.4rem 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .table-title h2 {
+    font-size: 2.4rem;
+    letter-spacing: 1.3px;
+  }
+  
+  .add-student-btn {
+    border-radius: 16px;
+    padding: 0.8rem;
+    width: 46px;
+  }
+  
+  .table-title-right {
+    gap: 1rem;
+  }
+  
+  .filter-select,
+  .search-box {
+    border-radius: 14px;
+    padding: 0.65rem 1.1rem;
+    font-size: 1.2rem;
+  }
+  
+  .table-container {
+    border-radius: 26px;
+    height: 72vh;
+    min-height: 520px;
+  }
+  
+  .students {
+    font-size: 1.2rem;
+  }
+  
+  .students th {
+    padding: 1.4rem;
+    letter-spacing: 0.6px;
+    font-size: 1.15rem;
+  }
+  
+  .students td {
+    padding: 1.4rem;
+    letter-spacing: 0.7px;
+  }
+  
+  .status {
+    padding: 0.55rem 1.1rem;
+    border-radius: 26px;
+    font-size: 1.1rem;
+  }
+  
+  .students td button {
+    margin-right: 8px;
+    border-radius: 11px;
+    padding: 6px;
+    width: 42px;
+  }
+  
+  .modal-content {
+    padding: 28px;
+    border-radius: 7px;
+    width: 680px;
+  }
+}
+
+/* 1920px - Full HD */
+@media (min-width: 1920px) and (max-width: 2499px) {
+  .admin-all-students-content {
+    padding: 2.4rem;
+  }
+  
+  .table-title {
+    border-radius: 23px;
+    padding: 1.2rem 1.8rem;
+    margin-bottom: 1.8rem;
+  }
+  
+  .table-title h2 {
+    font-size: 2.1rem;
+    letter-spacing: 1.2px;
+  }
+  
+  .add-student-btn {
+    border-radius: 14px;
+    padding: 0.7rem;
+    width: 40px;
+  }
+  
+  .table-title-right {
+    gap: 0.9rem;
+  }
+  
+  .filter-select,
+  .search-box {
+    border-radius: 12px;
+    padding: 0.55rem 1rem;
+    font-size: 1.1rem;
+  }
+  
+  .table-container {
+    border-radius: 23px;
+    height: 71vh;
+    min-height: 460px;
+  }
+  
+  .students {
+    font-size: 1.1rem;
+  }
+  
+  .students th {
+    padding: 1.2rem;
+    letter-spacing: 0.5px;
+    font-size: 1.05rem;
+  }
+  
+  .students td {
+    padding: 1.2rem;
+    letter-spacing: 0.6px;
+  }
+  
+  .status {
+    padding: 0.5rem 1rem;
+    border-radius: 23px;
+    font-size: 1rem;
+  }
+  
+  .students td button {
+    margin-right: 7px;
+    border-radius: 10px;
+    padding: 5px;
+    width: 36px;
+  }
+  
+  .modal-content {
+    padding: 24px;
+    border-radius: 6px;
+    width: 600px;
+  }
+}
+
+/* 1440px - Default (already set above, this is just for clarity) */
+@media (min-width: 1441px) and (max-width: 1919px) {
+  /* Default styles apply - no changes needed */
+}
+
+/* 1024px - Smaller desktop */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  .admin-all-students-content {
     padding: 1.5rem;
   }
+  
+  .table-title {
+    border-radius: 15px;
+    padding: 0.75rem 1.15rem;
+    margin-bottom: 1.15rem;
+  }
+  
+  .table-title h2 {
+    font-size: 1.45rem;
+    letter-spacing: 0.75px;
+  }
+  
+  .add-student-btn {
+    border-radius: 9px;
+    padding: 0.48rem;
+    width: 29px;
+  }
+  
+  .table-title-right {
+    gap: 0.58rem;
+  }
+  
+  .filter-select,
+  .search-box {
+    border-radius: 8px;
+    padding: 0.36rem 0.62rem;
+    font-size: 0.83rem;
+  }
+  
+  .table-container {
+    border-radius: 15px;
+    height: 67vh;
+    min-height: 340px;
+  }
+  
+  .students {
+    font-size: 0.83rem;
+  }
+  
+  .students th {
+    padding: 0.75rem;
+    letter-spacing: 0.28px;
+    font-size: 0.88rem;
+  }
+  
+  .students td {
+    padding: 0.75rem;
+    letter-spacing: 0.38px;
+  }
+  
+  .status {
+    padding: 0.33rem 0.62rem;
+    border-radius: 15px;
+    font-size: 0.73rem;
+  }
+  
+  .students td button {
+    margin-right: 4.5px;
+    border-radius: 6px;
+    padding: 3px;
+    width: 25px;
+  }
+  
+  .modal-content {
+    padding: 15px;
+    border-radius: 4px;
+    width: 410px;
+  }
+}
+
+/*====================================*/
+/* END ALL STUDENTS RESPONSIVE DESIGN */
+/*====================================*/
+
+/* ===== Responsive Design ===== */
+@media (max-width: 1024px) {
 }
 
 @media (max-width: 768px) {

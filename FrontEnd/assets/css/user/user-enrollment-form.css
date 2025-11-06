@@ -2,57 +2,82 @@
 #subjects, #teachers, #mv, .searchbox-wrapper{
     display: none;
 }
-/*----START OF MAIN CONTENT----*/
+
+/*----GLOBAL STYLES----*/
+* {
+    box-sizing: border-box;
+}
+
 .required {
     font-size: 1rem;
     color: red;
     padding: 0.1rem;
 }
+
 .responsive-text-break {
     display: none;
 }
+
+/*----MAIN CONTAINER----*/
 .enrollment-form-content {
-    margin-top: 1em;
-    font-family: "Barlow";
+    margin: 1em auto;
+    font-family: "Barlow", Arial, sans-serif;
     font-weight: 450;
-    font-size: 1em;
+    font-size: clamp(0.875rem, 2vw, 1rem);
     background-color: white;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow-x: hidden;
-    margin-left: auto;
-    margin-right: auto;
-    position: relative;
-    width: 90vw;
-    height: 100%;
+    padding: 1rem;
+    width: 100%;
+    max-width: 1400px;
+    min-height: 100vh;
 }
-#age.textbox {
-    width: 50%;
-    background: inherit;
-}
+
+/*----CONTENT TITLE----*/
 .content-title {
-    font-size: 1.24em;
+    font-size: clamp(1rem, 3vw, 1.5rem);
     font-family: Arial, Helvetica, sans-serif;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    padding-left: 1em;
-    height: 50px;
-    align-content: center;
+    padding: 0.75rem 1rem;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
     background-color: #ffffff;
-    position: sticky;
     top: 0;
+    z-index: 100;
+    margin-bottom: 1rem;
 }
+
+.content-title p {
+    margin: 0;
+}
+
+/*----FORM WRAPPER----*/
+.content-wrapper {
+    width: 100%;
+    padding: 0.5rem;
+}
+
+.form-main {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/*----FORM INPUTS----*/
 .textbox {
     border-radius: 8px;
-    border: 1px solid #616161 ;     
+    border: 1px solid #616161;
     background-color: #f7f4f4;
-    width: 13em;
-    height: 1.5rem;     
-    padding: 5px;
-    margin-top: 2%;   
+    width: 100%;
+    min-height: 2.5rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
 }
 
 .textbox:focus {
     border: 2px solid #295077;
+    outline: none;
 }
 
 .textbox[readonly] {
@@ -61,307 +86,757 @@
     opacity: 0.7;
 }
 
-.radio {
-    background-color: initial;
-    cursor: pointer;
-    appearance: auto;
-    box-sizing: border-box;
-    margin: 3px 3px 0px 5px;
-    padding: initial;
+/* Radio button override for reset.css */
+input[type="radio"].radio,
+.radio[type="radio"],
+input.radio[type="radio"] {
+    /* Force revert all properties */
+    all: revert !important;
+    
+    /* Then apply custom styling */
+    -webkit-appearance: radio !important;
+    -moz-appearance: radio !important;
+    appearance: radio !important;
+    
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+    cursor: pointer !important;
+    margin: 0 0.5rem 0 0 !important;
+    vertical-align: middle !important;
+    flex-shrink: 0 !important;
+    
+    /* Ensure it displays as inline element */
+    display: inline-block !important;
+    position: relative !important;
 }
 
-input[type="button"], input[type="submit"] {
-    background-color: #f7f4f4;
-    color: #616161;
-    border: 1px solid black;
-    border-radius: 8px;
-    padding: 10px 20px;
-    cursor: pointer;  
-    margin-top: 2%;
+/* Custom radio styling for browsers that support accent-color */
+input[type="radio"].radio:checked,
+.radio[type="radio"]:checked {
+    accent-color: #295077 !important;
 }
-label{
-    padding-bottom: .3em;
-    padding-top: 1em;
+
+/* Hover effect */
+input[type="radio"].radio:hover:not(:disabled),
+.radio[type="radio"]:hover:not(:disabled) {
+    box-shadow: 0 0 0 3px rgba(41, 80, 119, 0.1) !important;
+}
+
+/* Focus state */
+input[type="radio"].radio:focus,
+.radio[type="radio"]:focus {
+    outline: 2px solid #295077 !important;
+    outline-offset: 2px !important;
+}
+
+/* Disabled state */
+input[type="radio"].radio:disabled,
+.radio[type="radio"]:disabled {
+    cursor: not-allowed !important;
+    opacity: 0.5 !important;
+}
+
+/* Fallback for older browsers - custom radio button */
+@supports not (appearance: radio) {
+    input[type="radio"].radio,
+    .radio[type="radio"] {
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        
+        border: 2px solid #616161 !important;
+        border-radius: 50% !important;
+        background-color: white !important;
+        position: relative !important;
+    }
+    
+    input[type="radio"].radio:checked,
+    .radio[type="radio"]:checked {
+        border-color: #295077 !important;
+        background-color: white !important;
+    }
+    
+    input[type="radio"].radio:checked::before,
+    .radio[type="radio"]:checked::before {
+        content: '' !important;
+        display: block !important;
+        width: 0.625rem !important;
+        height: 0.625rem !important;
+        border-radius: 50% !important;
+        background-color: #295077 !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+    }
 }
 
 .select {
-    display: inline-block;
-    text-align: start;
-    appearance: auto;
-    box-sizing: border-box;
-    border-radius: 2px;
-    align-items: center;
+    width: 100%;
+    min-height: 2.5rem;
+    border-radius: 8px;
+    border: 1px solid #616161;
     background-color: #f7f4f4;
-    cursor: default;
-    margin-top: .3em;
-    white-space: pre;
-    border-width: 1px;
-    border-style: solid;
-    border-color: light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
-}
-/*ANTAS NG IMPORMASYON NG PAARALAN*/
-.acad-year-tbox {
-    display: flex;
-    justify-content: center;
-}
-.previous-school {
-    margin-top: 2vh;
+    padding: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
 }
 
+input[type="file"] {
+    width: 100%;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+/*----LABELS AND TEXT----*/
+label {
+    display: inline-block;
+    padding: 0.25rem 0;
+    cursor: pointer;
+    font-size: 1rem;
+    user-select: none;
+}
+
+/* Radio button label - always appears next to radio */
+label[for] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: 6px;
+    margin: 0;
+}
+
+label[for]:hover {
+    background-color: rgba(41, 80, 119, 0.05);
+}
+
+.dfont {
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    display: block;
+    line-height: 1.4;
+    color: #333;
+}
+
+/* Radio group containers */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.radio-group-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    min-height: 44px;
+}
+
+.radio-option:hover {
+    background-color: rgba(41, 80, 119, 0.08);
+}
+
+.radio-option input[type="radio"] {
+    margin: 0 !important;
+}
+
+/*----SECTION CONTAINERS----*/
+.border-75 {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.title {
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+    font-weight: 600;
+    background-color: #f8f9fa;
+    padding: 1rem;
+    display: block;
+    border-bottom: 2px solid #295077;
+}
+
+/*----SECTION WRAPPERS (Mobile First)----*/
 .previous-school-wrapper,
 .student-information-wrapper,
 .student-disability-wrapper,
 .address-wrapper,
 .parents-guardian-information-wrapper {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2em;
-    gap: 1.5em;
-    background-color: #ffffff;
-    box-sizing: border-box;
-}
-
-.previous-school-wrapper {
+    padding: 1rem;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    grid-template-columns: 1fr;
 }
 
-.student-information-wrapper {
+/*----PREVIOUS SCHOOL SECTION----*/
+.previous-school-row-1,
+.student-info-row-1 {
     display: grid;
-    grid-template-rows: auto auto auto;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #fff;
 }
 
-.student-disability-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+.school-year {
+    display: flex;
+    flex-direction: column;
 }
 
-.address-wrapper {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+.academic-year-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.parents-guardian-information-wrapper {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+.acad-year-tbox {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
 }
 
-.border-75 {
-    border: 1px solid #e0e0e0;
+.acad-year-tbox .textbox {
+    flex: 1;
+}
+
+.acad-year-tbox p {
+    margin: 0;
+    font-weight: bold;
+}
+
+.learner-radio {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.learner-radio .dfont {
+    margin-bottom: 0.5rem;
+}
+
+.lrn-radio-buttons-selections {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
     border-radius: 8px;
-    margin-bottom: 2em;
+    border: 1px solid #e9ecef;
+}
+
+.lrn-radio-buttons-selections .radio-option {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.lrn-radio-buttons-selections .radio-option:hover {
     background-color: white;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.previous-school-title {
-    background-color: #ffffff;
-    padding: 1em 0em 1em 0em;
-}
-.nais-paaralan {
-    padding: 1em;
-}
-.heducation {
-    padding: 1em;
+.lrn-radio-buttons-selections input[type="radio"] {
+    margin-right: 0.75rem !important;
 }
 
-.grade {
-    border-right :1px solid #295077;
-    padding: 1em;
-}
-.school-year,
-.last-year-finished {
-   display: flex;
-   flex-direction: column;
-   flex-wrap: wrap;
-   align-content: flex-start;
-}
-/* dinagdagan ko ng margin because sikip -dabid*/
-.academic-year-input {
-    display: flex;
-    flex-direction: column;
-    margin: 5px;
-}
-.learner-radio {
-    display: flex;
-    flex-direction: column;
-}
-.lschool-wrapper, .fschool-wrapper {
-    display: flex;
-    gap: 1em;
+.lrn-radio-buttons-selections label {
+    flex: 1;
+    margin: 0;
+    padding: 0;
+    font-weight: 500;
 }
 
-#lschoolAddress, #fschoolAddress {
-    width: 24rem;
+.heducation > div:has(input[type="radio"]) {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    flex-wrap: wrap;
 }
-.lrn-radio-buttons-selections {
-    padding-top: 10px;
-}
-/*IMPORMASYON NG ESTUDYANTE*/
 
-.student-information-title {
-    width: 100%;
-    background-color: #ffffff;
-    padding: 1em 0em 1em 0em;
+.heducation > div:has(input[type="radio"]) .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: white;
+    border-radius: 6px;
+    transition: all 0.2s ease;
 }
-.title {
-    font-size: clamp(1em, 8vw, 2em);
-    background-color: #ffffff;
-    padding-left: 2em;
-}       
-.gender-group-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    padding: 0.5em;
-}       
+
+.heducation > div:has(input[type="radio"]) .radio-option:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+/*----STUDENT INFORMATION SECTION----*/
 .student-info-row-2,
 .student-info-row-3,
 .student-info-row-4 {
-    display: flex;
-    width: 100%;
-}
-.lname,.fname,.mname,.extension,
-.bday, .age, .true-community,
-.native-language, .religion, .email {
-    padding: 0.5em;
-}                       
-.previous-school-row-1,
-.student-info-row-1 {
-    background-color: #fff;
-    padding: 1em 1em 1em 4em;
-    gap: 0.8rem;
-    width: 100%;
     display: grid;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: 1fr;
+    gap: 1rem;
 }
 
-/*PARA SA MGA MAGAARAL NA MAY KAPANSANAN*/
-.student-disability-title {
-    background-color: #ffffff;
-    padding: 1em 0em 1em 0em;
-}   
-
-/*TIRAHAN*/
-.address select option {
-    font-size: 0.5em;
-}
-.address-title {
-    background-color: #ffffff;
-    padding: 1em 0em 1em 0em;
-}
-
-/*IMPORMASYON NG MAGULANG/TAGAPAGALAGA*/
-.parents-guardian-information-title {
-    background-color: #ffffff;
-    padding: 1em 0em 1em 0em;
-}
-
-.select {
-    display: inline-block;
-    text-align: start;
-    appearance: auto;
-    box-sizing: border-box;
-    border-radius: 2px;
-    align-items: center;
-    background-color: #f7f4f4;
-    cursor: default;
-    width: 13em;
-    height: 2em;
-    white-space: pre;
-    border: 1px solid #616161;
-    border-radius: 8px;
-    text-align: center;
-}
-
-.father {
-    border-right :rgba(0, 51, 102, 0.7) 1px solid;
-}
-
-.mother {
-    border-right :rgba(0, 51, 102, 0.7) 1px solid;
-}
-
-/*4PS, IMAGES AND SUBMIT BUTTON*/     
-.confirmation {
+.gender-group-wrapper {
     display: grid;
-    grid-template-columns: 50% 50%;
-    background-color: #ffffff;
-    padding: 1.5em 6em 0.5em 5em;
-    gap: 1em;
-}     
-
-.fourPS {
-    border-right :rgba(0, 51, 102, 0.7) 1px solid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
 }
 
-.submit-button {
-    cursor: pointer;
-    height: 3.5em;
-    width: 11em;
-    border-radius: 1.8em;
-    background-color: #0cff04;
-    justify-self: center;
-    text-align: center;
-    margin: 0px auto;
-    background: rgb(68 208 123 / 46%);
-    color: #029a3e;
-    border: 1px solid #029a3e;
-    font-weight: bolder;
-}
-.success-message {
-    display: none;
-    position: fixed; 
-    top: 20px; 
-    left: 50%; 
-    transform: translateX(-50%); 
-    padding: 15px; 
-    border-radius: 4px; 
-    background-color: #d4edda; 
-    color: #155724; 
-    border: 1px solid #c3e6cb; 
-    z-index: 1000;
-}
-.error-message {
-    display: none;
-    position: fixed; 
-    top: 20px; 
-    left: 50%; 
-    transform: translateX(-50%); 
-    padding: 15px; border-radius: 4px; 
-    background-color: 
-    #f8d7da; color: #721c24; 
-    border: 1px solid #f5c6cb; 
-    z-index: 1000;
-}
-.submit-button:hover {
-    background-color: #059200;
-    color: rgb(217, 250, 231)
-}
-/*----END OF MAIN CONTENT----*/
-
-.content-wrapper {
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-.form-main {
-    width: 100%;
+.gender,
+.community {
     display: flex;
     flex-direction: column;
-    box-sizing: border-box;
+    gap: 0.75rem;
 }
 
+.gender .dfont,
+.community .dfont {
+    margin-bottom: 0.5rem;
+}
 
+.gender > div,
+.community > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.gender > div .radio-option,
+.community > div .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background-color: white;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    flex: 0 0 auto;
+}
+
+.gender > div .radio-option:hover,
+.community > div .radio-option:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.gender > div input[type="radio"],
+.community > div input[type="radio"] {
+    margin: 0 !important;
+}
+
+.gender > div label,
+.community > div label {
+    margin: 0;
+    padding: 0;
+    font-weight: 500;
+}
+
+/*----DISABILITY SECTION----*/
+.special-needs,
+.assisttech {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.special-needs .dfont,
+.assisttech .dfont {
+    margin-bottom: 0.5rem;
+}
+
+.special-needs > div:has(input[type="radio"]),
+.assisttech > div:has(input[type="radio"]) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.special-needs .radio-option,
+.assisttech .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background-color: white;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.special-needs .radio-option:hover,
+.assisttech .radio-option:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.special-needs input[type="radio"],
+.assisttech input[type="radio"] {
+    margin: 0 !important;
+}
+
+.special-needs label,
+.assisttech label {
+    margin: 0;
+    padding: 0;
+    font-weight: 500;
+}
+
+/*----PARENT INFORMATION SECTION----*/
+.father,
+.mother,
+.guardian {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.father h3,
+.mother h3,
+.guardian h3 {
+    margin: 0 0 0.5rem 0;
+    color: #295077;
+    border-bottom: 2px solid #295077;
+    padding-bottom: 0.5rem;
+}
+
+/*----CONFIRMATION SECTION----*/
+.confirmation {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem 1rem;
+}
+
+.fourPS {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.fourPS .dfont {
+    margin-bottom: 0.5rem;
+}
+
+.fourPS > div:has(input[type="radio"]) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.fourPS .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background-color: white;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.fourPS .radio-option:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.fourPS input[type="radio"] {
+    margin: 0 !important;
+}
+
+.fourPS label {
+    margin: 0;
+    padding: 0;
+    font-weight: 500;
+}
+
+/*----SUBMIT BUTTON----*/
+.submit-button {
+    cursor: pointer;
+    min-height: 3.5rem;
+    width: 100%;
+    max-width: 350px;
+    border-radius: 2rem;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    border: 2px solid #45a049;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin: 2rem auto;
+    display: block;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.submit-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    border-color: #3d8b40;
+}
+
+.submit-button:active:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+}
+
+.submit-button:disabled {
+    background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);
+    border-color: #757575;
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+    transform: none;
+}
+
+.submit-button:focus-visible {
+    outline: 3px solid #4CAF50;
+    outline-offset: 3px;
+}
+
+/*----MESSAGES----*/
+.success-message,
+.error-message {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    z-index: 1000;
+    max-width: 90%;
+    text-align: center;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/*----HIDE NUMBER INPUT SPINNERS----*/
 input[type="number"] {
-  -moz-appearance: textfield;
+    -moz-appearance: textfield;
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/*----TABLET BREAKPOINT (min-width: 640px)----*/
+@media (min-width: 640px) {
+    .enrollment-form-content {
+        padding: 1.5rem;
+    }
+
+    .content-wrapper {
+        padding: 1rem;
+    }
+
+    .previous-school-row-1,
+    .student-info-row-1 {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .lrn-radio-buttons-selections {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .lrn-radio-buttons-selections .radio-option {
+        flex: 0 1 auto;
+        min-width: 200px;
+    }
+
+    .gender > div,
+    .community > div {
+        justify-content: flex-start;
+    }
+
+    .gender > div .radio-option,
+    .community > div .radio-option {
+        flex: 0 0 auto;
+        min-width: 120px;
+    }
+}
+
+/*----DESKTOP BREAKPOINT (min-width: 1024px)----*/
+@media (min-width: 1024px) {
+    .enrollment-form-content {
+        padding: 2rem;
+    }
+
+    .content-wrapper {
+        padding: 1.5rem;
+    }
+
+    .previous-school-wrapper {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .grade {
+        border-right: 1px solid #295077;
+        padding-right: 1.5rem;
+    }
+
+    .student-info-row-2 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .student-info-row-3 {
+        grid-template-columns: repeat(2, 1fr) 1.5fr;
+    }
+
+    .student-info-row-4 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .gender-group-wrapper {
+        grid-template-columns: 1fr 2fr;
+    }
+
+    .student-disability-wrapper {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .address-wrapper {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .parents-guardian-information-wrapper {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .father {
+        border-right: 1px solid rgba(0, 51, 102, 0.3);
+        padding-right: 1.5rem;
+    }
+
+    .mother {
+        border-right: 1px solid rgba(0, 51, 102, 0.3);
+        padding-right: 1.5rem;
+    }
+
+    #age.textbox {
+        width: 50%;
+    }
+
+    .responsive-text-break {
+        display: inline;
+    }
+
+    .submit-button {
+        max-width: 450px;
+        min-height: 4rem;
+        font-size: 1.3rem;
+    }
+}
+
+/*----LARGE DESKTOP BREAKPOINT (min-width: 1280px)----*/
+@media (min-width: 1280px) {
+    .previous-school-wrapper,
+    .student-information-wrapper,
+    .student-disability-wrapper,
+    .address-wrapper,
+    .parents-guardian-information-wrapper {
+        padding: 2rem;
+        gap: 1.5rem;
+    }
+}
+
+/*----ACCESSIBILITY IMPROVEMENTS----*/
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+    outline: 2px solid #295077;
+    outline-offset: 2px;
+}
+
+/* Better touch targets for mobile */
+@media (hover: none) and (pointer: coarse) {
+    input[type="radio"].radio,
+    .radio[type="radio"] {
+        width: 1.5rem !important;
+        height: 1.5rem !important;
+        margin-right: 0.75rem !important;
+    }
+    
+    .radio-option {
+        min-height: 48px;
+        padding: 0.75rem 1rem;
+    }
+
+    label[for] {
+        min-height: 48px;
+        padding: 0.75rem 1rem;
+    }
+    
+    .textbox,
+    .select,
+    .submit-button {
+        min-height: 48px;
+    }
+    
+    .submit-button {
+        font-size: 1.1rem;
+    }
 }

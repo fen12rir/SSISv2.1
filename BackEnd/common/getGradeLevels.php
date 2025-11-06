@@ -44,6 +44,22 @@ class getGradeLevels {
                 'data'=> $data
             ];
         }
+        catch(DatabaseConnectionException $e) {
+            return [
+                'success'=> false,
+                'message'=> 'Database error: ' . $e->getMessage(),
+                'data'=>[
+                    ['label'=> 'Kinder I', 'value'=>1],
+                    ['label'=> 'Kinder II', 'value'=>2],
+                    ['label'=> 'Grade 1', 'value'=>3],
+                    ['label'=> 'Grade 2', 'value'=>4],
+                    ['label'=> 'Grade 3', 'value'=>5],
+                    ['label'=> 'Grade 4', 'value'=>6],
+                    ['label'=> 'Grade 5', 'value'=>7],
+                    ['label'=> 'Grade 6', 'value'=>8],
+                ]
+            ]; 
+        }
         catch(DatabaseException $e) {
             return [
                 'success'=> false,
@@ -76,14 +92,28 @@ class getGradeLevels {
                 ]
             ];
         }
-
+        catch(Throwable $t) {
+            return [
+                'success'=> false,
+                'message'=>'Error: '.$t->getMessage(),
+                'data'=> [
+                    ['label'=> 'Kinder I', 'value'=>1],
+                    ['label'=> 'Kinder II', 'value'=>2],
+                    ['label'=> 'Grade 1', 'value'=>3],
+                    ['label'=> 'Grade 2', 'value'=>4],
+                    ['label'=> 'Grade 3', 'value'=>5],
+                    ['label'=> 'Grade 4', 'value'=>6],
+                    ['label'=> 'Grade 5', 'value'=>7],
+                    ['label'=> 'Grade 6', 'value'=>8],
+                ]
+            ];
+        }
     }
     public function createSelectValues() {
         try {
             $data = $this->returnValues();
             if(!$data['success']) {
                 echo '<p>' .$data['message']. '</p>';
-
                 foreach($data['data'] as $label => $value) {
                     echo '<option value='.$value.'>' .htmlspecialchars($label). '</option>';
                 }
@@ -96,8 +126,15 @@ class getGradeLevels {
                 }
             }
         }
+        catch(DatabaseConnectionException $e) {
+            echo '<div class="error-mesage">'.htmlspecialchars($e->getMessage()).'</div>';
+        }
+        catch(DatabaseException $e) {
+            echo '<div class="error-mesage">'.htmlspecialchars($e->getMessage()).'</div>';
+        }
+        
         catch(Exception $e) {
-            echo "Error: " . $e->getMessage();
+            echo '<div class="error-message">Error: '. htmlspecialchars($e->getMessage()) . '</div>';
         }
     }
     public function createCheckBoxes() {
@@ -121,6 +158,12 @@ class getGradeLevels {
                     </div>';
                 }
             }
+        }
+        catch(DatabaseConnectionException $e) {
+            echo '<div class="error-mesage">'.htmlspecialchars($e->getMessage()).'</div>';
+        }
+        catch(DatabaseException $e) {
+            echo '<div class="error-mesage">'.htmlspecialchars($e->getMessage()).'</div>';
         }
         catch(Exception $e) {
             echo '<input type="text" name="manual-grade">';

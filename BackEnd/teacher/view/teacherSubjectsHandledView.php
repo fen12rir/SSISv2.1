@@ -14,30 +14,29 @@ class teacherSubjectsHandledView {
         $this->subjectsController = new teacherSubjectsHandledController(); 
         $this->tableTemplate = new TableCreator();
     }
-
     private function dayConvertToString(int $day) : string {
         $stringEqual = '';
         switch($day) {
             case 1:
-                $stringEqual = 'Monday';
+                $stringEqual = 'monday';
                 break;
             case 2:
-                $stringEqual = 'Tuesday';
+                $stringEqual = 'tuesday';
                 break;
             case 3: 
-                $stringEqual = 'Wednesday';
+                $stringEqual = 'wednesday';
                 break;
             case 4: 
-                $stringEqual = 'Thursday';
+                $stringEqual = 'thursday';
                 break;
             case 5: 
-                $stringEqual = 'Friday';
+                $stringEqual = 'friday';
                 break;
             case 6: 
-                $stringEqual = 'Saturday';
+                $stringEqual = 'saturday';
                 break;
             case 7: 
-                $stringEqual = 'Sunday';
+                $stringEqual = 'sunday';
                 break;
         }
         return $stringEqual;
@@ -54,7 +53,7 @@ class teacherSubjectsHandledView {
             }
             else {
                 echo '<table class="subjects-list">';
-                    echo $this->tableTemplate->returnHorizontalTitles(['Subject Name', 'Day', 'Time', 'Section Name', 'Action'], 'subject-titles');
+                    echo $this->tableTemplate->returnHorizontalTitles(['Subject Name', 'Day', 'Time', 'Section Name', 'Action'],'subject-titles');
                     echo '<tbody>';
                     foreach($subjectData['data'] as $rows) {
                         $subjectName = !empty($rows['Subject_Name']) ? $rows['Subject_Name'] : 'No Subject name yet';
@@ -62,13 +61,9 @@ class teacherSubjectsHandledView {
                         $day = !empty($rows['Schedule_Day']) ? $this->dayConvertToString($rows['Schedule_Day']) :  'No Scheduled day yet';
                         $time = (!empty($rows['Time_Start']) && !empty($rows['Time_End'])) ? $rows['Time_Start'] . '-' . $rows['Time_End'] : 'No Scheduled time yet';
                         $button = new safeHTML('<button> Grade Students</button>');
-                        echo $this->tableTemplate->returnHorizontalRows(
-                            [$subjectName,$day,$time, $sectionName, $button]
-                            ,'subject-details'
-                        );
+                        echo $this->tableTemplate->returnHorizontalRows( [$subjectName,$day,$time, $sectionName, $button],'subject-details');
                     }
-                    echo '</tbody>';
-                echo '</table>';
+                    echo '</tbody></table>';
             }
         }
         catch(Exception $e) {

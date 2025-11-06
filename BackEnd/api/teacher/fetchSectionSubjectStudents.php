@@ -8,16 +8,18 @@ try {
     
     $staffId = isset($_SESSION['Staff']['Staff-Id']) ? (int) $_SESSION['Staff']['Staff-Id'] : null;
     $sectionSubjectId = isset($_GET['secSubId']) ? (int) $_GET['secSubId'] : null;
+    $quarter = isset($_GET['quarter']) ? (int) $_GET['quarter'] : null;
     if(is_null($sectionSubjectId)) {
-        throw new IdNotFoundException('Unrecognized section subject. Unable to change');
+        throw new IdNotFoundException('Unrecognized section subject. Unable to view Students.');
     }
     if(is_null($staffId)) {
         var_dump($_SESSION);
         die();
-        throw new IdNotFoundException('Unauthorized access! Cannot make changes.');
+        throw new IdNotFoundException('Unauthorized access! Cannot access Student grades.');
     }
     $controller = new teacherGradesController();
-    $response = $controller->apiFetchSectionSubjectStudents($sectionSubjectId, $staffId);
+    $response = $controller->apiFetchSectionSubjectStudents($sectionSubjectId, $staffId, $quarter);
+    
 
     http_response_code($response['httpcode']);
     echo json_encode($response);

@@ -4,21 +4,22 @@
     if(session_status() === PHP_SESSION_NONE) {
         session_start();
     }
-    if(!isset($_SESSION['Staff']) && $_SESSION['Staff']['Staff-Type'] !== 2) {
+    if(!isset($_SESSION['Staff']) || $_SESSION['Staff']['Staff-Type'] !== 2) {
         header('Location: ../../Login.php');
         exit();
     }
     $teacherIsAnAdviser = new teacherIsAnAdviserView();
     $userType = new UserTypeView((int)$_SESSION['Staff']['Staff-Type']);
+    $pageTitle_full = (string)$userType;
     if(isset($pageTitle)) {  
-        $userType .= ' - ' . $pageTitle;
+        $pageTitle_full .= ' - ' . $pageTitle;
     }
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> <?php echo $userType?></title> 
+    <title> <?php echo $pageTitle_full?></title> 
     <link rel="stylesheet" href="../../assets/css/teacher/teacher-base-designs.css">
     <link rel="stylesheet" href="../../assets/css/reset.css">
     <link rel="stylesheet" href="../../assets/css/loader.css">
@@ -34,9 +35,9 @@
    <script src="../../assets/js/teacher/teacher-base-designs.js" defer></script>
 
    <div class="main-wrapper">
-        <?php require_once __DIR__ . '/./teacher_sidebar.php';?> 
+        <?php require_once __DIR__ . '/teacher_sidebar.php';?> 
         <div class="content">
-            <?php require_once __DIR__ . '/./teacher_header.php'; 
+            <?php require_once __DIR__ . '/teacher_header.php'; 
                 if(isset($pageContent)) {
                     echo $pageContent;
                 }

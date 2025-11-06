@@ -1,48 +1,47 @@
 #enrolledTitle/* === ADMIN UNPROCESSED ENROLLMENTS PAGE === */
 .denied-followup-content {
   width: 100%;
-  padding: 20px;
+  padding: 22px; /* Increased from 20px */
   display: flex;
   flex-direction: column;
   font-family: "Poppins", "Segoe UI", sans-serif;
 }
 
 .denied-followup-content{
-  padding: 0rem 2rem;
+  padding: 0rem 2.2rem; /* Increased from 2rem */
   transition: margin-left 0.3s ease;
   font-family: "Poppins", "Segoe UI", sans-serif;
   background-image: url("../../imgs/paper.jpg");
 }
-
-
-
 
 /* Section Headers */
 .header-left {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 11px; /* Increased from 10px */
+  margin-bottom: 11px; /* Increased from 10px */
 }
+
 h2#enrolledTitle {
     margin: 2px 3px -11px 16px;
-    font-size: 24px;
+    font-size: 26px; /* Increased from 24px */
     color: white;
     font-weight: 900;
     text-shadow: 2px 1px 9px #0000009c;
-    width: 190px;
-    padding: 15px;
+    width: 210px; /* Increased from 190px */
+    padding: 16px; /* Increased from 15px */
     border-top: 28px;
-    border-radius: 12px 12px 0px 0px;
+    border-radius: 13px 13px 0px 0px; /* Increased from 12px */
     text-align: center;
 }
+
 .header-left h2 {
   color: #fff;
-  font-size: 1.3rem;
+  font-size: 1.4rem; /* Increased from 1.3rem */
   font-weight: 600;
-  padding: 10px 18px;
-  border-radius: 10px;
+  padding: 11px 19px; /* Increased from 10px 18px */
+  border-radius: 11px; /* Increased from 10px */
   letter-spacing: 0.5px;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(8px);
@@ -53,38 +52,38 @@ h2#enrolledTitle {
   background: rgb(36 186 255 / 28%);
   backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
-  border-radius: 20px;
+  border-radius: 22px; /* Increased from 20px */
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
-  padding: 1.5rem;
+  padding: 1.7rem; /* Increased from 1.5rem */
   width: 100%;
   height: 78vh;
-  min-height: 400px;
+  min-height: 420px; /* Increased from 400px */
   overflow: auto;
   scrollbar-width: thin;
-  margin-bottom: 31px;
+  margin-bottom: 33px; /* Increased from 31px */
   scrollbar-color: rgba(62, 158, 196, 0.5) transparent;
 }
 
 /* Remarks Button */
 .view-reason, .view-resubmission {
-    padding: 0.7rem;
+    padding: 0.75rem; /* Increased from 0.7rem */
     cursor: pointer;
     transition: background-color 0.3s ease;
     border: none;
-    border-radius: 20px;
+    border-radius: 22px; /* Increased from 20px */
     margin: 2px;
-    width: 117px;
+    width: 125px; /* Increased from 117px */
 }
 
 .view-reason:hover, .view-resubmission:hover {
-    background-color: #ffffff13; /* darker blue on hover */
+    background-color: #ffffff13;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     transform: scale(1.05);
 }
 
 .view-reason {
     color: #ff5500;
-    border: 1PX solid #ffb100;
+    border: 1px solid #ffb100;
     background: rgb(255 177 0 / 15%);
 }
 
@@ -99,14 +98,14 @@ h2#enrolledTitle {
   width: 100%;
   border-collapse: collapse;
   color: #fff;
-  font-size: 0.95rem;
+  font-size: 1rem; /* Increased from 0.95rem */
 }
 
 .enrollments thead th {
   text-align: center;
-  padding: 1rem;
+  padding: 1.1rem; /* Increased from 1rem */
   background: rgb(4 169 244 / 44%);
-  padding: 12px 14px;
+  padding: 13px 15px; /* Increased from 12px 14px */
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -125,7 +124,7 @@ h2#enrolledTitle {
 }
 
 .enrollments tbody td {
-  padding: 10px 14px;
+  padding: 11px 15px; /* Increased from 10px 14px */
   color: #000000;
   border-top: 1px solid rgba(63, 166, 210, 0.897);
   text-align: center;
@@ -140,9 +139,11 @@ h2#enrolledTitle {
 .status-cell.status-enrolled {
     color: #349b00;
 }
+
 .status-cell.status-to-follow {
     color: #e8ba00;
 }
+
 .status-cell.status-denied {
     color: #e30000;
 }
@@ -169,10 +170,10 @@ h2#enrolledTitle {
 .modal-content {
   background: rgba(255, 255, 255, 0.1);
   margin: 8% auto;
-  padding: 25px;
-  border-radius: 15px;
+  padding: 27px; /* Increased from 25px */
+  border-radius: 16px; /* Increased from 15px */
   width: 90%;
-  max-width: 700px;
+  max-width: 750px; /* Increased from 700px */
   color: #fff;
   box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(12px);
@@ -190,8 +191,228 @@ h2#enrolledTitle {
   to { transform: translateY(0); opacity: 1; }
 }
 
+/*====================================*/
+/* UNPROCESSED ENROLLMENTS RESPONSIVE */
+/*====================================*/
+
+/* 2500px and above - Larger screens */
+@media (min-width: 2500px) {
+  .denied-followup-content {
+    padding: 28px;
+  }
+  
+  .denied-followup-content {
+    padding: 0rem 2.8rem;
+  }
+  
+  .header-left {
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  
+  h2#enrolledTitle {
+    margin: 3px 4px -15px 22px;
+    font-size: 34px;
+    width: 265px;
+    padding: 21px;
+    border-radius: 17px 17px 0px 0px;
+  }
+  
+  .header-left h2 {
+    font-size: 1.8rem;
+    padding: 14px 25px;
+    border-radius: 14px;
+    letter-spacing: 0.7px;
+  }
+  
+  .table {
+    border-radius: 26px;
+    padding: 2rem;
+    height: 80vh;
+    min-height: 550px;
+    margin-bottom: 43px;
+  }
+  
+  .view-reason, .view-resubmission {
+    padding: 0.95rem;
+    border-radius: 26px;
+    margin: 3px;
+    width: 164px;
+    font-size: 1.15rem;
+  }
+  
+  .enrollments {
+    font-size: 1.25rem;
+  }
+  
+  .enrollments thead th {
+    padding: 1.4rem;
+    padding: 17px 20px;
+    letter-spacing: 0.5px;
+    font-size: 1.2rem;
+  }
+  
+  .enrollments tbody td {
+    padding: 14px 20px;
+    font-size: 1.15rem;
+  }
+  
+  .modal-content {
+    margin: 8% auto;
+    padding: 35px;
+    border-radius: 21px;
+    max-width: 980px;
+  }
+}
+
+/* 1920px - Full HD */
+@media (min-width: 1920px) and (max-width: 2499px) {
+  .denied-followup-content {
+    padding: 24px;
+  }
+  
+  .denied-followup-content {
+    padding: 0rem 2.4rem;
+  }
+  
+  .header-left {
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  
+  h2#enrolledTitle {
+    margin: 2.5px 3.5px -13px 19px;
+    font-size: 29px;
+    width: 228px;
+    padding: 18px;
+    border-radius: 14px 14px 0px 0px;
+  }
+  
+  .header-left h2 {
+    font-size: 1.55rem;
+    padding: 12px 22px;
+    border-radius: 12px;
+    letter-spacing: 0.6px;
+  }
+  
+  .table {
+    border-radius: 23px;
+    padding: 1.8rem;
+    height: 79vh;
+    min-height: 480px;
+    margin-bottom: 37px;
+  }
+  
+  .view-reason, .view-resubmission {
+    padding: 0.85rem;
+    border-radius: 23px;
+    margin: 2.5px;
+    width: 140px;
+    font-size: 1.05rem;
+  }
+  
+  .enrollments {
+    font-size: 1.1rem;
+  }
+  
+  .enrollments thead th {
+    padding: 1.2rem;
+    padding: 14px 17px;
+    letter-spacing: 0.4px;
+    font-size: 1.1rem;
+  }
+  
+  .enrollments tbody td {
+    padding: 12px 17px;
+    font-size: 1.05rem;
+  }
+  
+  .modal-content {
+    margin: 8% auto;
+    padding: 30px;
+    border-radius: 18px;
+    max-width: 840px;
+  }
+}
+
+/* 1440px - Default (already set above, this is just for clarity) */
+@media (min-width: 1441px) and (max-width: 1919px) {
+  /* Default styles apply - no changes needed */
+}
+
+/* 1024px - Smaller desktop */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  .denied-followup-content {
+    padding: 12px;
+  }
+  
+  .denied-followup-content {
+    padding: 0rem 1.2rem;
+  }
+  
+  .header-left {
+    gap: 7px;
+    margin-bottom: 7px;
+  }
+  
+  h2#enrolledTitle {
+    margin: 1.5px 2.5px -8px 12px;
+    font-size: 18px;
+    width: 145px;
+    padding: 11px;
+    border-radius: 9px 9px 0px 0px;
+  }
+  
+  .header-left h2 {
+    font-size: 1.05rem;
+    padding: 7px 13px;
+    border-radius: 8px;
+    letter-spacing: 0.4px;
+  }
+  
+  .table {
+    border-radius: 14px;
+    padding: 1rem;
+    height: 74vh;
+    min-height: 320px;
+    margin-bottom: 22px;
+  }
+  
+  .view-reason, .view-resubmission {
+    padding: 0.52rem;
+    border-radius: 14px;
+    margin: 1.5px;
+    width: 95px;
+    font-size: 0.8rem;
+  }
+  
+  .enrollments {
+    font-size: 0.8rem;
+    min-width: 750px;
+  }
+  
+  .enrollments thead th {
+    padding: 0.7rem;
+    padding: 8px 10px;
+    letter-spacing: 0.25px;
+    font-size: 0.85rem;
+  }
+  
+  .enrollments tbody td {
+    padding: 7px 10px;
+    font-size: 0.8rem;
+  }
+  
+  .modal-content {
+    margin: 8% auto;
+    padding: 17px;
+    border-radius: 11px;
+    max-width: 520px;
+  }
+}
+
 /* Responsive Design */
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
   .enrollments thead {
     display: none;
   }

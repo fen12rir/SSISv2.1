@@ -11,33 +11,6 @@ class adminStudentsModel {
         $db = new Connect();
         $this->conn = $db->getConnection();
     }
-    public function insertEnrolleeToStudent($enrolleeId) : bool {
-        try {
-            $this->conn->beginTransaction();
-            $sql = "INSERT INTO students(Enrollee_Id, First_Name, Last_Name, Middle_Name, Age, Sex, LRN, Grade_Level_Id, Student_Status)
-                    SELECT e.Enrollee_Id, e.Student_First_Name, e.Student_Last_Name, 
-                    e.Student_Middle_Name, e.Age, e.Sex, e.Learner_Reference_Number, Enrolling_Grade_Level, 1 AS Status FROM enrollee AS e
-                     JOIN educational_information AS ei ON e.Educational_Information_Id = ei.Educational_Information_Id
-                     WHERE e.Enrollee_Id = :id";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':id', $enrolleeId);
-            $result = $stmt->execute();
-
-            if($result) {
-                $this->conn->commit();
-                return true;
-            }
-            else {
-                $this->conn->rollBack();
-                return false;
-          }
-            
-        }
-        catch(PDOException $e) {
-            $this->conn->rollBack();
-            throw new DatabaseException('Failed to insert the enrollee to student',0,$e);
-        }
-    }
     public function getAllStudents() : array{
         try {
             $sql = "SELECT  e.Enrollee_Id,
@@ -396,6 +369,26 @@ class adminStudentsModel {
         }
         catch(PDOException $e) {
             throw new DatabaseException('Failed to update student changes',0,$e);
+        }
+    }
+    public function insertEnrolleeToStudent(int $enrolleeId) : bool {
+        try {
+            $sql = "INSERT INTO students(Enrollee_Id, First_Name, Last_Name, Middle_Name, Age, Sex, LRN, Grade_Level_Id, Student_Status)
+                    SELECT e.Enrollee_Id, e.Student_First_Name, e.Student_Last_Name, 
+                    e.Student_Middle_Name, e.Age, e.Sex, e.Learner_Reference_Number, Enrolling_Grade_Level, 1 AS Status FROM enrollee AS e
+                     JOIN educational_information AS ei ON e.Educational_Information_Id = ei.Educational_Information_Id
+                     WHERE e.Enrollee_Id = :id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':id', $enrolleeId);
+            $stmt->execute();
+            if($stmt->rowCount() === 0) {
+                return false;
+            }
+            return true;
+        }
+        catch(PDOException $e) {
+            $this->conn->rollBack();
+            throw new DatabaseException('Failed to insert the enrollee to student',0,$e);
         }
     }
     public function searchStudents($query) : array{

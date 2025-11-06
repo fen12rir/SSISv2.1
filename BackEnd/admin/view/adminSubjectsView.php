@@ -27,7 +27,7 @@ class adminSubjectsView {
                 echo '<table class="subjects-table">';
                 echo $this->tableTemplate->returnHorizontalTitles([
                     'Subject Name', 'Section Name', 'Grade Level', 'Teacher Assigned', 'Actions'
-                ], 'subject-table-head');
+                ],'subject-table-head');
                 echo '<tbody>';
                 foreach($response['data'] as $rows) {
                     $firstName = !empty($rows['Staff_First_Name']) ? htmlspecialchars($rows['Staff_First_Name']) : '';
@@ -40,13 +40,13 @@ class adminSubjectsView {
 
                     echo $this->tableTemplate->returnHorizontalRows([
                         $rows['Subject_Name'],$rows['Section_Name'],$rows['Grade_Level'], $fullName ,$button
-                    ], 'subject-data');
+                    ],'subject-data');
                 }
                 echo '</tbody></table>';
             }
         }
         catch(Exception $e) {
-            $this->tableTemplate->generateHorizontalRows('exception-content', [$e->getMessage()]);
+            echo $this->tableTemplate->returnHorizontalRows([$e->getMessage()], 'exception-content');
         }
     }
 }

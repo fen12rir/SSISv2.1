@@ -7,7 +7,7 @@
 }
 
 .section-details-container {
-    padding: 1rem;
+    padding: 1rem; /* Base for 1440px */
     background-color: white;
     border-radius: 5px;
     box-shadow: -.1px -1px 5px .1px #d0caca;
@@ -15,28 +15,27 @@
     height: 100%;
 }
 
-
 .students-list-container, .subject-details-container {
-    margin-top: 1rem;
+    margin-top: 1rem; /* Base for 1440px */
 }
 
 .students-list-title, .subject-details-title {
     font-weight: 700;
-    margin: 1.5rem 1rem;
+    margin: 1.5rem 1rem; /* Base for 1440px */
     text-transform: uppercase;
     border-left: 5px solid #18ce13;
-    padding-left: 0.8rem;
+    padding-left: 0.8rem; /* Base for 1440px */
     font-family: "Poppins", "Segoe UI", sans-serif;
 }
 
 .students-list, .subject-details-list {
-    margin-top: 1rem;
+    margin-top: 1rem; /* Base for 1440px */
     font-family: "Poppins", "Segoe UI", sans-serif;
     overflow-x: auto;
 }
 
 .section-name {
-    font-size: 1.2em;
+    font-size: 1.2em; /* Base for 1440px */
     font-weight: bold;
     color: var(--main-color);
     font-family: "Poppins", "Segoe UI", sans-serif;
@@ -53,7 +52,7 @@ table {
 }
 
 th, td {
-    padding: 1rem;
+    padding: 1rem; /* Base for 1440px */
     text-align: center;
     border-bottom: 1px solid #ddd;
 }
@@ -78,31 +77,30 @@ tr:hover {
 
 .admin-view-section-content {
     background: var(--wrapper-bg-color);
-    margin: 1.5rem;
+    margin: 1.5rem; /* Base for 1440px */
 }
 
 .three-container {
     background-color: var(--accent-color);
     background-color: #3e9ec4;
-    /* color: white; */
-    padding: 1.1rem;
-    border-radius: 1.5rem;
+    padding: 1.1rem; /* Base for 1440px */
+    border-radius: 1.5rem; /* Base for 1440px */
     box-shadow: 0 2px 20px -14px #000000;
 }
 
 .section-name, .adviser-name {
-    margin-bottom: 1rem;
+    margin-bottom: 1rem; /* Base for 1440px */
     font-weight: bold;
     color: var(--title-font-color);
 }
 
 .adviser-name {
-    font-size: 1.2rem;
-    margin-bottom: 1.5rem;
+    font-size: 1.2rem; /* Base for 1440px */
+    margin-bottom: 1.5rem; /* Base for 1440px */
     font-family: "Poppins", "Segoe UI", sans-serif;
 }
 .section-name{
-    font-size: 2.3rem;
+    font-size: 2.3rem; /* Base for 1440px */
 }
 
 .subject-details-body tr:nth-child(even) td {
@@ -117,20 +115,20 @@ tr:hover {
 .button-container {
     display: flex;
     justify-content: flex-end;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    gap: 1rem; /* Base for 1440px */
+    margin-bottom: 1rem; /* Base for 1440px */
     font-family: "Poppins", "Segoe UI", sans-serif;
 }
 
 .edit-section, .back-btn {
     color: white;
-    padding: 0.7rem 11.2px 1rem;
+    padding: 0.7rem 11.2px 1rem; /* Base for 1440px */
     cursor: pointer;
     background: #00b4d8;
     font-weight: 500;
-    border-radius: 0.6rem;
+    border-radius: 0.6rem; /* Base for 1440px */
     transition: all .3s ease;
-    font-size: 0.95rem;
+    font-size: 0.95rem; /* Base for 1440px */
     border: 1px solid #ffffff47;
 }
 
@@ -144,7 +142,7 @@ tr:hover {
 /*No students design*/
 .no-students-container {
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 1.5rem; /* Base for 1440px */
 }
 
 .no-students-container h1 {
@@ -173,8 +171,8 @@ tr:hover {
     -webkit-appearance: none;
     background-color: #fff;
     border: 2px solid #007bff;
-    width: 1.2em;
-    height: 1.2em;
+    width: 1.2em; /* Base for 1440px */
+    height: 1.2em; /* Base for 1440px */
     border-radius: 0.3em;
     display: inline-block;
     position: relative;
@@ -204,34 +202,34 @@ tr:hover {
 
 .edit-section-details input[type="text"] {
     width: 30%;
-    padding: 0.5em;
-    margin-bottom: 1em;
+    padding: 0.5em; /* Base for 1440px */
+    margin-bottom: 1em; /* Base for 1440px */
     border: 1px solid #ccc;
     border-radius: 0.5em;
-    font-size: 1em;
+    font-size: 1em; /* Base for 1440px */
     box-sizing: border-box;
 }
 
 .edit-section-details select {
-    padding: 0.5em;
+    padding: 0.5em; /* Base for 1440px */
     border-radius: 4px;
     border: 1px solid #ccc;
     width: 30%;
 }
 
 .edit-section-details button[type="submit"] {
-    margin: 0.3rem;
+    margin: 0.3rem; /* Base for 1440px */
     background-color: #4caf50;
-    padding: 0.5rem 0.8rem;
+    padding: 0.5rem 0.8rem; /* Base for 1440px */
     border-radius: 0.3rem;
     width: fit-content;
     cursor: pointer;
 }
 
 .cancel-btn {
-    margin: 0.3rem;
+    margin: 0.3rem; /* Base for 1440px */
     background-color: #f44336;
-    padding: 0.5rem 0.8rem;
+    padding: 0.5rem 0.8rem; /* Base for 1440px */
     border-radius: 0.3rem;
     width: fit-content;
     cursor: pointer;
@@ -253,12 +251,352 @@ tr:hover {
 .modal-content {
     background-color: white;
     margin: 5% auto;
-    padding: 20px;
-    border-radius: 8px;
+    padding: 20px; /* Base for 1440px */
+    border-radius: 8px; /* Base for 1440px */
     width: 80%;
-    max-width: 600px;
+    max-width: 600px; /* Base for 1440px */
     max-height: 80vh;
     overflow-y: auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     font-family: var(--main-fonts);
 }
+
+/*====================================*/
+/* VIEW SECTION RESPONSIVE DESIGN PC  */
+/*====================================*/
+
+/* 2500px and above - Larger screens */
+@media (min-width: 2500px) {
+  .section-details-container {
+    padding: 1.4rem;
+    border-radius: 7px;
+  }
+  
+  .students-list-container, .subject-details-container {
+    margin-top: 1.4rem;
+  }
+  
+  .students-list-title, .subject-details-title {
+    margin: 2rem 1.4rem;
+    border-left-width: 7px;
+    padding-left: 1.1rem;
+    font-size: 1.3rem;
+  }
+  
+  .students-list, .subject-details-list {
+    margin-top: 1.4rem;
+  }
+  
+  .section-name {
+    font-size: 3.1rem;
+  }
+  
+  th, td {
+    padding: 1.4rem;
+    font-size: 1.15rem;
+  }
+  
+  th {
+    font-size: 1.2rem;
+  }
+  
+  .admin-view-section-content {
+    margin: 2rem;
+  }
+  
+  .three-container {
+    padding: 1.5rem;
+    border-radius: 2rem;
+  }
+  
+  .section-name, .adviser-name {
+    margin-bottom: 1.4rem;
+  }
+  
+  .adviser-name {
+    font-size: 1.65rem;
+    margin-bottom: 2rem;
+  }
+  
+  .button-container {
+    gap: 1.4rem;
+    margin-bottom: 1.4rem;
+  }
+  
+  .edit-section, .back-btn {
+    padding: 0.95rem 15px 1.35rem;
+    border-radius: 0.8rem;
+    font-size: 1.25rem;
+  }
+  
+  .no-students-container {
+    font-size: 2rem;
+  }
+  
+  .edit-section-details input[type="checkbox"] {
+    width: 1.65em;
+    height: 1.65em;
+    border-radius: 0.4em;
+    margin-right: 0.7em;
+  }
+  
+  .edit-section-details input[type="text"] {
+    padding: 0.7em;
+    margin-bottom: 1.4em;
+    border-radius: 0.7em;
+    font-size: 1.3em;
+  }
+  
+  .edit-section-details select {
+    padding: 0.7em;
+    border-radius: 6px;
+    font-size: 1.2em;
+  }
+  
+  .edit-section-details button[type="submit"] {
+    margin: 0.4rem;
+    padding: 0.7rem 1.1rem;
+    border-radius: 0.4rem;
+    font-size: 1.15rem;
+  }
+  
+  .cancel-btn {
+    margin: 0.4rem;
+    padding: 0.7rem 1.1rem;
+    border-radius: 0.4rem;
+    font-size: 1.15rem;
+  }
+  
+  .modal-content {
+    padding: 28px;
+    border-radius: 11px;
+    max-width: 820px;
+  }
+}
+
+/* 1920px - Full HD */
+@media (min-width: 1920px) and (max-width: 2499px) {
+  .section-details-container {
+    padding: 1.2rem;
+    border-radius: 6px;
+  }
+  
+  .students-list-container, .subject-details-container {
+    margin-top: 1.2rem;
+  }
+  
+  .students-list-title, .subject-details-title {
+    margin: 1.8rem 1.2rem;
+    border-left-width: 6px;
+    padding-left: 1rem;
+    font-size: 1.15rem;
+  }
+  
+  .students-list, .subject-details-list {
+    margin-top: 1.2rem;
+  }
+  
+  .section-name {
+    font-size: 2.7rem;
+  }
+  
+  th, td {
+    padding: 1.2rem;
+    font-size: 1.05rem;
+  }
+  
+  th {
+    font-size: 1.1rem;
+  }
+  
+  .admin-view-section-content {
+    margin: 1.8rem;
+  }
+  
+  .three-container {
+    padding: 1.3rem;
+    border-radius: 1.8rem;
+  }
+  
+  .section-name, .adviser-name {
+    margin-bottom: 1.2rem;
+  }
+  
+  .adviser-name {
+    font-size: 1.45rem;
+    margin-bottom: 1.8rem;
+  }
+  
+  .button-container {
+    gap: 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  .edit-section, .back-btn {
+    padding: 0.85rem 13px 1.2rem;
+    border-radius: 0.7rem;
+    font-size: 1.1rem;
+  }
+  
+  .no-students-container {
+    font-size: 1.8rem;
+  }
+  
+  .edit-section-details input[type="checkbox"] {
+    width: 1.45em;
+    height: 1.45em;
+    border-radius: 0.35em;
+    margin-right: 0.6em;
+  }
+  
+  .edit-section-details input[type="text"] {
+    padding: 0.6em;
+    margin-bottom: 1.2em;
+    border-radius: 0.6em;
+    font-size: 1.15em;
+  }
+  
+  .edit-section-details select {
+    padding: 0.6em;
+    border-radius: 5px;
+    font-size: 1.1em;
+  }
+  
+  .edit-section-details button[type="submit"] {
+    margin: 0.35rem;
+    padding: 0.6rem 1rem;
+    border-radius: 0.35rem;
+    font-size: 1.05rem;
+  }
+  
+  .cancel-btn {
+    margin: 0.35rem;
+    padding: 0.6rem 1rem;
+    border-radius: 0.35rem;
+    font-size: 1.05rem;
+  }
+  
+  .modal-content {
+    padding: 24px;
+    border-radius: 10px;
+    max-width: 720px;
+  }
+}
+
+/* 1440px - Default (already set above, this is just for clarity) */
+@media (min-width: 1441px) and (max-width: 1919px) {
+  /* Default styles apply - no changes needed */
+}
+
+/* 1024px - Smaller desktop */
+@media (min-width: 1024px) and (max-width: 1440px) {
+    .section-details-container {
+        padding: 0.75rem;
+        border-radius: 4px;
+    }
+    
+    .students-list-container, .subject-details-container {
+        margin-top: 0.75rem;
+    }
+    
+    .students-list-title, .subject-details-title {
+        margin: 1.15rem 0.75rem;
+        border-left-width: 3.5px;
+        padding-left: 0.62rem;
+        font-size: 0.88rem;
+    }
+    
+    .students-list, .subject-details-list {
+        margin-top: 0.75rem;
+    }
+    
+    .section-name {
+        font-size: 1.85rem;
+    }
+    
+    th, td {
+        padding: 0.75rem;
+        font-size: 0.83rem;
+    }
+    
+    th {
+        font-size: 0.88rem;
+    }
+    
+    .admin-view-section-content {
+        margin: 1.15rem;
+    }
+    
+    .three-container {
+        padding: 0.85rem;
+        border-radius: 1.15rem;
+    }
+    
+    .section-name, .adviser-name {
+        margin-bottom: 0.75rem;
+    }
+    
+    .adviser-name {
+        font-size: 0.98rem;
+        margin-bottom: 1.15rem;
+    }
+    
+    .button-container {
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .edit-section, .back-btn {
+        padding: 0.58rem 8.5px 0.83rem;
+        border-radius: 0.48rem;
+        font-size: 0.83rem;
+    }
+    
+    .no-students-container {
+        font-size: 1.18rem;
+    }
+    
+    .edit-section-details input[type="checkbox"] {
+        width: 0.98em;
+        height: 0.98em;
+        border-radius: 0.23em;
+        margin-right: 0.38em;
+    }
+    
+    .edit-section-details input[type="text"] {
+        padding: 0.38em;
+        margin-bottom: 0.75em;
+        border-radius: 0.38em;
+        font-size: 0.88em;
+    }
+    
+    .edit-section-details select {
+        padding: 0.38em;
+        border-radius: 3px;
+        font-size: 0.88em;
+    }
+    
+    .edit-section-details button[type="submit"] {
+        margin: 0.23rem;
+        padding: 0.38rem 0.62rem;
+        border-radius: 0.23rem;
+        font-size: 0.83rem;
+    }
+    
+    .cancel-btn {
+        margin: 0.23rem;
+        padding: 0.38rem 0.62rem;
+        border-radius: 0.23rem;
+        font-size: 0.83rem;
+    }
+    
+    .modal-content {
+        padding: 15px;
+        border-radius: 6px;
+        max-width: 480px;
+    }
+}
+
+/*====================================*/
+/* END VIEW SECTION RESPONSIVE PC     */
+/*====================================*/

@@ -8,7 +8,6 @@ class userEditFormModel {
         $db = new Connect();
         $this->conn = $db->getConnection();
     }
-    
     public function getEnrolleeData($enrolleeId) {
         try {
             // First get the enrollee's basic information
@@ -73,32 +72,16 @@ class userEditFormModel {
             return ['success' => false, 'error' => $e->getMessage()];
         }
     }
-
-    public function setResubmitStatus($enrolleeId) {
-        try {
-            $sql = "UPDATE enrollment_transactions SET Is_Resubmitted = 1 WHERE Enrollee_ID = :enrolleeId";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':enrolleeId', $enrolleeId);
-            $stmt->execute();
-            return ['success' => true, 'message' => 'Resubmit status updated successfully'];
-            }
-        catch (PDOException $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
     public function updateEnrolleeData($enrolleeId, $data) {
         try {
             $this->conn->beginTransaction();
             error_log("Starting transaction for enrollee ID: " . $enrolleeId);
-
             // Convert and validate LRN and PSA numbers
             $lrn = !empty($data['lrn']) ? filter_var($data['lrn'], FILTER_VALIDATE_INT) : null;
             $psa = !empty($data['psa']) ? filter_var($data['psa'], FILTER_VALIDATE_INT) : null;
 
             error_log("Converted LRN: " . var_export($lrn, true));
             error_log("Converted PSA: " . var_export($psa, true));
-
             // 1. Update enrollee table
             $enrolleeSQL = "UPDATE enrollee SET 
                 Student_First_Name = :firstName,
@@ -135,13 +118,11 @@ class userEditFormModel {
                 ':email' => $data['email_address'],
                 ':enrolleeId' => $enrolleeId
             ]);
-
             if (!$enrolleeResult) {
                 error_log("Failed to update enrollee table: " . json_encode($enrolleeStmt->errorInfo()));
                 throw new PDOException("Failed to update enrollee table");
             }
             error_log("Successfully updated enrollee table");
-
             // 2. Update educational_information table
             $eduInfoSQL = "UPDATE educational_information ei 
                 JOIN enrollee e ON e.Educational_Information_ID = ei.Educational_Information_ID
@@ -152,12 +133,7 @@ class userEditFormModel {
                 WHERE e.Enrollee_ID = :enrolleeId";
 
             $eduInfoStmt = $this->conn->prepare($eduInfoSQL);
-            $eduInfoResult = $eduInfoStmt->execute([
-                ':enrollingGrade' => $data['enrolling_grade_level'],
-                ':lastGrade' => $data['last_grade_level'],
-                ':lastYear' => $data['last_year_attended'],
-                ':enrolleeId' => $enrolleeId
-            ]);
+            $eduInfoResult = $eduInfo;
 
             if (!$eduInfoResult) {
                 error_log("Failed to update educational_information table: " . json_encode($eduInfoStmt->errorInfo()));
@@ -191,8 +167,8 @@ class userEditFormModel {
             error_log("Successfully updated educational_background table");
 
             // 4. Update enrollee_address table
-            $addressSQL = "UPDATE enrollee_address ea 
-                JOIN enrollee e ON e.Enrollee_Address_ID = ea.Enrollee_Address_ID
+            $addressSQL = "UPDATE enrollee_address AS ea 
+                JOIN enrollee AS e ON e.Enrollee_Address_ID = ea.Enrollee_Address_ID
                 SET 
                 ea.Region_Code = :region,
                 ea.Region = :regionName,
@@ -361,23 +337,6 @@ class userEditFormModel {
             error_log("Rolling back transaction");
             $this->conn->rollBack();
             return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    public function getPSAImageData($enrolleeId) {
-        try {
-            $sql = "SELECT pd.filename, pd.directory as filepath
-                    FROM enrollee e
-                    JOIN Psa_directory pd ON e.Psa_Image_Id = pd.Psa_Image_Id
-                    WHERE e.Enrollee_Id = :enrolleeId";
-            
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':enrolleeId', $enrolleeId);
-            $stmt->execute();
-            
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            return null;
         }
     }
 

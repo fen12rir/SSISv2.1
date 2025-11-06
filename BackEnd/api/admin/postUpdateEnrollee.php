@@ -1,27 +1,22 @@
 <?php
 declare(strict_types=1);
 header('Content-Type: application/json');
-require_once __DIR__ . '/../../admin/models/adminEnrolleesModel.php';
-
-$adminEnrolleesModel = new adminEnrolleesModel();
-if($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success'=> false, 'message' => 'Wrong method']);
+require_once __DIR__ . '/../../admin/controller/adminUnprocessedEnrollmentsController.php';
+try {
+    if($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        echo json_encode(['success'=> false, 'message' => 'Wrong method']);
+        exit();
+    }
+    $status = isset($_POST['enrollment-status']) ? (int)$_POST['enrollment-status'] : null;
+    $enrolleeId = isset($_POST['enrollee-id']) ? (int)$_POST['enrollee-id'] : null;
+    $controller = new adminUnprocessedEnrollmentsController();
+    $response = $controller->apiPostUpdateEnrollee($status,$enrolleeId);
+    http_response_code($response['httpcode']);
+    echo json_encode($response);
+    exit();
+}
+catch(IdNotFoundException $e) {
+    echo json_encode(['success'=> false,'message'=>$e->getMessage()]);
     exit();
 }
 
-$status = (int)$_POST['status'];
-$enrolleeId = (int)$_POST['id'];
-
-if(!isset($status) && !isset($enrolleeId)) {
-    echo json_encode(['success'=> false, 'message' => 'No status or id found']);
-    exit();
-}
-$update = $adminEnrolleesModel->updateEnrollee($id, $status);
-
-if(!$update) {
-    echo json_encode(['success'=> false, 'message' => 'Update failed']);
-    exit();
-}
-
-echo json_encode($update);
-exit();

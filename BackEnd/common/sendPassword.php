@@ -18,7 +18,7 @@ class SendPassword {
     }
 
     public function send_password($Last_Name, $First_Name, $Middle_Name, $Recipient_Contact_Number, $User_Password) {
-        $gatewayUrl = "http://172.20.10.3:8080/message";
+        $gatewayUrl = "http://192.168.1.168:8080/message";
         $username = "sms";
         $password = "KVs6RP-9";
 

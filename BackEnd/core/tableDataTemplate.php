@@ -8,9 +8,9 @@ class TableCreator {
         $html = '';
         foreach($assoc as $key=> $value) {
             $keyVal = (is_numeric($key) || $key instanceof SafeHTML) ? $key : htmlspecialchars($key) ;
-            $val = (is_numeric($value) || $val instanceof SafeHTML) ? $value : htmlspecialchars($value);
+            $val = (is_numeric($value) || $value instanceof SafeHTML) ? $value : htmlspecialchars($value);
             //start creating table
-            $html = is_null($rowname) ? '<tr>' : '<tr class="'.$rowname.'">';
+            $html .= is_null($rowname) ? '<tr>' : '<tr class="'.$rowname.'">';
             $html .= '<td>'.$keyVal.'</td>';
             $html .= '<td>'.$val.'</td>';
             $html .= '</tr>';

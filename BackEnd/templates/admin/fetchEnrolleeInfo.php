@@ -1,51 +1,21 @@
 <?php
-    require_once __DIR__ . '/../../admin/adminEnrolleeInfo.php';
-
+    require_once __DIR__ . '/../../admin/view/adminEnrolleeInfo.php';
     $view = new adminEnrolleeInfo();
-?>
-
-    <span class="close">&times;</span>
-                        
+?>                      
 <!-- 🧍‍♂️ Student Info Section -->
+<?php $view->displayGlobalError();?>
 <h1>I. Impormasyon ng Mag-aaral</h1>
-<table class="modal-table">
-    <tbody>
-        <?php $view->enrolleeInfo(); ?>
-    </tbody>
-</table>
-
+<?php $view->displayEnrolleePersonalInfo(); ?>
 <!-- 🎓 School Level Info Section -->
 <h1>II. Impormasyon sa Pagpapatalang Pang-Eskwela</h1>
-<table class="modal-table">
-    <tbody>
-        <?php $view->schoolLevelInfo(); ?>
-    </tbody>
-</table>
-
+<?php $view->displayEnrolleeEducationalInfo(); ?>
+<h1>III. Impormasyon sa Eskwelang Huli at Nais Pagpatalaan</h1>
+<?php $view->displayEnrolleeEducationalBackground(); ?>
 <!-- ♿ Special Conditions Section -->
-<h1>III. Espesyal na Kondisyon (kung mayroon)</h1>
-<table class="modal-table">
-    <tr>
-        <td>
-            <?php $view->ifDisabled(); ?>
-        </td>
-    </tr>
-</table>
-<h1>IV. Impormasyon ng mga Magulang </h1>
-<table class="modal-table">
-    <tr>
-        <td>
-            <?php $view->parentInfo(); ?>
-        </td>
-    </tr>
-</table>
-
+<h1>IV. Espesyal na Kondisyon (kung mayroon)</h1>
+<?php $view->displayDisabledInfo(); ?>
+<h1>V. Impormasyon ng mga Magulang </h1>
+<?php $view->displayParentInfo(); ?>          
 <!-- 📄 PSA Image Section -->
-<h1>V. PSA Birth Certificate</h1>
-<table class="modal-table">
-    <tr>
-        <tbody>
-            <?php $view->displayPsaImg(); ?>
-        </tbody>
-    </tr>
-<table>
+<h1>VI. PSA Birth Certificate</h1>
+<?php $view->displayPsaImg(); ?>

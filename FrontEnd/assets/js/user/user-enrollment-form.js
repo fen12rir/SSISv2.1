@@ -1,98 +1,49 @@
-// Unified Enrollment Form Validation Handler
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('enrollment-form');
-    
-    // ===== VALIDATION UTILITIES =====
-    const ValidationUtils = {
-        emptyError: "This field is required",
-        notNumber: "This field must be a number",
-        
-        isEmpty(element) {
-            // FIX: Check if element exists and is not null
-            if (!element || element === null) {
-                return true;
-            }
-            // FIX: Check if element.value exists
-            if (!element.value) {
-                return true;
-            }
-            return !element.value.trim();
-        },
-        
-        clearError(errorElement, childElement) {
-            let container = childElement.parentElement.querySelector('.error-msg');
-            if (!container) {
-                container = childElement.closest('div').querySelector('.error-msg');
-            }
-            if (!container) {
-                container = childElement.parentElement.parentElement.querySelector('.error-msg');
-            }
-            const errorSpan = container.querySelector('.' + errorElement);
-
-            container.classList.remove('show');
-            childElement.style.border = "1px solid #616161";
-            if (errorSpan) {
-                errorSpan.innerHTML = '';
-            }
-        },
-        
-        errorMessages(errorElement, message, childElement) {
-            let container = childElement.parentElement.querySelector('.error-msg');
-            if (!container) {
-                container = childElement.closest('div').querySelector('.error-msg');
-            }
-            if (!container) {
-                container = childElement.parentElement.parentElement.querySelector('.error-msg');
-            }
-            const errorSpan = container.querySelector('.' + errorElement);
-
-            container.classList.add('show');
-            childElement.style.border = "1px solid red";
-            if (errorSpan) {
-                errorSpan.innerHTML = message;
-            }
-            return false;
-        },
-        
-        checkEmptyFocus(element, errorElement) {
-            element.addEventListener('blur', () => this.clearError(errorElement, element));
-        },
-
-        validateEmpty(element, errorElement) {
-            if(this.isEmpty(element)) {
-                this.errorMessages(errorElement, this.emptyError, element);
-                this.checkEmptyFocus(element, errorElement);
-                return false;
-            }
-            this.clearError(errorElement, element);
-            return true;
-        },
-        
-        validationState: {
-            studentInfo: true,
-            parentInfo: true,
-            addressInfo: true,
-            previousSchool: true
-        },
-
-        isFormValid() {
-            return Object.values(this.validationState).every(state => state === true);
-        }
-    };
-
-    // ===== ELEMENT SELECTORS =====
+import {ValidationUtils,capitalizeFirstLetter,generateOptions, getRegions, getProvinces, getCities, getBarangays } from "../utils.js";
+document.addEventListener('DOMContentLoaded',function(){
+    // |=================|
+    // |===== ORDER =====|
+    // |=================|
+    //1ST PREVIOUS SCHOOL INFO
+    //2ND STUDENT INFO
+    //3RD DISABILITY
+    //4TH ADDRESS
+    //5TH PARENT INFO 
+    //|=========================|
+    //|===== HTML ELEMENTS =====|
+    //|=========================|
+    // === PREVIOUS SCHOOL INFORMATION (FORM 1ST PART) ===
+    const startYear = document.getElementById("start-year");
+    const endYear = document.getElementById("end-year");
+    const lastYear = document.getElementById("last-year");
+    const lschool = document.getElementById("lschool");
+    const lschoolAddr = document.getElementById("lschoolAddress");
+    const lschoolId = document.getElementById("lschoolID");
+    const fschool = document.getElementById("fschool");
+    const fschoolAddr = document.getElementById("fschoolAddress");
+    const fschoolId = document.getElementById("fschoolID");
+    const enrollingGradeLevel = document.getElementById("grades-tbe");
+    const lastGradeLevel = document.getElementById("last-grade");
+    // === STUDENT INFORMATION(FORM 2ND PART) ===
     const psaNumber = document.getElementById("PSA-number");
     const lrn = document.getElementById("LRN");
     const lname = document.getElementById("lname");
     const fname = document.getElementById("fname");
     const birthDate = document.getElementById("bday");
     const age = document.getElementById("age");
+    const nativeGroup = document.getElementById("community");
     const language = document.getElementById("language");
     const religion = document.getElementById("religion");
+    //=== STUDENT IF DISABLED (FORM 3RD PART) ===
     const disability = document.getElementById("boolsn");
     const assistiveTech = document.getElementById("atdevice");
-    const nativeGroup = document.getElementById("community");
-
+    //=== STUDENT ADDRESS (FORM 4TH PART) ===
+    const regions = document.getElementById("region");
+    const provinces = document.getElementById("province");
+    const cityOrMunicipality = document.getElementById("city-municipality");
+    const barangay = document.getElementById("barangay");
+    const subdivsion = document.getElementById("subdivision");
+    const houseNumber = document.getElementById("house-number");
+    //===STUDENT PARENTS INFORMATION (FORM 5TH PART) ===
     const fatherLname = document.getElementById("Father-Last-Name");
     const fatherFname = document.getElementById("Father-First-Name");
     const motherLname = document.getElementById("Mother-Last-Name");
@@ -102,558 +53,320 @@ document.addEventListener('DOMContentLoaded', function() {
     const fatherCPnum = document.getElementById("F-number");
     const motherCPnum = document.getElementById("M-number");
     const guardianCPnum = document.getElementById("G-number");
-
-    const regions = document.getElementById("region");
-    const provinces = document.getElementById("province");
-    const cityOrMunicipality = document.getElementById("city-municipality");
-    const barangay = document.getElementById("barangay");
-    const subdivsion = document.getElementById("subdivision");
-    const houseNumber = document.getElementById("house-number");
-
-    const startYear = document.getElementById("start-year");
-    const endYear = document.getElementById("end-year");
-    const lastYear = document.getElementById("last-year");
-    const lschool = document.getElementById("lschool");
-    const lschoolAddr = document.getElementById("lschoolAddress");
-    const lschoolId = document.getElementById("lschoolID");
-    const enrollingGradeLevel = document.getElementById("grades-tbe");
-    const lastGradeLevel = document.getElementById("last-grade");
-
-    // ===== CONSTANTS =====
+    //===FORM && FORM BUTTON ===
+    const form = document.getElementById('enrollment-form');
+    const submitButton = form.querySelector('button[type="submit"]');
+    // |============================|
+    // |===== DECLARED VALUES ======|
+    // |============================|
+    // === DATES ===
     const today = new Date();
     const year = today.getFullYear();
     const minDate = new Date();
     minDate.setFullYear(today.getFullYear() - 25);
     const maxDate = new Date();
     maxDate.setFullYear(today.getFullYear() - 3);
-
+    
+    // === VALIDATION REGEX (for final validation) ===
+    const nameRegex = /^[A-Za-z]+(\s[A-Za-z]+)*$/; // Only letters, single space between words
+    const numberRegex = /^[0-9]+$/; // Digits only
+    const addressRegex = /^[A-Za-z0-9\s,.]+$/; // Alphanumeric, space, comma, period
+    
+    // === LEGACY REGEX (keeping for backward compatibility) ===
     const lrnRegex = /^([0-9]){12}$/;
     const bCertRegex = /^([0-9]){13}$/;
     const yearRegex = /^(1[0-9]{3}|2[0-9]{3}|3[0-9]{3})$/;
     const idRegex = /^([0-9]){6}$/;
     const charRegex = /^[A-Za-z0-9\s.,'-]{3,100}$/;
-    const nameRegex = /^[A-Za-z\s.\-`'ñÑ]+$/;
-    const numericOnlyRegex = /^[0-9]+$/;
-    const phoneRegex = /^[0-9]{11}$/;
-
-    // ===== HELPER FUNCTIONS =====
-    function formatDate(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
-    function sanitizeNumericInput(element, maxLength) {
-        element.addEventListener('input', function(e) {
-            const value = e.target.value;
-            if (/\D/.test(value)) {
-                const cursorPos = e.target.selectionStart;
-                const sanitizedValue = value.replace(/\D/g, '');
-                e.target.value = sanitizedValue.slice(0, maxLength);
-                const posDiff = value.length - sanitizedValue.length;
-                e.target.setSelectionRange(cursorPos - posDiff, cursorPos - posDiff);
-            } else if (value.length > maxLength) {
-                e.target.value = value.slice(0, maxLength);
-                e.target.setSelectionRange(maxLength, maxLength);
-            }
-        });
+    const onlyDigits = /^[0-9]+$/;
+    
+    // === INPUT FILTERING REGEX (real-time character filtering) ===
+    const REGEX_PATTERNS = {
+        // Names - STRICT: Only letters and spaces
+        NAME: /^[A-Za-z\s]*$/,
+        NAME_SINGLE_CHAR: /[A-Za-z\s]/,
         
-        // Prevent non-numeric keys and enforce max length on keydown
-        element.addEventListener('keydown', function(e) {
-            const currentLength = e.target.value.length;
-            const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
-            
-            // Allow Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-            if (e.ctrlKey && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase())) {
+        // Numbers only - digits only
+        NUMBERS_ONLY: /^[0-9]*$/,
+        NUMBER_SINGLE_CHAR: /[0-9]/,
+        
+        // Phone - digits only, max 11
+        PHONE: /^[0-9]{0,11}$/,
+        PHONE_SINGLE_CHAR: /[0-9]/,
+        
+        // Address - STRICT: alphanumeric, spaces, comma, period ONLY
+        ADDRESS: /^[A-Za-z0-9\s,.]*$/,
+        ADDRESS_SINGLE_CHAR: /[A-Za-z0-9\s,.]/,
+        
+        // Year - 4 digits
+        YEAR: /^[0-9]{0,4}$/,
+        YEAR_SINGLE_CHAR: /[0-9]/,
+        
+        // General text - alphanumeric, spaces, comma, period
+        GENERAL_TEXT: /^[A-Za-z0-9\s,.]*$/,
+        GENERAL_TEXT_SINGLE_CHAR: /[A-Za-z0-9\s,.]/,
+        
+        // Text only - letters and spaces only
+        TEXT_ONLY: /^[A-Za-z\s]*$/,
+        TEXT_ONLY_SINGLE_CHAR: /[A-Za-z\s]/
+    };
+    
+    // |=============================|
+    // |===== VALIDATION UTILS ======|
+    // |=============================|
+    
+    /**
+     * Trim and clean input based on field type
+     */
+    function trimInput(value, type = 'default') {
+        if (!value) return '';
+        
+        // Remove leading/trailing whitespace
+        let cleaned = value.trim();
+        
+        // Type-specific cleaning
+        switch(type) {
+            case 'name':
+                // Remove multiple consecutive spaces (allow only single space)
+                cleaned = cleaned.replace(/\s{2,}/g, ' ');
+                // Remove leading/trailing spaces
+                cleaned = cleaned.trim();
+                break;
+                
+            case 'address':
+                // Remove multiple consecutive spaces
+                cleaned = cleaned.replace(/\s{2,}/g, ' ');
+                // Remove multiple consecutive commas or periods
+                cleaned = cleaned.replace(/[,.]{2,}/g, match => match[0]);
+                // Remove leading/trailing punctuation and spaces
+                cleaned = cleaned.replace(/^[,.\s]+|[,.\s]+$/g, '');
+                break;
+                
+            case 'number':
+                // Remove all non-digits
+                cleaned = cleaned.replace(/\D/g, '');
+                break;
+                
+            case 'text':
+                // Remove multiple consecutive spaces
+                cleaned = cleaned.replace(/\s{2,}/g, ' ');
+                // Remove leading/trailing spaces
+                cleaned = cleaned.trim();
+                break;
+                
+            default:
+                // Remove multiple consecutive spaces
+                cleaned = cleaned.replace(/\s{2,}/g, ' ');
+                break;
+        }
+        
+        return cleaned;
+    }
+    
+    /**
+     * Filter input in real-time - prevents typing invalid characters
+     */
+    function filterInput(element, pattern, maxLength = null) {
+        element.addEventListener('beforeinput', function(e) {
+            // Allow special keys (backspace, delete, arrow keys, etc.)
+            if (e.inputType === 'deleteContentBackward' || 
+                e.inputType === 'deleteContentForward' ||
+                e.inputType === 'deleteByCut') {
                 return;
             }
             
-            // Block if max length reached and not a control key
-            if (currentLength >= maxLength && !allowedKeys.includes(e.key)) {
-                e.preventDefault();
-                return;
-            }
-            
-            // Block non-numeric keys
-            if (!allowedKeys.includes(e.key) && (e.key < '0' || e.key > '9')) {
-                e.preventDefault();
-            }
-        });
-        
-        // Handle paste events
-        element.addEventListener('paste', function(e) {
-            e.preventDefault();
-            const pasteData = e.clipboardData.getData('text');
-            const numericOnly = pasteData.replace(/\D/g, '').slice(0, maxLength);
-            
-            const currentValue = e.target.value;
-            const start = e.target.selectionStart;
-            const end = e.target.selectionEnd;
-            
-            const newValue = currentValue.substring(0, start) + numericOnly + currentValue.substring(end);
-            e.target.value = newValue.slice(0, maxLength);
-            
-            const newCursorPos = Math.min(start + numericOnly.length, maxLength);
-            e.target.setSelectionRange(newCursorPos, newCursorPos);
-        });
-    }
-
-    function sanitizePhoneInput(element) {
-        element.addEventListener('input', function(e) {
-            const value = e.target.value;
-            const cursorPos = e.target.selectionStart;
-            
-            // Remove any non-numeric characters
-            const sanitizedValue = value.replace(/\D/g, '');
-            
-            if (sanitizedValue.length > 11) {
-                e.target.value = sanitizedValue.slice(0, 11);
-                e.target.setSelectionRange(11, 11);
-            } else if (value !== sanitizedValue) {
-                e.target.value = sanitizedValue;
-                const newPos = Math.max(0, cursorPos - (value.length - sanitizedValue.length));
-                e.target.setSelectionRange(newPos, newPos);
-            }
-        });
-        
-        // Prevent non-numeric keys
-        element.addEventListener('keydown', function(e) {
-            const currentLength = e.target.value.length;
-            const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
-            
-            // Allow Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-            if (e.ctrlKey && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase())) {
-                return;
-            }
-            
-            // Block if max length (11) reached
-            if (currentLength >= 11 && !allowedKeys.includes(e.key)) {
-                e.preventDefault();
-                return;
-            }
-            
-            // Block non-numeric keys
-            if (!allowedKeys.includes(e.key) && (e.key < '0' || e.key > '9')) {
-                e.preventDefault();
-            }
-        });
-        
-        // Handle paste events
-        element.addEventListener('paste', function(e) {
-            e.preventDefault();
-            const pasteData = e.clipboardData.getData('text');
-            const numericOnly = pasteData.replace(/\D/g, '').slice(0, 11);
-            
-            const currentValue = e.target.value;
-            const start = e.target.selectionStart;
-            const end = e.target.selectionEnd;
-            
-            const newValue = currentValue.substring(0, start) + numericOnly + currentValue.substring(end);
-            e.target.value = newValue.slice(0, 11);
-            
-            const newCursorPos = Math.min(start + numericOnly.length, 11);
-            e.target.setSelectionRange(newCursorPos, newCursorPos);
-        });
-    }
-
-    function sanitizeNameInput(element) {
-        element.addEventListener('input', function(e) {
-            const value = e.target.value;
-            const cursorPos = e.target.selectionStart;
-            
-            // Remove any characters that are not letters, spaces, periods, hyphens, or apostrophes
-            const sanitizedValue = value.replace(/[^A-Za-zñÑ\s.\-'']/g, '');
-            
-            if (value !== sanitizedValue) {
-                e.target.value = sanitizedValue;
-                e.target.setSelectionRange(cursorPos - 1, cursorPos - 1);
-            }
-        });
-    }
-
-    function capitalizeFirstLetter(element) {
-        element.addEventListener('input', function(e) {
-            const value = e.target.value;
-            const cursorPos = e.target.selectionStart;
-            if(value.length > 0) {
-                const firstChar = value.charAt(0);
-                if (firstChar === firstChar.toLowerCase() && firstChar !== firstChar.toUpperCase()) {
-                    e.target.value = firstChar.toUpperCase() + value.slice(1);
-                    e.target.setSelectionRange(cursorPos, cursorPos);
+            // Check if input type is text insertion
+            if (e.inputType === 'insertText' || e.inputType === 'insertFromPaste') {
+                const newChar = e.data;
+                
+                if (!newChar) return;
+                
+                // Check against single character pattern
+                if (pattern && !pattern.test(newChar)) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                // Check max length
+                if (maxLength) {
+                    const currentLength = element.value.length;
+                    const selectionLength = element.selectionEnd - element.selectionStart;
+                    const newLength = currentLength - selectionLength + newChar.length;
+                    
+                    if (newLength > maxLength) {
+                        e.preventDefault();
+                        return;
+                    }
                 }
             }
         });
-    }
-
-    function validateName(element, errorElement) {
-        const value = element.value.trim();
         
-        if (!value) {
-            return ValidationUtils.errorMessages(errorElement, ValidationUtils.emptyError, element);
-        }
-        
-        if (!nameRegex.test(value)) {
-            return ValidationUtils.errorMessages(errorElement, "Name can only contain letters, spaces, periods, hyphens and apostrophes", element);
-        }
-        
-        if (value.length < 2) {
-            return ValidationUtils.errorMessages(errorElement, "Name must be at least 2 characters long", element);
-        }
-        
-        ValidationUtils.clearError(errorElement, element);
-        return true;
-    }
-
-    function validatePhoneNumber(element, errorElement) {
-        const value = element.value.trim();
-        
-        if (!value) {
-            return ValidationUtils.errorMessages(errorElement, ValidationUtils.emptyError, element);
-        }
-        
-        if (!numericOnlyRegex.test(value)) {
-            return ValidationUtils.errorMessages(errorElement, "Phone number must contain only numbers", element);
-        }
-        
-        if (!phoneRegex.test(value)) {
-            if (value.length < 11) {
-                return ValidationUtils.errorMessages(errorElement, "Phone number must be 11 digits", element);
-            } else {
-                return ValidationUtils.errorMessages(errorElement, "Phone number must be exactly 11 digits", element);
+        // Additional paste protection
+        element.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const filteredText = pastedText.split('').filter(char => pattern.test(char)).join('');
+            
+            if (maxLength && filteredText.length > maxLength) {
+                return;
             }
-        }
-        
-        ValidationUtils.clearError(errorElement, element);
-        return true;
-    }
-
-    // ===== STUDENT INFO VALIDATION =====
-    function validateAge(ageValue) {
-        const minAge = 3;
-        const maxAge = 25;
-        
-        if (isNaN(ageValue)) {
-            return ValidationUtils.errorMessages("em-age", "Age must be a number", age);
-        }
-        
-        if (ageValue < minAge) {
-            return ValidationUtils.errorMessages("em-age", "Student must be at least 3 years old", age);
-        }
-        
-        if (ageValue > maxAge) {
-            return ValidationUtils.errorMessages("em-age", "Student must be 25 years old or younger", age);
-        }
-
-        ValidationUtils.clearError("em-age", age);
-        return true;
-    }
-
-    function getAge() {
-        let currentYear = today.getFullYear();
-        let currentMonth = today.getMonth()+1;
-        let currentDay = today.getDate(); 
-
-        let bday = birthDate.value;
-        if (!bday) {
-            ValidationUtils.errorMessages("em-bday", "Please select a birth date", birthDate);
-            return false;
-        }
-
-        let getDate = new Date(bday);
-        
-        if (getDate > today) {
-            ValidationUtils.errorMessages("em-bday", "Birth date cannot be in the future", birthDate);
-            return false;
-        }
-
-        let birthYear = getDate.getFullYear();
-        let birthMonth = getDate.getMonth()+1;
-        let birthDay = getDate.getDate();
-
-        let ageValue = currentYear - birthYear;
-        if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
-            ageValue--;
-        }
-
-        if (validateAge(ageValue)) {
-            age.value = ageValue;
-            ValidationUtils.clearError("em-bday", birthDate);
-            return true;
-        } else {
-            age.value = "";
-            return false;
-        }
-    }
-
-    function validatePSA() {
-        const value = psaNumber.value.trim();
-        
-        if (!value) {
-            return ValidationUtils.errorMessages("em-PSA-number", ValidationUtils.emptyError, psaNumber);
-        }
-
-        if (!/^\d*$/.test(value)) {
-            return ValidationUtils.errorMessages("em-PSA-number", ValidationUtils.notNumber, psaNumber);
-        }
-
-        if (!bCertRegex.test(value)) {
-            return ValidationUtils.errorMessages("em-PSA-number", 
-                value.length > 13 ? "Only 13 digits are allowed" : "Enter a valid birth certificate number", 
-                psaNumber
-            );
-        }
-
-        ValidationUtils.clearError("em-PSA-number", psaNumber);
-        return true;
-    }
-
-    function validateLRN() {
-        const value = lrn.value.trim();
-        
-        if (lrn.disabled) {
-            ValidationUtils.clearError("em-LRN", lrn);
-            return true;
-        }
-
-        if (!value) {
-            return ValidationUtils.errorMessages("em-LRN", ValidationUtils.emptyError, lrn);
-        }
-
-        if (!/^\d*$/.test(value)) {
-            return ValidationUtils.errorMessages("em-LRN", ValidationUtils.notNumber, lrn);
-        }
-
-        if (!lrnRegex.test(value)) {
-            return ValidationUtils.errorMessages("em-LRN", 
-                value.length > 12 ? "Only 12 digits are allowed" : "Enter a valid LRN",
-                lrn
-            );
-        }
-
-        ValidationUtils.clearError("em-LRN", lrn);
-        return true;
-    }
-
-    function checkIndigenous(textBoxElement, nameValue, error) {
-        const radioInput = document.querySelector(`input[name="${nameValue}"]:checked`);
-        const textbox = document.getElementById(textBoxElement);
-        if (radioInput.value === "0") {
-            textbox.disabled = true;
-            textbox.style.opacity = "0.2";
-            textbox.value ="";
-            if (textbox.disabled) {
-                ValidationUtils.clearError(error, textbox);
-            }
-        } else {
-            textbox.disabled = false;
-            textbox.style.opacity = "1";
-        }
-    }
-
-    function validateStudentInfo() {
-        let isValid = true;
-
-        const requiredFields = [
-            {element: lname, error: "em-lname"},
-            {element: fname, error: "em-fname"},
-            {element: language, error: "em-language"},
-            {element: religion, error: "em-religion"}
-        ];
-
-        requiredFields.forEach(({element, error}) => {
-            if (!ValidationUtils.validateEmpty(element, error)) {
-                isValid = false;
+            
+            // Insert filtered text
+            const start = element.selectionStart;
+            const end = element.selectionEnd;
+            const currentValue = element.value;
+            const newValue = currentValue.substring(0, start) + filteredText + currentValue.substring(end);
+            
+            if (!maxLength || newValue.length <= maxLength) {
+                element.value = newValue;
+                element.setSelectionRange(start + filteredText.length, start + filteredText.length);
+                element.dispatchEvent(new Event('input', { bubbles: true }));
             }
         });
-
-        if (!validatePSA()) {
-            isValid = false;
-        }
-
-        if (!lrn.disabled && !validateLRN()) {
-            isValid = false;
-        }
-
-        if (!validateAge(parseInt(age.value)) || !birthDate.value || !getAge()) {
-            isValid = false;
-        }
-
-        ValidationUtils.validationState.studentInfo = isValid;
-        return isValid;
     }
-
-    // ===== PARENT INFO VALIDATION =====
-    function validateParentInfo() {
-        let isValid = true;
-
-        const allInfo = [
-            {element: fatherLname, error: "em-father-last-name"},
-            {element: fatherFname, error: "em-father-first-name"},
-            {element: motherLname, error: "em-mother-last-name"},
-            {element: motherFname, error: "em-mother-first-name"},
-            {element: guardianLname, error: "em-guardian-last-name"},
-            {element: guardianFname, error: "em-guardian-first-name"}
-        ];
-
-        allInfo.forEach(({element, error}) => {
-            if (!ValidationUtils.validateEmpty(element, error)) {
-                isValid = false;
+    
+    /**
+     * Apply name filtering and trimming - STRICT: letters and single space only
+     */
+    function applyNameFilter(element) {
+        filterInput(element, REGEX_PATTERNS.NAME_SINGLE_CHAR);
+        
+        element.addEventListener('blur', function() {
+            this.value = trimInput(this.value, 'name');
+            // Additional validation: ensure only single space between words
+            if (this.value) {
+                this.value = this.value.replace(/\s+/g, ' ').trim();
             }
         });
-
-        const phoneInfo = [
-            {element: fatherCPnum, error: "em-f-number"},
-            {element: motherCPnum, error: "em-m-number"},   
-            {element: guardianCPnum, error: "em-g-number"}
-        ];
-
-        phoneInfo.forEach(({element, error}) => {
-            if (!validatePhoneNumber(element, error)) {
-                isValid = false;
+        
+        element.addEventListener('input', function() {
+            // Real-time pattern validation - only letters and spaces
+            if (this.value && !REGEX_PATTERNS.NAME.test(this.value)) {
+                this.value = this.value.split('').filter(char => 
+                    REGEX_PATTERNS.NAME_SINGLE_CHAR.test(char)
+                ).join('');
+            }
+            // Prevent multiple consecutive spaces while typing
+            this.value = this.value.replace(/\s{2,}/g, ' ');
+        });
+    }
+    
+    /**
+     * Apply number filtering and trimming
+     */
+    function applyNumberFilter(element, maxLength = null) {
+        filterInput(element, REGEX_PATTERNS.NUMBER_SINGLE_CHAR, maxLength);
+        
+        element.addEventListener('blur', function() {
+            this.value = trimInput(this.value, 'number');
+        });
+        
+        element.addEventListener('input', function() {
+            // Ensure only digits
+            this.value = this.value.replace(/\D/g, '');
+            
+            // Enforce max length
+            if (maxLength && this.value.length > maxLength) {
+                this.value = this.value.substring(0, maxLength);
             }
         });
-
-        ValidationUtils.validationState.parentInfo = isValid;
-        return isValid;
     }
-
-    // ===== ADDRESS VALIDATION =====
-    let regionCode = "";
-    let provinceCode = "";
-    let cityCode = "";
+    
+    /**
+     * Apply phone number filtering
+     */
+    function applyPhoneFilter(element) {
+        filterInput(element, REGEX_PATTERNS.PHONE_SINGLE_CHAR, 11);
+        
+        element.addEventListener('blur', function() {
+            this.value = trimInput(this.value, 'number');
+        });
+        
+        element.addEventListener('input', function() {
+            // Ensure only digits and max 11
+            this.value = this.value.replace(/\D/g, '').substring(0, 11);
+        });
+    }
+    
+    /**
+     * Apply address filtering and trimming - STRICT: alphanumeric, space, comma, period only
+     */
+    function applyAddressFilter(element) {
+        filterInput(element, REGEX_PATTERNS.ADDRESS_SINGLE_CHAR);
+        
+        element.addEventListener('blur', function() {
+            this.value = trimInput(this.value, 'address');
+        });
+        
+        element.addEventListener('input', function() {
+            // Real-time pattern validation - only alphanumeric, space, comma, period
+            if (this.value && !REGEX_PATTERNS.ADDRESS.test(this.value)) {
+                this.value = this.value.split('').filter(char => 
+                    REGEX_PATTERNS.ADDRESS_SINGLE_CHAR.test(char)
+                ).join('');
+            }
+            // Prevent multiple consecutive spaces
+            this.value = this.value.replace(/\s{2,}/g, ' ');
+        });
+    }
+    
+    /**
+     * Apply text-only filtering (for religion, language, etc.) - STRICT: letters and spaces only
+     */
+    function applyTextFilter(element) {
+        filterInput(element, REGEX_PATTERNS.TEXT_ONLY_SINGLE_CHAR);
+        
+        element.addEventListener('blur', function() {
+            this.value = trimInput(this.value, 'text');
+        });
+        
+        element.addEventListener('input', function() {
+            // Real-time pattern validation - only letters and spaces
+            if (this.value && !REGEX_PATTERNS.TEXT_ONLY.test(this.value)) {
+                this.value = this.value.split('').filter(char => 
+                    REGEX_PATTERNS.TEXT_ONLY_SINGLE_CHAR.test(char)
+                ).join('');
+            }
+            // Prevent multiple consecutive spaces
+            this.value = this.value.replace(/\s{2,}/g, ' ');
+        });
+    }
+    
+    /**
+     * Apply year filtering
+     */
+    function applyYearFilter(element) {
+        filterInput(element, REGEX_PATTERNS.YEAR_SINGLE_CHAR, 4);
+        
+        element.addEventListener('input', function() {
+            // Ensure only digits and max 4
+            this.value = this.value.replace(/\D/g, '').substring(0, 4);
+        });
+    }
+    
+    /**
+     * Apply general text filtering (disability, assistive tech)
+     */
+    function applyGeneralTextFilter(element) {
+        filterInput(element, REGEX_PATTERNS.GENERAL_TEXT_SINGLE_CHAR);
+        
+        element.addEventListener('blur', function() {
+            this.value = trimInput(this.value, 'text');
+        });
+        
+        element.addEventListener('input', function() {
+            if (this.value && !REGEX_PATTERNS.GENERAL_TEXT.test(this.value)) {
+                this.value = this.value.split('').filter(char => 
+                    REGEX_PATTERNS.GENERAL_TEXT_SINGLE_CHAR.test(char)
+                ).join('');
+            }
+            this.value = this.value.replace(/\s{2,}/g, ' ');
+        });
+    }
 
     function initialSelectValue(selectElement, parentElement) {
         selectElement.innerHTML = `<option value=""> Select a ${parentElement} first </option>`;
     }
-
-    async function getRegions() {
-        try {
-            const controller = new AbortController();
-            const signal = controller.signal;
-            const timeOut = setTimeout(() => {
-                controller.abort();
-                console.error("Request timed out");
-                replaceTextBox(regions, "region");
-            }, 10000);
-            const response = await fetch("https://psgc.gitlab.io/api/regions", {signal});
-                            
-            if (!response.ok) {
-                throw new Error(`HTTP error! ${response.status}`);
-            }
-            clearTimeout(timeOut);
-            const data = await response.json();    
-            if (!data || !Array.isArray(data) || data.length === 0) {
-                throw new Error('No regions data available');
-            }
-            regions.innerHTML = `<option value=""> Select a Region</option>`;
-            data.forEach(region=>{
-                let option = document.createElement("option");
-                option.value = region.code;
-                option.textContent = region.name;
-                regions.appendChild(option);
-            });
-        }
-        catch (error) {
-            console.error("Error fetching regions:", error);
-            replaceTextBox(regions, "region");
-        }
-    }
-
-    async function getProvinces() {
-        try {
-            regionCode = regions.value;
-            if (!regionCode) {
-                initialSelectValue(provinces, "Region");
-                return;
-            }
-            const response = await fetch(`https://psgc.gitlab.io/api/regions/${regionCode}/provinces`);     
-            if (!response.ok) {
-                throw new Error(`HTTP error! ${response.status}`);
-            }
-            const data = await response.json();
-            if (!data || !Array.isArray(data) || data.length === 0) {
-                throw new Error('No provinces data available');
-            }
-            
-            provinces.innerHTML = `<option value=""> Select a Province</option>`;
-            data.forEach(province=>{
-                let option = document.createElement("option");
-                option.value = province.code;
-                option.textContent = province.name;
-                provinces.appendChild(option);
-            });
-        }
-        catch (error) {
-            console.error("Error fetching provinces:", error);
-            if (regions.value !== "") {
-                replaceTextBox(provinces, "province");
-            }
-        }
-    }
-
-    async function getCity() {
-        try {
-            provinceCode = provinces.value;
-            if (!provinceCode) {
-                initialSelectValue(cityOrMunicipality, "Province");
-                return;
-            }
-            const response = await fetch(`https://psgc.gitlab.io/api/provinces/${provinceCode}/cities-municipalities`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! ${response.status}`);
-            }
-            const data = await response.json();
-            if (!data || !Array.isArray(data) || data.length === 0) {
-                throw new Error('No cities/municipalities data available');
-            }
-            cityOrMunicipality.innerHTML = `<option value=""> Select a City/Municipality</option>`;
-            data.forEach(city=> {
-                let option = document.createElement("option");
-                option.value = city.code;
-                option.textContent = city.name;
-                cityOrMunicipality.appendChild(option);
-            });
-        }
-        catch (error) {
-            console.error("Error fetching cities:", error);
-            if (provinces.value !== "") {
-                replaceTextBox(cityOrMunicipality, "city");
-            } 
-        }
-    }
-
-    async function getBarangay() {
-        try {
-            cityCode = cityOrMunicipality.value;
-            if (!cityCode) {
-                initialSelectValue(barangay, "City/Municipality");
-                return;
-            }
-            const response = await fetch(`https://psgc.gitlab.io/api/cities-municipalities/${cityCode}/barangays`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! ${response.status}`);
-            }
-            const data = await response.json();
-            if (!data || !Array.isArray(data) || data.length === 0) {
-                throw new Error('No barangays data available');
-            }
-            barangay.innerHTML = `<option value=""> Select a Barangay</option>`;
-            data.forEach(barangays=> {
-                let option = document.createElement("option");
-                option.value = barangays.code;
-                option.textContent = barangays.name;
-                barangay.appendChild(option);
-            });
-        }
-        catch(error) {
-            console.error("Error fetching barangays:", error);
-            if (cityOrMunicipality.value !== "") {
-                replaceTextBox(barangay, "barangay");
-            }
-        }
-    }
-
     async function replaceTextBox(replaceElement, addressType) {
         let createTBox = document.createElement("input");
         createTBox.type = "text";
@@ -662,7 +375,6 @@ document.addEventListener('DOMContentLoaded', function() {
         createTBox.className = "textbox";
         replaceElement.replaceWith(createTBox);
     }
-
     async function changeAddressValues() {
         try {
             const addressData = {
@@ -671,27 +383,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 city: { code: '', text: '' },
                 barangay: { code: '', text: '' }
             };
-
             if(regions.value && regions.selectedIndex !== -1) {
                 addressData.region.code = regions.value;
                 addressData.region.text = regions.options[regions.selectedIndex].text;
-            }
-            
+            }            
             if(provinces.value && provinces.selectedIndex !== -1) {
                 addressData.province.code = provinces.value;
                 addressData.province.text = provinces.options[provinces.selectedIndex].text;
             }
-            
             if(cityOrMunicipality.value && cityOrMunicipality.selectedIndex !== -1) {
                 addressData.city.code = cityOrMunicipality.value;
                 addressData.city.text = cityOrMunicipality.options[cityOrMunicipality.selectedIndex].text;
             }
-            
             if(barangay.value && barangay.selectedIndex !== -1) {
                 addressData.barangay.code = barangay.value;
                 addressData.barangay.text = barangay.options[barangay.selectedIndex].text;
             }
-
             Object.entries(addressData).forEach(([key, value]) => {
                 let codeInput = form.querySelector(`input[name="${key}_code"]`);
                 if (!codeInput) {
@@ -701,7 +408,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     form.appendChild(codeInput);
                 }
                 codeInput.value = value.code;
-
                 let textInput = form.querySelector(`input[name="${key}_text"]`);
                 if (!textInput) {
                     textInput = document.createElement('input');
@@ -711,90 +417,143 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 textInput.value = value.text;
             });
-
             return addressData;
         } catch(error) {
             console.error('Error in changeAddressValues:', error);
             return null;
         }
     }
-
-    function validateAddressInfo() {
-        let isValid = true;
-
-        const addressFields = [
-            { element: regions, error: "em-region", label: "Region" },
-            { element: provinces, error: "em-province", label: "Province" },
-            { element: cityOrMunicipality, error: "em-city", label: "City/Municipality" },
-            { element: barangay, error: "em-barangay", label: "Barangay" },
-            { element: subdivsion, error: "em-subdivision", label: "Subdivision/Street" },
-            { element: houseNumber, error: "em-house-number", label: "House Number" }
-        ];
-
-        addressFields.forEach(({ element, error, label }) => {
-            if (!element) return;
-
-            if (element.tagName === "SELECT") {
-                if (!element.value) {
-                    ValidationUtils.errorMessages(error, `Please select a ${label}`, element);
-                    isValid = false;
-                } else {
-                    ValidationUtils.clearError(error, element);
-                }
-            }
-            else if (element.tagName === "INPUT") {
-                if (ValidationUtils.isEmpty(element)) {
-                    ValidationUtils.errorMessages(error, ValidationUtils.emptyError, element);
-                    isValid = false;
-                } else {
-                    ValidationUtils.clearError(error, element);
-                }
-
-                if (element === houseNumber && !ValidationUtils.isEmpty(element)) {
-                    if (isNaN(element.value)) {
-                        ValidationUtils.errorMessages(error, ValidationUtils.notNumber, element);
-                        isValid = false;
-                    }
-                }
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+    function checkIfNumericInput(element) {
+        element.addEventListener('beforeinput', function(e) {
+            if (e.inputType === 'insertText' && /\D/.test(e.data)) {
+                e.preventDefault(); // stop invalid character before it appears
+                return;
             }
         });
-
-        ValidationUtils.validationState.addressInfo = isValid;
-        return isValid;
     }
-
-    // ===== PREVIOUS SCHOOL VALIDATION =====
+    // |========================|
+    // |===== VALIDATIONS ======|
+    // |========================|
+    // === ENROLLING AND LAST GRADE LEVEL SCHOOL VALIDATION + INIT ===
+    // lgl = egl - 1 && egl = lgl+ 1
+    function syncSelects(currentSelect,otherSelect) { // OK
+        const selectedIndex = currentSelect.selectedIndex;
+        if(currentSelect.id === 'grades-tbe') {
+            const prevIndex = selectedIndex - 1;
+            if(selectedIndex === 0) {
+                otherSelect.selectedIndex = 0;
+            }
+            if(prevIndex >= 0) {
+                otherSelect.selectedIndex = prevIndex;
+            }
+        }
+        else {
+            if(selectedIndex === 0) {
+                otherSelect.selectedIndex = 0;
+            }
+            else {
+                const nextIndex = selectedIndex + 1;
+                if(nextIndex === 1) {
+                    currentSelect.disabled = true;
+                    lastGradeLevel.style.opacity = 0.5;
+                    lastGradeLevel.value = '';
+                    ValidationUtils.clearError('em-last-grade-level',lastGradeLevel);
+                }
+                if(nextIndex < otherSelect.options.length) {
+                    otherSelect.selectedIndex = nextIndex;
+                }
+            }
+        }
+    }
+    function toggleEnrollingGradeLevelRelatedDisables() { // OK
+        const selectedIndex = enrollingGradeLevel.selectedIndex;
+        if(selectedIndex === 1) {
+            //DISABLE LAST GRADE LEVEL
+            lastGradeLevel.disabled = true;
+            lastGradeLevel.style.opacity = 0.5;
+            lastGradeLevel.value = '';
+            ValidationUtils.clearError('em-last-grade-level',lastGradeLevel);
+            //DISABLE LAST YEAR ATTENDED
+            lastYear.disabled = true;
+            lastYear.style.opacity = 0.5;
+            lastYear.value = '';
+            ValidationUtils.clearError('em-last-year-finished',lastYear);
+            lastYear.removeEventListener('input', validateYearFinished);
+        }
+        else {
+            lastGradeLevel.disabled = false;
+            lastGradeLevel.style.opacity = 1;
+            //DISABLE LAST YEAR ATTENDED
+            lastYear.disabled = false;
+            lastYear.style.opacity = 1;
+            lastYear.value = saveYear;
+            if(saveYear && saveYear.trim() !== '') {
+                lastYear.dispatchEvent(new Event('input'));
+            }
+        }
+    }
+    function validateEnrollingLevel() { //OK
+        const enrollingLevelSelected = enrollingGradeLevel.selectedIndex
+        if( enrollingLevelSelected === 0) {
+            return ValidationUtils.errorMessages('em-enrolling-grade-level', 'Please select an enrolling grade level', enrollingGradeLevel);
+        }
+        ValidationUtils.clearError('em-enrolling-grade-level',enrollingGradeLevel);
+        return true;
+    }
+    function validateLastGradeLevel() { //OK
+        if (lastGradeLevel.disabled) return true;
+        const lastGradeLevelSelected = lastGradeLevel.selectedIndex;
+        if(lastGradeLevelSelected === lastGradeLevel.options.length - 1) {
+            return ValidationUtils.errorMessages("em-last-grade-level", 'This is already the last grade level possible', lastGradeLevel);
+        }
+        ValidationUtils.clearError('em-last-grade-level', lastGradeLevel);
+        return true;
+    }
+    function validateEnrollingAndLastGradeLevel() { // OK
+        if(!validateLastGradeLevel()) {
+            return false;
+        }
+        const lastGradeLevelSelected = lastGradeLevel.selectedIndex;
+        const enrollingGradeLevelSelected = enrollingGradeLevel.selectedIndex;
+        if(lastGradeLevelSelected > enrollingGradeLevelSelected) {
+            return ValidationUtils.errorMessages("em-last-grade-level", 'Last grade level cannot be greater than enrolling grade level', lastGradeLevel);
+        }
+        ValidationUtils.clearError('em-last-grade-level',lastGradeLevel);
+        return true;
+    }
     function validateStartYear() {
         let startYearVal = parseInt(startYear.value);
         let endYearVal = parseInt(endYear.value);
-        
         if(ValidationUtils.isEmpty(startYear)) {
             return ValidationUtils.errorMessages("em-start-year", ValidationUtils.emptyError, startYear);
         }
-        
         if (!yearRegex.test(startYear.value)) {
             return ValidationUtils.errorMessages("em-start-year", "Enter a valid year", startYear);
         }
-        
         if (startYearVal == endYearVal) {
             return ValidationUtils.errorMessages("em-start-year", "Academic year cannot be equal", startYear);
         }
-        
         if(startYearVal < year) {
             return ValidationUtils.errorMessages("em-start-year", "Year is lower than the current year", startYear);
         }
-        
         if(startYearVal > endYearVal) {
             return ValidationUtils.errorMessages("em-start-year", "Starting year cannot be greater than the end year", startYear);
         }
-        
         ValidationUtils.clearError("em-start-year", startYear);
         return true;
     }
-
     function validateAcademicYear(){
         const endYearVal = parseInt(endYear.value);
         const startYearVal = parseInt(startYear.value);
+        if(!validateStartYear()) {
+            return false;
+        }
         if (ValidationUtils.isEmpty(endYear)) {
             return ValidationUtils.errorMessages("em-start-year", ValidationUtils.emptyError, endYear);
         }
@@ -813,10 +572,9 @@ document.addEventListener('DOMContentLoaded', function() {
         ValidationUtils.clearError("em-start-year", endYear);
         return true;
     }
-
     function validateYearFinished(){
         const lastYearVal = parseInt(lastYear.value);
-
+            
         if (ValidationUtils.isEmpty(lastYear)) {
             return ValidationUtils.errorMessages("em-last-year-finished", ValidationUtils.emptyError, lastYear);
         }
@@ -832,40 +590,20 @@ document.addEventListener('DOMContentLoaded', function() {
         ValidationUtils.clearError("em-last-year-finished", lastYear);
         return true;
     }
-
     function validateSchoolId(element, errorElement) {
-        // FIX: Add null check before validation
-        if (!element || element === null) {
-            console.error('School ID element not found:', errorElement);
-            return false;
-        }
-        
         if (ValidationUtils.isEmpty(element)) {
             return ValidationUtils.errorMessages(errorElement, ValidationUtils.emptyError, element);
         }
-        
-        // Remove non-numeric characters
-        const numericValue = element.value.replace(/\D/g, '');
-        
-        // Check if it's exactly 6 digits
-        if (numericValue.length !== 6) {
-            return ValidationUtils.errorMessages(errorElement, "School ID must be exactly 6 digits", element);
+        else if(!idRegex.test(element.value)) {
+            return ValidationUtils.errorMessages(errorElement, "Not a valid school Id", element);
         }
-        
-        // Update the input value with cleaned numeric value
-        element.value = numericValue;
-        
+        else if(!onlyDigits.test(element.value)) {
+            return ValidationUtils.errorMessages(errorElement, "Contains non numeric characters", element);
+        }
         ValidationUtils.clearError(errorElement, element);
         return true;
     }
-
     function validateSchool(element, errorElement){
-        // FIX: Add null check before validation
-        if (!element || element === null) {
-            console.error('School element not found:', errorElement);
-            return false;
-        }
-        
         if (ValidationUtils.isEmpty(element)) { 
             return ValidationUtils.errorMessages(errorElement, ValidationUtils.emptyError, element);
         }
@@ -875,64 +613,723 @@ document.addEventListener('DOMContentLoaded', function() {
         ValidationUtils.clearError(errorElement, element);
         return true;
     }
-
     function validatePreviousSchoolInfo() {
         let isValid = true;
-
-        // ONLY validate last school fields - removed fschool references completely
         const fields = [
             {element: lschool, error: "em-lschool"},
-            {element: lschoolAddr, error: "em-lschoolAddress"}
+            {element: lschoolAddr, error: "em-lschoolAddress"},
+            {element: fschool, error: "em-fschool"},
+            {element: fschoolAddr, error: "em-fschoolAddress"}
         ];
-
         fields.forEach(({element, error}) => {
-            if (element && element !== null) {
-                if (!validateSchool(element, error)) {
-                    isValid = false;
-                }
+            if (!validateSchool(element, error)) {
+                isValid = false;
             }
         });
-
-        // ONLY validate last school ID - removed fschoolId reference completely
         const idFields = [
-            {element: lschoolId, error: "em-lschoolID"}
+            {element: lschoolId, error: "em-lschoolID"},
+            {element: fschoolId, error: "em-fschoolID"}
         ];
-
         idFields.forEach(({element, error}) => {
-            if (element && element !== null) {
-                if (!validateSchoolId(element, error)) {
-                    isValid = false;
-                }
+            if (!validateSchoolId(element, error)) {
+                isValid = false;
             }
         });
-
         if (!validateStartYear()) isValid = false;
         if (!validateAcademicYear()) isValid = false;
-        if (!validateYearFinished()) isValid = false;
-
+        if (!lastYear.disabled && !validateYearFinished()) isValid = false;
+        if(!validateEnrollingAndLastGradeLevel()) isValid = false;
         ValidationUtils.validationState.previousSchool = isValid;
         return isValid;
     }
+     // === STUDENT INFO VALIDATION ===
+    function validateAge(ageValue) {
+        const minAge = 3;
+        const maxAge = 25;
+        if (isNaN(ageValue)) {
+            return ValidationUtils.errorMessages("em-age", "Age must be a number", age);
+        }
+        
+        if (ageValue < minAge) {
+            return ValidationUtils.errorMessages("em-age", "Student must be at least 3 years old", age);
+        }
+        
+        if (ageValue > maxAge) {
+            return ValidationUtils.errorMessages("em-age", "Student must be 25 years old or younger", age);
+        }
+        ValidationUtils.clearError("em-age", age);
+        return true;
+    }
+    function getAge() {
+        let currentYear = today.getFullYear();
+        let currentMonth = today.getMonth()+1;
+        let currentDay = today.getDate(); 
+        let bday = birthDate.value;
+        if (!bday) {
+            ValidationUtils.errorMessages("em-bday", "Please select a birth date", birthDate);
+            return false;
+        }
+        let getDate = new Date(bday);
+        
+        if (getDate > today) {
+            ValidationUtils.errorMessages("em-bday", "Birth date cannot be in the future", birthDate);
+            return false;
+        }
+        let birthYear = getDate.getFullYear();
+        let birthMonth = getDate.getMonth()+1;
+        let birthDay = getDate.getDate();
+        let ageValue = currentYear - birthYear;
+        if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
+            ageValue--;
+        }
+        if (validateAge(ageValue)) {
+            age.value = ageValue;
+            ValidationUtils.clearError("em-bday", birthDate);
+            return true;
+        } else {
+            age.value = "";
+            return false;
+        }
+    }
+    function validatePSA() {
+        const value = psaNumber.value.trim();
+        if (!value) {
+            return ValidationUtils.errorMessages("em-PSA-number", ValidationUtils.emptyError, psaNumber);
+        }
+        if (!/^\d*$/.test(value)) {
+            return ValidationUtils.errorMessages("em-PSA-number", ValidationUtils.notNumber, psaNumber);
+        }
+        if (!bCertRegex.test(value)) {
+            return ValidationUtils.errorMessages("em-PSA-number", 
+                value.length > 13 ? "Only 13 digits are allowed" : "Enter a valid birth certificate number", 
+                psaNumber
+            );
+        }
+        ValidationUtils.clearError("em-PSA-number", psaNumber);
+        return true;
+    }
+    function validateLRN() {
+        const value = lrn.value.trim();
+        if (lrn.disabled) {
+            ValidationUtils.clearError("em-LRN", lrn);
+            return true;
+        }
+        if (!value) {
+            return ValidationUtils.errorMessages("em-LRN", ValidationUtils.emptyError, lrn);
+        }
+        if (!/^\d*$/.test(value)) {
+            return ValidationUtils.errorMessages("em-LRN", ValidationUtils.notNumber, lrn);
+        }
+        if (!lrnRegex.test(value)) {
+            return ValidationUtils.errorMessages("em-LRN", 
+                value.length > 12 ? "Only 12 digits are allowed" : "Enter a valid LRN",
+                lrn
+            );
+        }
+        ValidationUtils.clearError("em-LRN", lrn);
+        return true;
+    }
+    function validateNativeGroup() {
+        if(nativeGroup.disabled) {
+            ValidationUtils.clearError('em-community', nativeGroup);
+        }
+        if(ValidationUtils.isEmpty(nativeGroup)) {
+            return ValidationUtils.errorMessages("em-community", ValidationUtils.emptyError, nativeGroup);
+        }
+        ValidationUtils.clearError('em-community',nativeGroup);
+        return true;
+    }
+    function validateStudentInfo() {
+        let isValid = true;
+        const requiredFields = [
+            {element: lname, error: "em-lname"},
+            {element: fname, error: "em-fname"},
+            {element: language, error: "em-language"},
+            {element: religion, error: "em-religion"}
+        ];
+        requiredFields.forEach(({element, error}) => {
+            if (!ValidationUtils.validateEmpty(element, error)) {
+                isValid = false;
+            }
+        });
+        if (!validatePSA()) {
+            isValid = false;
+        }
+        if (!lrn.disabled && !validateLRN()) {
+            isValid = false;
+        }
+        if(!nativeGroup.disabled && !validateNativeGroup()) { 
+            isValid = false;
+        }
+        if (!validateAge(parseInt(age.value)) || !birthDate.value || !getAge()) {
+            isValid = false;
+        }
+        ValidationUtils.validationState.studentInfo = isValid;
+        return isValid;
+    }
+    // === DISABLED STUDENT VALIDATION ===
+    function validateDisabilities(element, errorElement) {
+        if(ValidationUtils.isEmpty(element)) {
+            return ValidationUtils.errorMessages(errorElement, ValidationUtils.emptyError, element);
+        }
+        ValidationUtils.clearError(errorElement,element);
+        return true;
+    }
+    function validateDisabilityInfo() {
+        let isValid = true;
+        if(disability.disabled && assistiveTech.disabled) return isValid;
+        const disabiltiyFields = [
+            {element: disability, error: "em-boolsn" },
+            {element: assistiveTech, error: "em-atdevice" }
+        ];
+        disabiltiyFields.forEach((element,error)=>{
+            if(!element.disabled) return;
+            if(!ValidationUtils.validateEmpty(element,error)) {
+                isValid = false;
+            }
+        });
+        ValidationUtils.validationState.disabledInfo = isValid;
+        return isValid;
+    }
+    // === ADDRESS VALIDATION ===
+    function validateAddressInfo() {
+        let isValid = true;
+        const addressFields = [
+            { element: regions, error: "em-region", label: "Region" },
+            { element: provinces, error: "em-province", label: "Province" },
+            { element: cityOrMunicipality, error: "em-city", label: "City/Municipality" },
+            { element: barangay, error: "em-barangay", label: "Barangay" },
+            { element: subdivsion, error: "em-subdivision", label: "Subdivision/Street" },
+            { element: houseNumber, error: "em-house-number", label: "House Number" }
+        ];
+        addressFields.forEach(({ element, error, label }) => {
+            if (!element) return;
+            if (element.tagName === "SELECT") {
+                if (!element.value) {
+                    ValidationUtils.errorMessages(error, `Please select a ${label}`, element);
+                    isValid = false;
+                } else {
+                    ValidationUtils.clearError(error, element);
+                }
+            }
+            else if (element.tagName === "INPUT") {
+                if (ValidationUtils.isEmpty(element)) {
+                    ValidationUtils.errorMessages(error, ValidationUtils.emptyError, element);
+                    isValid = false;
+                } else {
+                    ValidationUtils.clearError(error, element);
+                }
+                if (element === houseNumber && !ValidationUtils.isEmpty(element)) {
+                    if (isNaN(element.value)) {
+                        ValidationUtils.errorMessages(error, ValidationUtils.notNumber, element);
+                        isValid = false;
+                    }
+                }
+            }
+        });
+        ValidationUtils.validationState.addressInfo = isValid;
+        return isValid;
+    }
+    // === PARENT INFO VALIDATION ===
+    function validatePhoneNumber(element, errorElement) {
+        if(ValidationUtils.isEmpty(element)) {
+            ValidationUtils.errorMessages(errorElement, ValidationUtils.emptyError, element);
+            return false;
+        }
+        if(element.value.length > 11 || element.value.length < 11 || element.value.charAt(0) !== '0') {
+            ValidationUtils.errorMessages(errorElement, "Not a valid phone number", element);
+            return false;
+        }
+        ValidationUtils.clearError(errorElement, element);
+        return true;
+    }
+    function validateParentInfo() {
+        let isValid = true;
+        const allInfo = [
+            {element: fatherLname, error: "em-father-last-name"},
+            {element: fatherFname, error: "em-father-first-name"},
+            {element: motherLname, error: "em-mother-last-name"},
+            {element: motherFname, error: "em-mother-first-name"},
+            {element: guardianLname, error: "em-guardian-last-name"},
+            {element: guardianFname, error: "em-guardian-first-name"}
+        ];
+        allInfo.forEach(({element, error}) => {
+            if (!ValidationUtils.validateEmpty(element, error)) {
+                isValid = false;
+            }
+        });
+        const phoneInfo = [
+            {element: fatherCPnum, error: "em-f-number"},
+            {element: motherCPnum, error: "em-m-number"},   
+            {element: guardianCPnum, error: "em-g-number"}
+        ];
+        phoneInfo.forEach(({element, error}) => {
+            if (!validatePhoneNumber(element, error)) {
+                isValid = false;
+            }
+        });
+        ValidationUtils.validationState.parentInfo = isValid;
+        return isValid;
+    }
+    // |============================|
+    // |===== INITIALIZATIONS ======|
+    // |============================|
+    // === APPLY INPUT FILTERS TO ALL FIELDS ===
+    
+    // Name fields - student
+    const studentNameFields = [lname, fname, nativeGroup];
+    studentNameFields.forEach(field => {
+        if (field) applyNameFilter(field);
+    });
+    
+    // Name fields - parents/guardians
+    const parentNameFields = [fatherLname, fatherFname, motherLname, motherFname, guardianLname, guardianFname];
+    parentNameFields.forEach(field => {
+        if (field) applyNameFilter(field);
+    });
+    
+    // Middle names and extensions (optional fields) - also use name filter
+    const optionalNameFields = document.querySelectorAll('#mname, #extension, #Father-Middle-Name, #Mother-Middle-Name, #Guardian-Middle-Name');
+    optionalNameFields.forEach(field => {
+        if (field) applyNameFilter(field);
+    });
+    
+    // Phone numbers (exactly 11 digits)
+    const phoneFieldsList = [fatherCPnum, motherCPnum, guardianCPnum];
+    phoneFieldsList.forEach(field => {
+        if (field) applyPhoneFilter(field);
+    });
+    
+    // Number fields with specific lengths
+    if (psaNumber) applyNumberFilter(psaNumber, 13);  // PSA: 13 digits
+    if (lrn) applyNumberFilter(lrn, 12);              // LRN: 12 digits
+    if (lschoolId) applyNumberFilter(lschoolId, 6);   // School ID: 6 digits
+    if (fschoolId) applyNumberFilter(fschoolId, 6);   // School ID: 6 digits
+    
+    // Year fields (4 digits)
+    const yearFieldsList = [startYear, endYear, lastYear];
+    yearFieldsList.forEach(field => {
+        if (field) applyYearFilter(field);
+    });
+    
+    // Make start year and end year readonly
+    if (startYear) {
+        startYear.readOnly = true;
+        startYear.style.backgroundColor = '#f0f0f0';
+        startYear.style.cursor = 'not-allowed';
+    }
+    if (endYear) {
+        endYear.readOnly = true;
+        endYear.style.backgroundColor = '#f0f0f0';
+        endYear.style.cursor = 'not-allowed';
+    }
+    
+    // Address fields (alphanumeric + space, comma, period)
+    const addressFieldsList = [lschoolAddr, fschoolAddr, subdivsion];
+    addressFieldsList.forEach(field => {
+        if (field) applyAddressFilter(field);
+    });
+    
+    // School names (treated as address - alphanumeric + punctuation)
+    const schoolNameFields = [lschool, fschool];
+    schoolNameFields.forEach(field => {
+        if (field) applyAddressFilter(field);
+    });
+    
+    // Text-only fields (religion, language - letters only)
+    const textOnlyFieldsList = [religion, language];
+    textOnlyFieldsList.forEach(field => {
+        if (field) applyTextFilter(field);
+    });
+    
+    // House number (numbers only)
+    if (houseNumber) {
+        applyNumberFilter(houseNumber);
+    }
+    
+    // Disability and assistive tech fields (general text)
+    const generalTextFieldsList = [disability, assistiveTech];
+    generalTextFieldsList.forEach(field => {
+        if (field) applyGeneralTextFilter(field);
+    });
+    
+    // === PREVIOUS SCHOOL INFO INIT ===
+    // INIT pampublikong paaralan radio button
+    const publicSchool = document.getElementById('public');
+    if(publicSchool) {
+        publicSchool.checked = true;
+    }
+    const radios = document.querySelectorAll('input[name="bool-LRN"]');
+    // INIT lrn radio button to YES
+    if(![...radios].some(r=>r.checked)) {
+        const defaultVal = [...radios].find(r=>r.value === '1');
+        if(defaultVal) {
+            defaultVal.checked = true;
+            defaultVal.dispatchEvent(new Event('change'));
+        }
+    }
+    // INIT SELECT VALUES
+    if (lastGradeLevel && enrollingGradeLevel) {
+        let saveOptions = lastGradeLevel.innerHTML;
+        if (lastGradeLevel.options.length === 0  || enrollingGradeLevel.options.length === 0) {//fallback values
+            const gradeOptions = `
+                <option value=""> Select a grade level</option>
+                <option value="1">Kinder I</option>
+                <option value="2">Kinder II</option>
+                <option value="3">Grade 1</option>       
+                <option value="4">Grade 2</option>
+                <option value="5">Grade 3</option>
+                <option value="6">Grade 4</option>
+                <option value="7">Grade 5</option>
+                <option value="8">Grade 6</option>
+            `;
+            enrollingGradeLevel.innerHTML = gradeOptions;
+            lastGradeLevel.innerHTML = gradeOptions;
+        }
+        if(enrollingGradeLevel.selectedIndex === 1) {//disable if lastGradeLevel if index equals to 1(Kinder I)
+            lastGradeLevel.disabled = true;
+            lastGradeLevel.style.opacity = 0.5;
+            lastGradeLevel.textContent = '';
+        }
+        else {
+            lastGradeLevel.disabled = false;
+            lastGradeLevel.style.opacity = 1;
+            lastGradeLevel.innerHTML = saveOptions;
+        }
+    }
+    if (startYear && endYear) {
+        startYear.value = year;
+        endYear.value = year + 1;
+    }
+    // === STUDENT INFO INIT ===
+    // Set date constraints
+    if (birthDate) {
+        birthDate.max = formatDate(maxDate);
+        birthDate.min = formatDate(minDate);
+    }
+    //  INIT gender to babae
+    const female = document.getElementById('female');
+    if(female) {
+        female.checked = true;
+    }
+    //  INIT kabilang sa katutubong grupo to yes
+    const isEthnic = document.getElementById('is-ethnic');
+    if(isEthnic) {
+        isEthnic.checked = true;
+    }  
+    // === ADDRESS INIT ===
+    let regionCode = "";
+    let provinceCode = "";
+    let cityCode = "";
+    (async() =>{
+        try {
+            const controller = new AbortController();
+            const timeOut = setTimeout(() => {
+                controller.abort();
+                console.error("Request timed out");
+                replaceTextBox(regions, "region");
+            }, 10000);
+            const response = await getRegions();
+            clearTimeout(timeOut);
+            regions.innerHTML = `<option value=""> Select a Region </option>`;
+            generateOptions(response,regions);
+        }
+        catch(error) {
+            console.error("Error fetching regions:", error.message);
+            replaceTextBox(regions, "region");
+        }
+        initialSelectValue(provinces, "Region");
+        initialSelectValue(cityOrMunicipality, "Province");
+        initialSelectValue(barangay, "City/Municipality");
+    })();
+    async function getProvinceOptions() {
+        try {
+            regionCode = regions.value;
+            if (!regionCode) {
+                initialSelectValue(provinces, "Region");
+                return;
+            }
+            const data = await getProvinces(regionCode);
+            provinces.innerHTML = `<option value=""> Select a Province</option>`;
+            generateOptions(data,provinces);
+        }
+        catch (error) {
+            console.error("Error fetching provinces:", error);
+            if (regions.value !== "") {
+                replaceTextBox(provinces, "province");
+            }
+        }
+    }
+    async function getCityOptions() {
+        try {
+            provinceCode = provinces.value;
+            if (!provinceCode) {
+                initialSelectValue(cityOrMunicipality, "Province");
+                return;
+            }
+            const data = await getCities(provinceCode);
+            cityOrMunicipality.innerHTML = `<option value=""> Select a City/Municipality</option>`;
+            generateOptions(data,cityOrMunicipality);
+        }
+        catch (error) {
+            console.error("Error fetching cities:", error);
+            if (provinces.value !== "") {
+                replaceTextBox(cityOrMunicipality, "city");
+            } 
+        }
+    }
+    async function getBarangayOptions() {
+        try {
+            cityCode = cityOrMunicipality.value;
+            if (!cityCode) {
+                initialSelectValue(barangay, "City/Municipality");
+                return;
+            }
+            const data = await getBarangays(cityCode);
+            barangay.innerHTML = `<option value=""> Select a Barangay</option>`;
+            generateOptions(data,barangay);
+        }
+        catch(error) {
+            console.error("Error fetching barangays:", error);
+            if (cityOrMunicipality.value !== "") {
+                replaceTextBox(barangay, "barangay");
+            }
+        }
+    }
+    // === DISABLED STUDENT INIT ===
+    const isDisabled = document.getElementById('is-disabled');
+    if(isDisabled) isDisabled.checked = true;
+    const hasAssistiveTech = document.getElementById('has-assistive-tech');
+    if(hasAssistiveTech) hasAssistiveTech.checked = true; 
+    // === PARENT INFO INIT ===
+    const not4ps = document.getElementById('not-4ps');
+    if(not4ps) {
+        not4ps.checked = true;
+    } 
+    // |===================|
+    // |===== EVENTS ======|
+    // |===================|
+    // === PREVIOUS SCHOOL EVENTS ===
+    const schoolFields = [
+        {element: lschool, error: "em-lschool"},
+        {element: lschoolAddr, error: "em-lschoolAddress"},
+        {element: fschool, error: "em-fschool"},
+        {element: fschoolAddr, error: "em-fschoolAddress"}
+    ];
+    schoolFields.forEach(({element, error}) => {
+        if (element) {
+            // Filter already applied in initialization
+            element.addEventListener('input', () => validateSchool(element, error));
+        }
+    });
+    
+    const idFields = [
+        {element: lschoolId, error: "em-lschoolID"},
+        {element: fschoolId, error: "em-fschoolID"}
+    ];
+    idFields.forEach(({element, error}) => {
+        if (element) {
+            // Filter already applied, just add validation
+            element.addEventListener('input', () => validateSchoolId(element, error));
+        }
+    });
+    
+    // Year fields - filters already applied
+    // Note: startYear and endYear are readonly, so no user input validation needed
+    if (startYear) startYear.addEventListener('input', validateStartYear);
+    if (endYear) endYear.addEventListener('input', validateAcademicYear);
+    
+    //VARIABLE FOR SAVING VALUE
+    let saveYear = null;
+    if (lastYear) {
+       lastYear.addEventListener('input',function(){
+        if(!this.disabled) {
+            saveYear = this.value;
+            validateYearFinished();
+        }
+       }) 
+    }
+    enrollingGradeLevel.addEventListener('change', function() {
+        toggleEnrollingGradeLevelRelatedDisables();
+        if(!lastGradeLevel.disabled) syncSelects(this,lastGradeLevel);
+        validateEnrollingLevel();
+        validateEnrollingAndLastGradeLevel();
+    });
+    lastGradeLevel.addEventListener('change', function() {
+        if(this.disabled) return;
+        syncSelects(this,enrollingGradeLevel);
+        validateLastGradeLevel();
+        validateEnrollingAndLastGradeLevel(); 
+    });
+    // === STUDENT INFO EVENTS ===
+    let saveNativeGroup = '';
+    const hasNativeGroup = document.querySelectorAll('input[name="group"].radio');
+    hasNativeGroup.forEach(radio=>{
+        radio.addEventListener('change',function(){
+            if(!isEthnic.checked) {
+                saveNativeGroup = nativeGroup.value;
+                nativeGroup.disabled = true;
+                nativeGroup.style.opacity = 0.5;
+                nativeGroup.value = '';
+                ValidationUtils.clearError('em-community', nativeGroup);
+                nativeGroup.removeEventListener('input',validateNativeGroup);
+            }
+            else {
+                nativeGroup.disabled = false;
+                nativeGroup.style.opacity = 1;
+                nativeGroup.value = saveNativeGroup || '';
+                if (saveNativeGroup && saveNativeGroup.trim() !== '') {
+                    nativeGroup.dispatchEvent(new Event('input'));
+                };
+            }
+        })
+    })
+    nativeGroup.addEventListener('input', function(){
+        validateNativeGroup();
+    });
+    if (birthDate) {
+        birthDate.addEventListener('change', getAge);
+    }
+    
+    // PSA and LRN - filters already applied
+    if (psaNumber) {
+        psaNumber.addEventListener('blur', validatePSA);
+    }
+    
+    if (lrn) {
+        lrn.addEventListener('blur', validateLRN);
+    }
+    
+    radios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (radio.value === "0") {
+                lrn.disabled = true;
+                lrn.style.opacity = "0.2";
+                lrn.value ="";
+                ValidationUtils.clearError("em-LRN", lrn);
+            } else {
+                lrn.disabled = false;
+                lrn.style.opacity = "1";
+                lrn.value = localStorage.getItem('lrn');
+            }
+        });
+    });
+    // === DISABLITY EVENTS ===
+    function toggleField(radioChecked, field, savedValue,errorElement) {
+        if (!radioChecked) {
+            savedValue = field.value;
+            field.disabled = true;
+            field.style.opacity = 0.2;
+            field.value = '';
+            ValidationUtils.clearError(errorElement,field);
+            field.removeEventListener('input',validateDisabilities);
+        } else {
+            field.disabled = false;
+            field.style.opacity = 1;
+            field.value = savedValue;
+            if (savedValue && savedValue.trim() !== '') {
+                field.dispatchEvent(new Event('input'));
+            }
+        }
+        return savedValue;
+    }
+    const assistiveTechRadio = document.querySelectorAll('input[name="at"],radio');
+    const disabilityRadio = document.querySelectorAll('input[name="sn"].radio');
+    let saveDisability = '';
+    let saveAssistiveTech = '';
+    assistiveTechRadio.forEach(radio=>{
+        radio.addEventListener('change',function(){
+            saveAssistiveTech = toggleField(hasAssistiveTech.checked,assistiveTech,saveAssistiveTech,'em-atdevice');
+        })
+    })
+    disabilityRadio.forEach(radio=>{
+        radio.addEventListener('change',function(){
+            saveDisability = toggleField(isDisabled.checked,disability,saveDisability,'em-boolsn');
+        })
+    })
+    disability.addEventListener('input',function(){
+        validateDisabilities(this,'em-boolsn');
+    })
+    assistiveTech.addEventListener('input',function(){
+        validateDisabilities(this,'em-atdevice');
+    })
+    // === ADDRESS EVENTS ===
+    if (regions) {
+        regions.addEventListener("change", async function() {
+            await getProvinceOptions();
+            document.getElementById("region-name").value = regions.options[regions.selectedIndex].text;
+            if (regionCode == "") {
+                initialSelectValue(provinces, "Region");
+            }
+        });
+        provinces.addEventListener("change", async function(){
+            await getCityOptions();
+            document.getElementById("province-name").value = provinces.options[provinces.selectedIndex].text;
+            if (provinceCode == "") {
+                initialSelectValue(cityOrMunicipality, "Province");
+            }
+        });
+        cityOrMunicipality.addEventListener("change", async function() {
+            await getBarangayOptions();
+            document.getElementById("city-municipality-name").value = cityOrMunicipality.options[cityOrMunicipality.selectedIndex].text;
+            if (cityCode == "") {
+                initialSelectValue(barangay, "City/Municipality");
+            }
+        });
+        barangay.addEventListener("change", function() {
+            document.getElementById("barangay-name").value = barangay.options[barangay.selectedIndex].text;
+        });
+    }
+    // === PARENT INFO EVENTS ===
+    const parentNameFieldsList = [
+        {element: fatherLname, error: "em-father-last-name"},
+        {element: fatherFname, error: "em-father-first-name"},
+        {element: motherLname, error: "em-mother-last-name"},
+        {element: motherFname, error: "em-mother-first-name"},
+        {element: guardianLname, error: "em-guardian-last-name"},
+        {element: guardianFname, error: "em-guardian-first-name"}
+    ];
+    parentNameFieldsList.forEach(({element, error}) => {
+        if (element) {
+            // Filter already applied
+            element.addEventListener('keyup', () => {
+                ValidationUtils.validateEmpty(element, error);
+            });
+        }
+    });
+    
+    const phoneFields = [
+        {element: fatherCPnum, error: "em-f-number"},
+        {element: motherCPnum, error: "em-m-number"},   
+        {element: guardianCPnum, error: "em-g-number"}
+    ];
+    phoneFields.forEach(({element, error}) => {
+        if (element) {
+            // Filter already applied
+            element.addEventListener('input',() => validatePhoneNumber(element, error));
+        }
+    });
+    // === OTHER EVENTS ===
+    document.querySelectorAll('input[type="text"]').forEach(input => {
+        capitalizeFirstLetter(input);
+    });
     if (!localStorage.getItem('lrn')) {
         localStorage.setItem('lrn', 900000000000);
     }
-
     if (!localStorage.getItem('psa')) {
         localStorage.setItem('psa', 1000000000000);
     }
-
-    //set value for lrn and psa texbox
     lrn.value = localStorage.getItem('lrn');
     psaNumber.value = localStorage.getItem('psa');
-    
-
-    // ===== FORM SUBMISSION HANDLER =====
+    // |============================|
+    // |===== FORM SUBMISSION ======|
+    // |============================|
+    let isSubmitting = false;
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
         const validateAllFields = () => {
-            const allInputs = form.querySelectorAll('input:not([type="radio"]), select, textarea');
-            
+            const allInputs = form.querySelectorAll(':is(input:not([type="radio"]), select, textarea):not(:disabled):not([data-optional="true"])');
+            console.log(allInputs);
             // Clear existing error states
             allInputs.forEach(input => {
                 const errorContainer = input.parentElement.querySelector('.error-msg') || 
@@ -945,7 +1342,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
-            
             // Trigger validation events
             const events = ['blur', 'change', 'input'];
             allInputs.forEach(input => {
@@ -955,33 +1351,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
             });
-
             // Call validation functions
             const studentInfoValid = validateStudentInfo();
             const parentInfoValid = validateParentInfo();
             const previousSchoolValid = validatePreviousSchoolInfo();
+            const disabledInfo = validateDisabilityInfo();
             const addressInfoValid = validateAddressInfo();
-
             // Check for visible errors
-            const errorMessages = document.querySelectorAll('.error-msg.show');
-            
+            const errorMessages = document.querySelectorAll('.error-msg.show');   
             if (errorMessages.length > 0) {
                 const firstError = errorMessages[0];
-                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });   
                 const associatedInput = firstError.closest('div').querySelector('input, select, textarea');
                 if (associatedInput) {
                     associatedInput.focus();
                 }
                 return false;
             }
-            
-            return studentInfoValid && parentInfoValid && previousSchoolValid && addressInfoValid;
+            return studentInfoValid && parentInfoValid && previousSchoolValid && addressInfoValid && disabledInfo;
         };
-
         const areFieldsValid = validateAllFields();
         const isFormValid = ValidationUtils.isFormValid();
-
         if (!areFieldsValid || !isFormValid) {
             const errorMessage = document.getElementById('error-message');
             if (errorMessage) {
@@ -995,7 +1385,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             return;
         }
-
         // Process address values
         try {
             const addressData = await changeAddressValues();
@@ -1014,391 +1403,82 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             return;
         }
-
         const formData = new FormData(form);
-
         // Show loading state
-        const submitButton = form.querySelector('button[type="submit"]');
-        const originalButtonText = submitButton.textContent;
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
         submitButton.disabled = true;
         submitButton.style.backgroundColor = 'gray';
-        submitButton.textContent = 'Submitting...';
-
-        fetch('../../../BackEnd/api/user/postEnrollmentFormData.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
-            
-            // Get the raw text first to see what we're actually receiving
-            return response.text().then(text => {
-                console.log('Raw response:', text);
-                
-                // Try to parse as JSON
-                try {
-                    const data = JSON.parse(text);
-                    return data;
-                } catch (e) {
-                    console.error('JSON Parse Error:', e);
-                    console.error('Response was:', text.substring(0, 500)); // Show first 500 chars
-                    throw new Error('Server returned invalid JSON. Check console for details.');
-                }
-            });
-        })
-        .then(data => {
-            console.log('Parsed data:', data);
-            
-            if(data.success) {
-                const successMessage = document.getElementById('success-message');
-                if (successMessage) {
-                    successMessage.style.display = 'block';
-                    successMessage.innerHTML = data.message || 'Enrollment form submitted successfully!';
-                }
-                
-                // Update localStorage
-                let lrnValue = localStorage.getItem('lrn');
-                let psaValue = localStorage.getItem('psa');
-                const currentLRN = parseInt(lrnValue);
-                const currentPSA = parseInt(psaValue);
-                localStorage.setItem('lrn', currentLRN + 1);
-                localStorage.setItem('psa', currentPSA + 1);
-                
-                setTimeout(() => {
-                    window.location.href = './user_enrollees.php';
-                }, 2000);
-            } else {
-                const errorMessage = document.getElementById('error-message');
-                if (errorMessage) {
-                    errorMessage.style.display = 'block';
-                    errorMessage.innerHTML = data.message || 'Failed to submit enrollment form. Please try again.';
-                    setTimeout(() => {
-                        errorMessage.style.display = 'none';
-                    }, 5000);
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Fetch error:', error);
-            console.error('Error stack:', error.stack);
-            
-            const errorMessage = document.getElementById('error-message');
-            if (errorMessage) {
-                errorMessage.style.display = 'block';
-                errorMessage.textContent = 'An error occurred while submitting the form. Check the console for details.';
-                setTimeout(() => {
-                    errorMessage.style.display = 'none';
-                }, 5000);
-            }
-        })
-        .finally(() => {
+        if(isSubmitting) return;
+        isSubmitting = true;
+        const result = await postEnrollmentForm(formData);
+        if(!result.success) {
+            errorMessage.style.display = 'block';
+            errorMessage.innerHTML = result.message;
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+            form.reset();
+            isSubmitting = false;
             submitButton.disabled = false;
-            submitButton.textContent = originalButtonText;
-            submitButton.style.backgroundColor = '';
-        });
-    });
-
-    // ===== INITIALIZATION =====
-    
-    // Set date constraints
-    if (birthDate) {
-        birthDate.max = formatDate(maxDate);
-        birthDate.min = formatDate(minDate);
-    }
-
-    // Set default academic year and make readonly
-    if (startYear && endYear) {
-        startYear.value = year;
-        endYear.value = year + 1;
-        startYear.readOnly = true;
-        endYear.readOnly = true;
-        startYear.style.cursor = 'not-allowed';
-        endYear.style.cursor = 'not-allowed';
-        startYear.style.backgroundColor = '#e9ecef';
-        endYear.style.backgroundColor = '#e9ecef';
-    }
-
-    // Initialize grade level dropdowns
-    if (lastGradeLevel && enrollingGradeLevel) {
-        if (lastGradeLevel.options.length === 0 && enrollingGradeLevel.options.length === 0) {
-            const gradeOptions = `
-                <option value="1">Kinder I</option>
-                <option value="2">Kinder II</option>
-                <option value="3">Grade 1</option>       
-                <option value="4">Grade 2</option>
-                <option value="5">Grade 3</option>
-                <option value="6">Grade 4</option>
-                <option value="7">Grade 5</option>
-                <option value="8">Grade 6</option>
-            `;
-            enrollingGradeLevel.innerHTML = gradeOptions;
-            lastGradeLevel.innerHTML = gradeOptions;
+            submitButton.style.backgroundColor = "#0FFCF6";
         }
-        
-        if (enrollingGradeLevel.selectedIndex !== -1) {
-            enrollingGradeLevel.selectedIndex = lastGradeLevel.selectedIndex + 1;
-        }
-        lastGradeLevel.options[lastGradeLevel.options.length - 1].disabled = true;
-
-        lastGradeLevel.addEventListener('change', function() {
-            const nextIndex = this.selectedIndex + 1;
-            if (nextIndex < enrollingGradeLevel.options.length) {
-                enrollingGradeLevel.selectedIndex = nextIndex;
-            }
-            validatePreviousSchoolInfo();
-        });
-        
-        enrollingGradeLevel.addEventListener('change', function() {
-            const prevIndex = this.selectedIndex - 1;
-            if (prevIndex >= 0) {
-                lastGradeLevel.selectedIndex = prevIndex;
-            }
-            validatePreviousSchoolInfo();
-        });
-    }
-
-    // Initialize address API
-    if (regions) {
-        getRegions();
-        
-        regions.addEventListener("change", async function() {
-            await getProvinces();
-            document.getElementById("region-name").value = regions.options[regions.selectedIndex].text;
-            if (regionCode == "") {
-                initialSelectValue(provinces, "Region");
-            }
-        });
-        
-        provinces.addEventListener("change", async function(){
-            await getCity();
-            document.getElementById("province-name").value = provinces.options[provinces.selectedIndex].text;
-            if (provinceCode == "") {
-                initialSelectValue(cityOrMunicipality, "Province");
-            }
-        });
-        
-        cityOrMunicipality.addEventListener("change", async function() {
-            await getBarangay();
-            document.getElementById("city-municipality-name").value = cityOrMunicipality.options[cityOrMunicipality.selectedIndex].text;
-            if (cityCode == "") {
-                initialSelectValue(barangay, "City/Municipality");
-            }
-        });
-        
-        barangay.addEventListener("change", function() {
-            document.getElementById("barangay-name").value = barangay.options[barangay.selectedIndex].text;
-        });
-    }
-
-    // Initialize existing values
-    if (regions && regions.value) {
-        getProvinces();
-    }
-    if (provinces && provinces.value) {
-        getCity();
-    }
-    if (cityOrMunicipality && cityOrMunicipality.value) {
-        getBarangay();
-    }
-
-    // ===== EVENT LISTENERS =====
-
-    // Student Info Events
-   
-    if (birthDate) {
-        birthDate.addEventListener('change', getAge);
-    }
-
-    if (psaNumber) {
-        sanitizeNumericInput(psaNumber, 13);
-        psaNumber.addEventListener('blur', validatePSA);
-        // Set maxlength attribute as fallback
-        psaNumber.setAttribute('maxlength', '13');
-    }
-
-    if (lrn) {
-        sanitizeNumericInput(lrn, 12);
-        lrn.addEventListener('blur', validateLRN);
-        // Set maxlength attribute as fallback
-        lrn.setAttribute('maxlength', '12');
-    }
-
-    // LRN radio buttons
-    document.querySelectorAll('input[name="LRN"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (radio.value === "0" || radio.value === "2") {
-                lrn.disabled = true;
-                lrn.style.opacity = "0.2";
-                lrn.value ="";
-                ValidationUtils.clearError("em-LRN", lrn);
-            } else {
-                lrn.disabled = false;
-                lrn.style.opacity = "1";
-                lrn.value = localStorage.getItem('lrn');
-            }
-        });
-    });
-
-    // Indigenous/Disability radio groups
-    const radioGroups = [
-        {textBoxElement: "community", nameValue: "group", error: "em-community"},
-        {textBoxElement: "boolsn", nameValue: "sn", error: "em-boolsn"},
-        {textBoxElement: "atdevice", nameValue: "at", error: "em-atdevice"}
-    ];
-
-    radioGroups.forEach(({textBoxElement, nameValue, error}) => {
-        document.querySelectorAll(`input[name="${nameValue}"]`).forEach(radio => {
-            radio.addEventListener('change', () => checkIndigenous(textBoxElement, nameValue, error));
-        });
-    });
-
-    // Apply name sanitization and capitalization to all name fields
-    const nameFields = [
-        lname, fname,
-        fatherLname, fatherFname,
-        motherLname, motherFname,
-        guardianLname, guardianFname
-    ];
-
-    nameFields.forEach(field => {
-        if (field) {
-            sanitizeNameInput(field);
-            capitalizeFirstLetter(field);
-        }
-    });
-
-    // Apply sanitization to middle name and extension (optional fields)
-    const optionalNameFields = [
-        document.getElementById('mname'),
-        document.getElementById('extension'),
-        document.getElementById('Father-Middle-Name'),
-        document.getElementById('Mother-Middle-Name'),
-        document.getElementById('Guardian-Middle-Name')
-    ];
-
-    optionalNameFields.forEach(field => {
-        if (field) {
-            sanitizeNameInput(field);
-            capitalizeFirstLetter(field);
-        }
-    });
-
-    // Parent Info Events
-    const parentNameFields = [
-        {element: fatherLname, error: "em-father-last-name"},
-        {element: fatherFname, error: "em-father-first-name"},
-        {element: motherLname, error: "em-mother-last-name"},
-        {element: motherFname, error: "em-mother-first-name"},
-        {element: guardianLname, error: "em-guardian-last-name"},
-        {element: guardianFname, error: "em-guardian-first-name"}
-    ];
-
-    parentNameFields.forEach(({element, error}) => {
-        if (element) {
-            element.addEventListener('keyup', () => {
-                validateName(element, error);
-                validateParentInfo();
-            });
-            element.addEventListener('blur', () => {
-                validateName(element, error);
-            });
-        }
-    });
-
-    // Student name validation
-    const studentNameFields = [
-        {element: lname, error: "em-lname"},
-        {element: fname, error: "em-fname"}
-    ];
-
-    studentNameFields.forEach(({element, error}) => {
-        if (element) {
-            element.addEventListener('keyup', () => {
-                validateName(element, error);
-            });
-            element.addEventListener('blur', () => {
-                validateName(element, error);
-            });
-        }
-    });
-
-    // Phone number fields - apply sanitization and validation
-    const phoneFields = [
-        {element: fatherCPnum, error: "em-f-number"},
-        {element: motherCPnum, error: "em-m-number"},   
-        {element: guardianCPnum, error: "em-g-number"}
-    ];
-
-    phoneFields.forEach(({element, error}) => {
-        if (element) {
-            sanitizePhoneInput(element);
-            element.setAttribute('maxlength', '11');
-            element.setAttribute('inputmode', 'numeric');
-            element.setAttribute('pattern', '[0-9]{11}');
-            
-            element.addEventListener('blur', function() {
-                validatePhoneNumber(element, error);
-                validateParentInfo();
-            });
-            
-            element.addEventListener('input', function() {
-                if (element.value.length === 11) {
-                    validatePhoneNumber(element, error);
-                }
-            });
-        }
-    });
-
-    // Address Events
-    const addressFields = [regions, provinces, cityOrMunicipality, barangay, subdivsion, houseNumber];
-    addressFields.forEach(element => {
-        if (element) {
-            element.addEventListener('change', () => validateAddressInfo());
-            element.addEventListener('input', () => validateAddressInfo());
-        }
-    });
-
-    // Previous School Events
-    const schoolFields = [
-        {element: lschool, error: "em-lschool"},
-        {element: lschoolAddr, error: "em-lschoolAddress"}
-    ];
-
-    schoolFields.forEach(({element, error}) => {
-        // FIX: Only add event listener if element exists
-        if (element && element !== null) {
-            element.addEventListener('input', () => validateSchool(element, error));
-        } else {
-            console.warn('School field element not found for error:', error);
-        }
-    });
-
-    const yearFields = [startYear, endYear, lastYear];
-    yearFields.forEach(element => {
-        // FIX: Only add sanitization if element exists
-        if (element && element !== null) {
-            sanitizeNumericInput(element, 4);
-        }
-    });
-
-    const idFields = [
-        {element: lschoolId, error: "em-lschoolID"}
-    ];
-
-    idFields.forEach(({element, error}) => {
-        // FIX: Only add event listeners if element exists
-        if (element && element !== null) {
-            sanitizeNumericInput(element, 6);
-            element.addEventListener('blur', () => validateSchoolId(element, error));
-            element.addEventListener('input', () => {
-                // Auto-validate when 6 digits are entered
-                if (element.value.length === 6) {
-                    validateSchoolId(element, error);
-                }
-            });
-        } else {
-            console.warn('School ID field element not found for error:', error);
+        else {
+            successMessage.style.display = 'block';
+            successMessage.innerHTML = result.message;
+            let lrnValue = localStorage.getItem('lrn');
+            let psaValue = localStorage.getItem('psa');
+            const currentLRN = parseInt(lrnValue);
+            const currentPSA = parseInt(psaValue);
+            //incerment if submission is successful
+            localStorage.setItem('lrn', currentLRN + 1);
+            localStorage.setItem('psa', currentPSA + 1);
+            setTimeout(() => {
+                window.location.href = './user_enrollees.php';
+            }, 2000);
         }
     });
 });
+const TIME_OUT = 10000;
+async function postEnrollmentForm(formData) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(()=> controller.abort(),TIME_OUT);
+    try {
+        const response = await fetch(`../../../BackEnd/api/users/postEnrollmentFormData.php`,{
+            signal: controller.signal,
+            method: 'POST',
+            body: formData
+        });
+        clearTimeout(timeoutId);
+        let data;
+        try {
+            data = await response.json();
+        }
+        catch{
+            throw new Error('Invalid response');
+        }
+        if(!response.ok) {
+            return {
+                success: false,
+                message: data.message || `HTTP error: ${response.status}`,
+                data: null
+            }
+        };
+        return data;
+    }
+    catch(error) {
+        clearTimeout(timeoutId);
+        if(error.name === "AbortError") {
+            return {
+                success: false,
+                message: `Response timeout: Server took too long to response. Took ${TIME_OUT / 1000} seconds`,
+                data: null
+            };
+        }
+        return {
+            success: false,
+            message: error.message || `There was an unexpected problem`,
+            data: null
+        };
+    }
+}

@@ -10,8 +10,8 @@ class staffEnrollmentController {
     protected $adminStudentModel;
     protected $adminEnrolleeModel;
     protected $staffEnrolleeModel;
-    private int $isApproved = 0;
-    private const IS_HANDLED = 1;
+    private const BOOL_FALSE = 0;
+    private const BOOL_TRUE = 1;
     public function __construct() { 
         $this->transactionsModel = new staffEnrollmentTransactionsModel();
         $this->adminStudentModel = new adminStudentsModel();
@@ -50,9 +50,11 @@ class staffEnrollmentController {
                 2 => 'D',
                 4 => 'F'
             ][$status];
-            $date = date('Ymd');
+            //RANDOM NUMBER CHARACTERS
+            $rand = '';
+            for($i = 0;$i<8;$i++) $rand .= random_int(0,9);
             $time = time();
-            $transactionCode = $statusCode . "-" . $date . "-" . $time;
+            $transactionCode = $statusCode . "-" . $rand . "-" . $time;
             if($staffType === 1) {
                 $adminUpdate = $this->executeAdminUpdate($enrolleeId, $transactionCode, $status, $staffId, $remarks);
                 if(!$adminUpdate['success']) {
@@ -108,13 +110,11 @@ class staffEnrollmentController {
         }
     }
     //HELPERS
-    private function executeTeacherUpdate(int $enrolleeId, string $transactionCode, int $status, int $staffId, ?string $remarks, int $isHandled) : array {
+    private function executeTeacherUpdate(int $enrolleeId, string $transactionCode, int $status, int $staffId,?string $remarks) : array {
         try {
-            if(!$this->transactionsModel->insertEnrolleeTransaction($enrolleeId, $transactionCode, $status, $staffId, $remarks, $this->isApproved)) {
+            if(!$this->adminEnrolleeModel->setIsHandledStatus($enrolleeId,self::BOOL_TRUE)
+                || !$this->transactionsModel->insertEnrolleeTransaction($enrolleeId, $transactionCode, $status, $staffId, $remarks, self::BOOL_FALSE)) {
                 return ['success'=> false,'message'=> 'Inserting enrollee transaction failed'];
-            }
-            if(!$this->staffEnrolleeModel->setIsHandledStatus($enrolleeId, self::IS_HANDLED)) {
-                return ['success'=> false,'message'=> 'Handled status not updated'];
             }
             return ['success'=> true,'message'=> 'Teacher successfully updated changes'];
         }
@@ -139,31 +139,40 @@ class staffEnrollmentController {
         }
     }
     private function executeAdminUpdate(int $enrolleeId, string $transactionCode, int $status, int $staffId, ?string $remarks) : array {
-        $this->isApproved = 1;
         try {
             if($status === 1) {
-                if(!$this->adminEnrolleeModel->updateEnrollee($enrolleeId, $status)) {
-                    return ['success'=> false,'message'=> 'Update enrollee failed'];
+                if(!$this->enrolleesModel->udpateEnrollee($enrolleeId,$enrollmentStatus) || !$this->adminEnrolleeModel->setIsHandledStatus($enrolleeId, self::BOOL_TRUE)
+                    || !$this->transactionsModel->updateIsApprovedToTrue($enrolleeId,self::BOOL_TRUE)) {
+                    return ['success'=> false,'message'=> "Failed to update Enrollee's statuses",'data'=>[]];
                 }
-                if(!$this->transactionsModel->insertEnrolleeTransaction($enrolleeId,$transactionCode,$status, $staffId, $remarks, $isApproved)) {
+                if(!$this->transactionsModel->insertEnrolleeTransaction($enrolleeId,$transactionCode,$status, $staffId, $remarks, self::BOOL_TRUE)) {
                     return ['success'=> false,'message'=> 'Inserting enrollee transaction failed'];
                 }
                 if(!$this->adminStudentModel->insertEnrolleeToStudent($enrolleeId)) {
                     return ['success'=> false,'message'=> 'Enrollee insert to student failed'];
                 }
-                if($this->staffEnrolleeModel->setIsHandledStatus($enrolleeId, self::IS_HANDLED)) {
-                    return ['success'=> false,'message'=>'Handled status not updated'];
-                }
+                return ['success'=> true,'message'=> 'Admin successfully enrolled and inserted Enrollee to student','data'=>[]];
             }
-            else if($status === 4 || $status === 2) {
-                if(!$this->$transactionsModel->insertEnrolleeTransaction($enrolleeId,$transactionCode,$status, $staffId, $remarks, $isApproved)) {
+            else if($status === 2){
+                if(!$this->enrolleesModel->udpateEnrollee($enrolleeId,$enrollmentStatus) || !$this->adminEnrolleeModel->setIsHandledStatus($enrolleeId, self::BOOL_TRUE)
+                    || !$this->transactionsModel->updateIsApprovedToTrue($enrolleeId,self::BOOL_TRUE)) {
+                    return ['success'=> false,'message'=> "Failed to update Enrollee's statuses",'data'=>[]];
+                }
+                if(!$this->transactionsModel->insertEnrolleeTransaction($enrolleeId,$transactionCode,$status, $staffId, $remarks, self::BOOL_TRUE)) {
                     return ['success'=> false,'message'=> 'Inserting enrollee transaction failed'];
                 }
-                if(!$this->staffEnrolleeModel->setIsHandledStatus($enrolleeId, $isHandled)) {
-                    return ['success'=> false,'message'=>'Handled status not updated'];
-                }
+                return ['success'=> true,'message'=> 'Admin successfully denied the Enrollee. Cannot change it again.','data'=>[]];
             }
-            return ['success'=> true,'message'=> 'Admin successfully updated changes'];
+            else if($status === 4) {
+                if(!$this->adminEnrolleeModel->setIsHandledStatus($enrolleeId, self::BOOL_TRUE)
+                    || !$this->transactionsModel->insertEnrolleeTransaction($enrolleeId,$transactionCode,$status, $staffId, $remarks, self::BOOL_FALSE)) {
+                    return ['success'=> false,'message'=> 'Inserting enrollee transaction failed'];
+                }
+                return ['success'=> false,'message'=>'Admin successfully followed up the Enrollee.','data'=>[]];
+            }
+            else {
+                return ['success'=> false ,'message'=> 'Failed to start Admin update operations'];
+            }
         }
         catch(DatabaseException $e) {
             return [

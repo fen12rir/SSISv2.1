@@ -1,3 +1,4 @@
+import {close,generateOptions, getRegions, getProvinces, getCities, getBarangays} from '../utils.js'
 document.addEventListener('DOMContentLoaded', function() {
     const status = document.querySelector('.status');
     const statusInfo = document.querySelector('#status-info');
@@ -12,35 +13,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const statusText = status.textContent.trim().toLowerCase();
         statusInfo.classList.add(statusText);
     }
-
-    // Modal control functions
-    function openModal() {
-        modal.style.display = 'block';
-    }
-
-    function closeModalHandler() {
-        modal.style.display = 'none';
-        formFields.innerHTML = ''; // Clear form fields
-    }
-
-    // Close modal with X button or cancel button
-    closeModal.addEventListener('click', closeModalHandler);
-    cancelBtn.addEventListener('click', closeModalHandler);
-
     function createFormField(label, data) {
         const fieldContainer = document.createElement('div');
         fieldContainer.className = 'form-field';
-
         const labelElement = document.createElement('label');
         labelElement.textContent = label;
-        
         let inputElement;
-        
         // Handle image type
         if (data.type === 'image') {
             const imageContainer = document.createElement('div');
             imageContainer.className = 'image-container';
-            
             // Display current image if exists
             if (data.value && data.value.path) {
                 const currentImage = document.createElement('img');
@@ -49,14 +31,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentImage.className = 'current-psa-image';
                 imageContainer.appendChild(currentImage);
             }
-            
             // Add file input for new image
             inputElement = document.createElement('input');
             inputElement.type = 'file';
             inputElement.accept = 'image/*';
             inputElement.name = label.replace(/\s+/g, '_').toLowerCase();
             inputElement.id = inputElement.name;
-            
             // Add preview functionality
             inputElement.addEventListener('change', function(e) {
                 const file = e.target.files[0];
@@ -68,7 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (existingPreview) {
                             existingPreview.remove();
                         }
-                        
                         // Create new preview
                         const preview = document.createElement('img');
                         preview.src = e.target.result;
@@ -79,17 +58,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     reader.readAsDataURL(file);
                 }
             });
-            
             imageContainer.appendChild(inputElement);
             fieldContainer.appendChild(labelElement);
             fieldContainer.appendChild(imageContainer);
             return fieldContainer;
         }
-        
+        //Radio 
         if (data.type === 'radio') {
             const radioContainer = document.createElement('div');
             radioContainer.className = 'radio-group';
-            
             // Define radio options based on field name
             let options;
             if (label === 'School Type') {
@@ -116,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     { label: 'No', value: '0' }
                 ];
             }
-            
             options.forEach(option => {
                 const radioWrapper = document.createElement('div');
                 inputElement = document.createElement('input');
@@ -139,27 +115,28 @@ document.addEventListener('DOMContentLoaded', function() {
             fieldContainer.appendChild(radioContainer);
             return fieldContainer;
         }
-        
+        //Select
         if (data.type === 'select') {
             inputElement = document.createElement('select');
             inputElement.name = label.replace(/\s+/g, '_').toLowerCase();
             inputElement.id = inputElement.name;
             // Handle address fields
-            if (label === 'Region' || label === 'Province' || label === 'City/Municipality' || label === 'Barangay') {
+            if (['Region', 'Province', 'City/Municipality', 'Barangay'].includes(label)) {
                 // Convert label to match expected IDs
-                const addressId = label === 'Region' ? 'region' :
-                                 label === 'Province' ? 'province' :
-                                 label === 'City/Municipality' ? 'city-municipality' :
-                                 'barangay';
+                const addressId = {
+                    'Region' : 'region',
+                    'Province' : 'province',
+                    'City/Municipality' : 'city-municipality',
+                    'Barangay' : 'barangay'
+                }[label]
+
                 inputElement.name = addressId;
                 inputElement.id = addressId;
-                
                 // Add default option
                 const defaultOption = document.createElement('option');
                 defaultOption.value = "";
                 defaultOption.textContent = `Select ${label}`;
                 inputElement.appendChild(defaultOption);
-
                 // Add the current value as an option
                 if (data.value && data.code) {
                     const currentOption = document.createElement('option');
@@ -168,173 +145,132 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentOption.selected = true;
                     // Set the hidden name field with the current value
                     const nameField = document.getElementById(`${addressId}-name`);
-                    if (nameField) {
-                        nameField.value = data.value;
-                    }
+                    if (nameField) nameField.value = data.value;
                     inputElement.appendChild(currentOption);
                 }
-
                 // Add change event listeners for cascading dropdowns
                 if (addressId === 'region') {
-                    inputElement.addEventListener('change', function() {
+                    inputElement.addEventListener('change', async function() {
+                        //store the region value to the hidden field dynamically
                         const regionCode = this.value;
                         const selectedText = this.options[this.selectedIndex].text;
                         document.getElementById(`${addressId}-name`).value = selectedText;
+                        // Reset region dependent dropdowns every change
                         const provinceSelect = document.getElementById('province');
                         const citySelect = document.getElementById('city-municipality');
-                        const barangaySelect = document.getElementById('barangay');
-                        
-                        // Store the pre-selected values
-                        const preSelectedProvince = provinceSelect ? provinceSelect.getAttribute('data-preselected') : null;
-                        
-                        // Reset dependent dropdowns
-                        if (provinceSelect) {
-                            provinceSelect.innerHTML = '<option value="">Select Province</option>';
-                            if (citySelect) citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
-                            if (barangaySelect) barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
-                        }
-
+                        const barangaySelect = document.getElementById('barangay');   
+                        if(provinceSelect) provinceSelect.innerHTML = '<option value="">Select Province</option>';
+                        if(citySelect) citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+                        if(barangaySelect) barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
                         // Fetch provinces for selected region
-                        if (regionCode) {
-                            fetch(`https://psgc.gitlab.io/api/regions/${regionCode}/provinces`)
-                                .then(response => response.json())
-                                .then(provinces => {
-                                    provinces.forEach(province => {
+                        if (!regionCode) return;
+                            try {
+                                const provinces = await getProvinces(regionCode);
+                                const preSelectedProvince = provinceSelect.getAttribute('data-preselected');
+                                provinces.forEach(p=>{
                                         const option = document.createElement('option');
-                                        option.value = province.code;
-                                        option.textContent = province.name;
+                                        option.value = p.code;
+                                        option.textContent = p.name;
                                         // Check if this is the pre-selected province
-                                        if (preSelectedProvince === province.code) {
-                                            option.selected = true;
-                                        }
+                                        if (preSelectedProvince === p.code) option.selected = true;
                                         provinceSelect.appendChild(option);
-                                    });
-                                    // If we had a pre-selected province, trigger its change event
-                                    if (preSelectedProvince) {
-                                        provinceSelect.dispatchEvent(new Event('change'));
-                                    }
-                                })
-                                .catch(error => console.error('Error fetching provinces:', error));
-                        }
+                                });
+                                if(provinceSelect) provinceSelect.dispatchEvent(new Event('change'));
+                            }   
+                            catch(error) {
+                                console.error(error.message);
+                            }
                     });
                 } else if (addressId === 'province') {
                     // Store the pre-selected value as a data attribute
-                    if (data.code) {
-                        inputElement.setAttribute('data-preselected', data.code);
-                    }
-                    
-                    inputElement.addEventListener('change', function() {
+                    if (data.code) inputElement.setAttribute('data-preselected', data.code);
+                    inputElement.addEventListener('change', async function() {
+                        //Store province value in hidden field
                         const provinceCode = this.value;
                         const selectedText = this.options[this.selectedIndex].text;
                         document.getElementById(`${addressId}-name`).value = selectedText;
-                        const citySelect = document.getElementById('city-municipality');
-                        const barangaySelect = document.getElementById('barangay');
-                        
-                        // Store the pre-selected values
-                        const preSelectedCity = citySelect ? citySelect.getAttribute('data-preselected') : null;
-                        
-                        // Reset dependent dropdowns
-                        if (citySelect) {
-                            citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
-                            if (barangaySelect) barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
-                        }
-
+                        // Reset province dependent dropdowns every change
+                        const citySelect = document.getElementById('city-municipality');    
+                        const barangaySelect = document.getElementById('barangay');        
+                        if (citySelect) citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+                        if (barangaySelect) barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
                         // Fetch cities/municipalities for selected province
-                        if (provinceCode) {
-                            fetch(`https://psgc.gitlab.io/api/provinces/${provinceCode}/cities-municipalities`)
-                                .then(response => response.json())
-                                .then(cities => {
-                                    cities.forEach(city => {
-                                        const option = document.createElement('option');
+                        if (!provinceCode) return;
+                            try {
+                                const cities = await getCities(provinceCode);
+                                const preSelectedCity = citySelect.getAttribute('data-preselected');
+                                cities.forEach(city=>{
+                                    const option = document.createElement('option');
                                         option.value = city.code;
                                         option.textContent = city.name;
-                                        // Check if this is the pre-selected city
-                                        if (preSelectedCity === city.code) {
-                                            option.selected = true;
-                                        }
+                                        // Initial select the pre selected value
+                                        if (preSelectedCity === city.code) option.selected = true;
                                         citySelect.appendChild(option);
-                                    });
-                                    // If we had a pre-selected city, trigger its change event
-                                    if (preSelectedCity) {
-                                        citySelect.dispatchEvent(new Event('change'));
-                                    }
-                                })
-                                .catch(error => console.error('Error fetching cities:', error));
-                        }
+                                });
+                                if(preSelectedCity) citySelect.dispatchEvent(new Event('change'));
+                            }
+                            catch(error) {
+                                console.error(error.message);
+                            }
                     });
                 } else if (addressId === 'city-municipality') {
                     // Store the pre-selected value as a data attribute
-                    if (data.code) {
-                        inputElement.setAttribute('data-preselected', data.code);
-                    }
-                    
-                    inputElement.addEventListener('change', function() {
+                    if (data.code) inputElement.setAttribute('data-preselected', data.code);
+                    inputElement.addEventListener('change', async function() {
                         const cityCode = this.value;
                         const selectedText = this.options[this.selectedIndex].text;
                         document.getElementById(`${addressId}-name`).value = selectedText;
-                        const barangaySelect = document.getElementById('barangay');
-                        
-                        // Store the pre-selected value
-                        const preSelectedBarangay = barangaySelect ? barangaySelect.getAttribute('data-preselected') : null;
-                        
                         // Reset barangay dropdown
-                        if (barangaySelect) {
-                            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
-                        }
-
+                        const barangaySelect = document.getElementById('barangay');
+                        if (barangaySelect) barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
                         // Fetch barangays for selected city/municipality
-                        if (cityCode) {
-                            fetch(`https://psgc.gitlab.io/api/cities-municipalities/${cityCode}/barangays`)
-                                .then(response => response.json())
-                                .then(barangays => {
-                                    barangays.forEach(barangay => {
+                        if (!cityCode) return; 
+                            try {
+                                const barangays = await getBarangays(cityCode);
+                                const preSelectedBarangay = barangaySelect.getAttribute('data-preselected') // get the pre-selected value
+                                barangays.forEach(barangay => {
                                         const option = document.createElement('option');
                                         option.value = barangay.code;
                                         option.textContent = barangay.name;
                                         // Check if this is the pre-selected barangay
-                                        if (preSelectedBarangay === barangay.code) {
-                                            option.selected = true;
-                                        }
+                                        if (preSelectedBarangay === barangay.code) option.selected = true;
                                         barangaySelect.appendChild(option);
                                     });
-                                })
-                                .catch(error => console.error('Error fetching barangays:', error));
-                        }
+                                if(preSelectedBarangay) barangaySelect.dispatchEvent(new Event('change'));
+                            }
+                            catch(error) {
+                                console.error(error.message);
+                            }
                     });
                 } else if (addressId === 'barangay') {
                     // Store the pre-selected value as a data attribute
-                    if (data.code) {
-                        inputElement.setAttribute('data-preselected', data.code);
-                    }
+                    if (data.code) inputElement.setAttribute('data-preselected', data.code);
                     inputElement.addEventListener('change', function() {
                         const selectedText = this.options[this.selectedIndex].text;
                         document.getElementById(`${addressId}-name`).value = selectedText;
                     });
                 }
-
                 // Initial load of all regions
                 if (addressId === 'region') {
-                    fetch('https://psgc.gitlab.io/api/regions/')
-                        .then(response => response.json())
-                        .then(regions => {
-                            regions.forEach(region => {
+                    (async()=> {
+                        try {
+                            const regions = await getRegions();
+                            regions.forEach(r=>{
                                 const option = document.createElement('option');
-                                option.value = region.code;
-                                option.textContent = region.name;
+                                option.value = r.code;
+                                option.textContent = r.name;
                                 // Check if this is the pre-selected region
-                                if (data.code === region.code) {
+                                if (data.code === r.code) {
                                     option.selected = true;
                                 }
                                 inputElement.appendChild(option);
                             });
-                            // If we have a pre-selected region, trigger its change event
-                            if (data.code) {
-                                inputElement.dispatchEvent(new Event('change'));
-                            }
-                        })
-                        .catch(error => console.error('Error fetching regions:', error));
+                        }
+                        catch(error) {
+                            console.error(error.message);
+                        }
+                    })();
                 }
-
                 // If we have initial values, trigger the cascade
                 if (data.code) {
                     if (addressId === 'region') {
@@ -357,7 +293,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Nakapagtapos ng Sekundarya',
                     'Nakapag-aral Pagkatapos ng Sekundarya o ng Teknikal/Bokasyonal'
                 ];
-                
                 inputElement.innerHTML = '<option value="">Select Educational Attainment</option>';
                 educationOptions.forEach(opt => {
                     const option = document.createElement('option');
@@ -380,7 +315,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     {label:'Grade 6', value: '8'},
 
                 ];
-                
                 inputElement.innerHTML = '<option value="">Select Grade Level</option>';
                 gradeLevels.forEach(grade => {
                     const option = document.createElement('option');
@@ -397,59 +331,56 @@ document.addEventListener('DOMContentLoaded', function() {
             inputElement.name = label.replace(/\s+/g, '_').toLowerCase();
             inputElement.id = inputElement.name;
         }
-        
         labelElement.htmlFor = inputElement.id;
-        
         fieldContainer.appendChild(labelElement);
         if (data.type !== 'radio') {
             fieldContainer.appendChild(inputElement);
         }
         return fieldContainer;
     }
-
     // Handle edit button click
     statusInfo.addEventListener('click', async function(e) {
+        modal.style.display = 'block';
         if (e.target.classList.contains('edit-enrollment-form')) {
-            const enrolleeId = e.target.getAttribute('data-id');
+            const enrolleeId = parseInt(e.target.getAttribute('data-id'));
             try {
-                const response = await fetch(`../../../BackEnd/api/user/fetchUserEditForm.php?editId=${enrolleeId}`);
-                const data = await response.json();
-                
-                if (data.success) {
+                const result = await fetchFormValues(enrolleeId);
+                if (result.success) {
                     formFields.innerHTML = ''; // Clear existing fields
-                    console.log(data);
+                    console.log(result);
                     // Add hidden enrollee ID field
                     const hiddenField = document.createElement('input');
                     hiddenField.type = 'hidden';
                     hiddenField.name = 'enrolleeId';
                     hiddenField.value = enrolleeId;
                     formFields.appendChild(hiddenField);
-                    
                     // Create form fields for each data item
-                    Object.entries(data).forEach(([key, value]) => {
+                    Object.entries(result.data).forEach(([key, value]) => {
                         if (key !== 'success') {
                             const fieldElement = createFormField(key, value);
                             formFields.appendChild(fieldElement);
                         }
                     });
+                    close(modal);
                     
-                    openModal();
                 } else {
-                    alert(data.error || 'Failed to load enrollment data');
+                    alert(result.message || 'Failed to load enrollment data');
                 }
             } catch (error) {
                 alert('Error fetching enrollment form: ' + error);
             }
         }
     });
-
     // Handle form submission
+    const submitButton = modal.querySelector('button[type="submit"]');
+    let isSubmitting = false;
     editForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
+        submitButton.disabled = true;
+        if(isSubmitting) return;
+        isSubmitting = true;
         // Create FormData object
         const formData = new FormData();
-        
         // Add basic form fields
         const formElements = formFields.querySelectorAll('input:not([type="file"]), select');
         formElements.forEach(element => {
@@ -461,13 +392,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 formData.append(element.name, element.value);
             }
         });
-
         // Add hidden address name fields
         const hiddenAddressFields = document.querySelectorAll('input[type="hidden"][name$="_name"]');
         hiddenAddressFields.forEach(field => {
             formData.append(field.name, field.value);
         });
-
         // Handle file upload
         const fileInput = formFields.querySelector('input[type="file"]');
         if (fileInput && fileInput.files[0]) {
@@ -475,13 +404,11 @@ document.addEventListener('DOMContentLoaded', function() {
             reader.onload = function(e) {
                 // Remove the data URL prefix
                 const base64String = e.target.result.split(',')[1];
-                
                 // Create the final data object
                 const finalData = {
                     ...Object.fromEntries(formData),
                     psa_image: base64String
                 };
-
                 // Send data to server
                 submitFormData(finalData);
             };
@@ -492,35 +419,96 @@ document.addEventListener('DOMContentLoaded', function() {
             submitFormData(finalData);
         }
     });
-
-    function submitFormData(formData) {
+    async function submitFormData(formData) {
         // Debug: Log the form data being sent
         console.log('Form data being sent:', formData);
-        
-        fetch('../../../BackEnd/api/user/updateUserForm.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Debug: Log the response
-            console.log('Server response:', data);
-            
-            if (data.success) {
-                alert('Enrollment data updated successfully');
-                closeModalHandler();
-                // Reload the page to show updated data
+        try {
+            const result = await postUpdateUserForm(formData);
+            if(result.success) {
+                alert(result.message || `Enrollment form updated successfully`);
                 window.location.reload();
-            } else {
-                alert(data.error || 'Failed to update enrollment data');
             }
-        })
-        .catch(error => {
-            alert('Error updating enrollment data: ' + error);
-            console.log(error);
-        });
+            else {
+                alert(result.message || `Update failed`);
+                submitButton.disabled = false;
+            }
+        }
+        catch(error) {
+            alert(`Error: ${error.message}`);
+            submitButton.disabled = false;
+            console.error(error);
+        }
     }
 });
+async function postUpdateUserForm(formData) {
+    try {
+        const response = await fetch(`../../../BackEnd/api/user/postUpdateUserForm.php`,{
+            method: 'POST',
+            headers: {'Content-Type' :'application/json'},
+            body: JSON.stringify(formData)
+        });
+        let data;
+        try {
+            data = await response.json();
+        }
+        catch {
+            throw new Error('Invalid response');
+        }
+        if(!response.ok) {
+            return {
+                success: false,
+                message: data.message || `HTTP ERROR: ${response.status}`,
+                data: null
+            };
+        }
+        if(!data.success) {
+            return {
+                success: false,
+                message: data.message || `Something went wrong`,
+                data: null
+            };
+        }
+        return data;
+    }
+    catch(error) {
+        return {
+            success: false,
+            message: error.message || `There was an unexpected error`,
+            data: null
+        };
+    }
+}
+async function fetchFormValues(enrolleeId) {
+    try {
+        const response = await fetch(`../../../BackEnd/api/user/fetchUserEditFormValues.php?editId=${enrolleeId}`);
+        let data;
+        try {
+            data = await response.json();
+        }
+        catch {
+            throw new Error('Invalid response');
+        }
+        if(!response.ok) {
+            return {
+                success: false,
+                message: data.message || `HTTP ERROR: ${response.status}`,
+                data: null
+            };
+        }
+        if(!data.success) {
+            return {
+                success: false,
+                message: data.message || `Something went wrong`,
+                data: null
+            };
+        }
+        return data;
+    }
+    catch(error) {
+        return {
+            success: false,
+            message: error.message || `There was an unexpected error`,
+            data: null
+        };
+    }
+}

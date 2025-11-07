@@ -3,44 +3,60 @@
     font-family: var(--main-fonts);
 }
 
-.advisory-title {
+.advisory-header {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Change back to space-between */
-    background: #3e9ec4;
-    min-height: 80px; /* Add fixed height to ensure vertical centering */
-    padding: 1rem 2rem; /* Increase horizontal padding */
+    justify-content: space-between;
+    background: linear-gradient(135deg, #3e9ec4 0%, #2d7a9a 100%);
+    min-height: 90px;
+    padding: 1.5rem 2rem;
     border: 1px solid var(--glass-border);
     border-radius: 20px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     margin-bottom: 1.5rem;
 }
 
-.advisory-title h1 {
-    font-size: 1.8rem;
+.advisory-header h1 {
+    font-size: 2rem;
     font-weight: 700;
     letter-spacing: 1px;
     color: white;
     font-family: var(--main-fonts);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin: 0;
 }
-
 
 .advisory-wrapper {
     padding: 2rem;
     background: rgb(36 186 255 / 28%);
+    backdrop-filter: blur(10px);
     border-radius: 1.5rem;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
 }
+.students-wrapper {
+    margin-bottom: 2rem;
+}
+
+.students-wrapper > h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d7a9a;
+    margin-bottom: 1rem;
+    padding-left: 0.5rem;
+    border-left: 4px solid #3e9ec4;
+}
+
 .students-list-wrapper {
-    background: rgb(36 186 255 / 28%);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
     overflow-x: auto;
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
     padding: 1.5rem;
-    height: 65vh;
+    max-height: 70vh;
     min-height: 400px;
-    overflow: auto;
+    overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(62, 158, 196, 0.5) transparent;
 }
@@ -58,37 +74,123 @@
 .students-list {
     width: 100%;
     table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
 }
+
+.students-list thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
 .students-list th {
+    padding: 1.2rem 1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #3e9ec4 0%, #2d7a9a 100%);
+    text-transform: uppercase;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    color: white;
+    font-size: 0.95rem;
+    border: none;
+}
+
+.students-list th:first-child {
+    text-align: left;
+}
+
+.students-list th:last-child {
+    text-align: right;
+}
+
+.students-list tbody tr {
+    transition: all 0.2s ease;
+}
+
+.students-list td {
+    padding: 1.2rem 1rem;
+    border-top: 1px solid rgba(62, 158, 196, 0.2);
+    vertical-align: middle;
+    color: #333;
+    letter-spacing: 0.3px;
+    font-weight: 400;
+    font-size: 0.95rem;
+}
+
+.students-list td:first-child {
+    text-align: left;
+}
+
+.students-list td:last-child {
+    text-align: right;
+}
+
+.students-list tbody tr:hover {
+    background: rgba(62, 158, 196, 0.1) !important;
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.students-list tbody tr:hover td {
+    color: #2d7a9a;
+}
+
+.students-list tbody tr:nth-child(even) td {
+    background: rgba(178, 224, 248, 0.3);
+}
+
+.students-list tbody tr:nth-child(odd) td {
+    background: rgba(187, 229, 248, 0.2);
+}
+.subjects-wrapper {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.subjects-wrapper > h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d7a9a;
+    margin-bottom: 1rem;
+    padding-left: 0.5rem;
+    border-left: 4px solid #3e9ec4;
+}
+
+.subjects-list {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.subjects-list th {
     padding: 1rem;
     font-weight: 600;
     letter-spacing: 0.4px;
-    background: rgb(21 182 255 / 27%);
+    background: linear-gradient(135deg, #3e9ec4 0%, #2d7a9a 100%);
     text-transform: uppercase;
-    text-shadow: 0 1.5px #0967a266;
     color: white;
-    position: sticky;
-    top: 0;
-    z-index: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
-.students-list td {
+
+.subjects-list td {
     padding: 1rem;
-    border-top: 1px solid rgba(63, 166, 210, 0.897);
-    vertical-align: middle;
-    color: black;
-    letter-spacing: 0.5px;
-    font-weight: 400;
+    border-top: 1px solid rgba(62, 158, 196, 0.2);
+    color: #333;
+    background: rgba(255, 255, 255, 0.8);
 }
-.students-list tbody tr:hover td {
-    color: var(--hover);
-    transition: all 0.25s ease-in-out; 
+
+.subjects-list tbody tr:hover td {
+    background: rgba(62, 158, 196, 0.1);
+    color: #2d7a9a;
+    transition: all 0.2s ease;
 }
-.students-list tbody tr:nth-child(even) td {
-    background: #b2e0f8;
-}
-.students-list tbody tr:nth-child(odd) td {
-    background: #bbe5f8;
-}
+
 .section-subjects-wrapper {
     background-color: #ffffff;
     padding: 1rem;
@@ -99,58 +201,196 @@
     height: 100%;
     display: flex;
     align-items: center;
+    gap: 1rem;
 }
+
 .advisory-button-wrapper a {
-    padding: 0.7rem 1.2rem;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.95);
+    color: #3e9ec4;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
     font-size: 0.95rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     text-decoration: none;
     backdrop-filter: blur(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
 }
+
 .advisory-button-wrapper a:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.4);
+    background: white;
+    border-color: white;
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    color: #2d7a9a;
+}
+
+.advisory-button-wrapper a:active {
+    transform: translateY(0);
 }
 .advisory-name-wrapper {
-    height: 100%; /* Take full height of parent */
+    height: 100%;
     display: flex;
-    align-items: center; /* Center title vertically */
+    align-items: center;
 }
+
 .advisory-name {
-    font-size: var(--font-heading);
-    font-weight: 600;
-    margin: var(--base-padding);
-    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
     text-transform: uppercase;
     border-left: 5px solid #18ce13;
-    padding-left: 0.8rem;
+    padding-left: 1rem;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    letter-spacing: 1px;
 }
 .view-student-button-wrapper {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
 }
+
 .view-student-button {
-    padding: 0.5rem;
-    background-color: #007bff;
+    padding: 0.6rem 1.2rem;
+    background: linear-gradient(135deg, #3e9ec4 0%, #2d7a9a 100%);
     color: white;
-    border-radius: 0.5rem;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(62, 158, 196, 0.3);
+    letter-spacing: 0.3px;
 }
+
+.view-student-button:hover {
+    background: linear-gradient(135deg, #2d7a9a 0%, #1f5a73 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(62, 158, 196, 0.5);
+}
+
+.view-student-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(62, 158, 196, 0.3);
+}
+.modal {
+    backdrop-filter: blur(6px);
+}
+
+.modal-content {
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+    animation: modalFadeIn 0.3s ease-out;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px 8px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
 .modal h1 {
-    font-weight: bold;
-    font-size: 1.5rem;
+    font-weight: 700;
+    font-size: 1.6rem;
+    color: #2d7a9a;
+    margin: 1.5rem 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #3e9ec4;
 }
+
 .modal-table {
     width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
 }
+
 .modal-table tr {
     display: flex;
     justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    transition: background 0.2s ease;
+}
+
+.modal-table tr:hover {
+    background: rgba(62, 158, 196, 0.05);
+}
+
+.modal-table tr:last-child {
+    border-bottom: none;
+}
+
+.modal-table td {
+    padding: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.modal-table td:first-child {
+    font-weight: 600;
+    color: #2d7a9a;
+    min-width: 200px;
+}
+
+.modal-table td:last-child {
+    color: #333;
+    text-align: right;
+}
+
+/* Grades table in modal */
+.modal table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.modal table th {
+    background: linear-gradient(135deg, #3e9ec4 0%, #2d7a9a 100%);
+    color: white;
+    padding: 0.75rem;
+    text-align: center;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.modal table td {
+    padding: 0.75rem;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    background: white;
+}
+
+.modal table tbody tr:nth-child(even) td {
+    background: #f8f9fa;
+}
+
+.modal table tbody tr:hover td {
+    background: rgba(62, 158, 196, 0.1);
 }

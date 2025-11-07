@@ -1,12 +1,36 @@
 export function close(modal) { // global close util
-    const closeButton = document.querySelector('.close');
-    if(closeButton) {
+    const closeButton = modal.querySelector('.close');
+    if(closeButton && !closeButton.hasAttribute('data-listener-added')) {
+        closeButton.setAttribute('data-listener-added', 'true');
         closeButton.addEventListener('click', function(){
-        modal.style.display = 'none';
-    })
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+        });
+    }
+    
+    // Also close on outside click
+    if (!modal.hasAttribute('data-outside-listener-added')) {
+        modal.setAttribute('data-outside-listener-added', 'true');
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('show');
+            }
+        });
     }
 }
-export const loadingText = `<div class="loading"></div>`; //global loading pop up modal
+export const loadingText = `
+    <div class="loading-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem; min-height: 200px;">
+        <div class="spinner" style="width: 48px; height: 48px; border: 4px solid #f3f3f3; border-top: 4px solid #3e9ec4; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <p style="margin-top: 1rem; color: #666; font-size: 1rem;">Loading...</p>
+    </div>
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+`; //global loading pop up modal
 export function modalHeader(backButton = false) {
     let hasBackButton = backButton === true ? '<button class="back-button"> <img src="../../assets/imgs/arrow-left-solid.svg"> </button>' : '';
     const headerContent = `<div class="modal-header">${hasBackButton}<span class="close">&times;</span> </div><br>`;   

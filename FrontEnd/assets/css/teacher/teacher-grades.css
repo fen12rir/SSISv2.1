@@ -1,24 +1,49 @@
 .teacher-grades-content {
     margin: 1.5rem;
+    font-family: var(--main-fonts);
+}
+
+.grades-wrapper {
+    padding: 2rem;
+    background: rgb(36 186 255 / 28%);
+    backdrop-filter: blur(10px);
+    border-radius: 1.5rem;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.grades-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #3e9ec4 0%, #2d7a9a 100%);
+    min-height: 90px;
+    padding: 1.5rem 2rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1.5rem;
+}
+
+.grades-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: white;
+    font-family: var(--main-fonts);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin: 0;
 }
 
 .subjects-to-grade-wrapper {
-    background: rgb(36 186 255 / 28%);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
     padding: 1.5rem;
-    
-    /* Add fixed dimensions */
-    width: 100%;
-    height: 70vh; /* 70% of viewport height */
-    min-height: 500px; /* Minimum height even when empty */
-    
-    /* Add scrolling behavior */
-    overflow: auto;
-    
-    /* Optional: Hide scrollbar but keep functionality */
+    max-height: 70vh;
+    min-height: 500px;
+    overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(62, 158, 196, 0.5) transparent;
 }
@@ -50,23 +75,6 @@
     table-layout: fixed;
 }
 
-.teacher-grades-content h1 {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    backdrop-filter: blur(12px);
-    background: #3e9ec4;
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 1rem 1.5rem;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    margin-bottom: 1.5rem;
-    font-size: 1.8rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    color: white;
-    font-family: var(--main-fonts);
-}
 
 .subjects-to-grade-wrapper th {
     padding: 1rem;
@@ -94,4 +102,141 @@
 
 .subjects-to-grade-wrapper tr:nth-child(even) td {
   background:#b2e0f8;
+}
+
+/* Grade Button Styling */
+#grade-button {
+    background: linear-gradient(135deg, #3e9ec4 0%, #2d7a9a 100%);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(62, 158, 196, 0.3);
+    text-transform: uppercase;
+    min-width: 100px;
+}
+
+#grade-button:hover {
+    background: linear-gradient(135deg, #2d7a9a 0%, #1f5a73 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(62, 158, 196, 0.5);
+}
+
+#grade-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(62, 158, 196, 0.3);
+}
+
+#grade-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(62, 158, 196, 0.3);
+}
+
+/* Modal improvements */
+.modal {
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.close {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.2s;
+    line-height: 1;
+}
+
+.close:hover {
+    color: #000;
+}
+
+.grade-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.grade-table th {
+    background: #3e9ec4;
+    color: white;
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    border: 1px solid #2d7a9a;
+}
+
+.grade-table td {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    background: white;
+}
+
+.grade-table tr:nth-child(even) td {
+    background: #f8f9fa;
+}
+
+.grade-table input[type="number"] {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.grade-table input[type="number"]:focus {
+    outline: none;
+    border-color: #3e9ec4;
+    box-shadow: 0 0 0 3px rgba(62, 158, 196, 0.1);
+}
+
+.save-grades-btn {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.save-grades-btn:hover {
+    background: #2d7a9a !important;
+}
+
+.save-grades-btn:active {
+    transform: scale(0.98);
 }

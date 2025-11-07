@@ -18,17 +18,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Open upload modal
     uploadBtn.addEventListener('click', () => {
-        uploadModal.style.display = 'block';
+        uploadModal.classList.add('show');
+        uploadModal.style.display = 'flex';
     });
 
     // Close upload modal
     closeModal.addEventListener('click', () => {
         uploadModal.style.display = 'none';
+        uploadModal.classList.remove('show');
         uploadForm.reset();
     });
 
     cancelUpload.addEventListener('click', () => {
         uploadModal.style.display = 'none';
+        uploadModal.classList.remove('show');
         uploadForm.reset();
     });
 
@@ -36,16 +39,19 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('click', (e) => {
         if (e.target === uploadModal) {
             uploadModal.style.display = 'none';
+            uploadModal.classList.remove('show');
             uploadForm.reset();
         }
         if (e.target === previewModal) {
             previewModal.style.display = 'none';
+            previewModal.classList.remove('show');
         }
     });
 
     // Close preview modal
     closePreviewModal.addEventListener('click', () => {
         previewModal.style.display = 'none';
+        previewModal.classList.remove('show');
     });
 
     // Handle file upload
@@ -90,6 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
                 uploadModal.style.display = 'none';
+                uploadModal.classList.remove('show');
                 uploadForm.reset();
                 loadFiles();
             } else {
@@ -280,7 +287,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const previewUrl = `../../../BackEnd/api/teacher/getLockerPreview.php?fileId=${file.Locker_File_Id}`;
         
         previewFileName.textContent = file.Original_File_Name;
-        previewModal.style.display = 'block';
+        previewModal.classList.add('show');
+        previewModal.style.display = 'flex';
         previewContent.innerHTML = '<div class="preview-loading">Loading preview...</div>';
         
         // Set download button

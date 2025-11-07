@@ -15,11 +15,12 @@ $pageJs = '<script src="../../assets/js/teacher/teacher-locker.js" defer></scrip
 ob_start();
 ?>
 
-<div class="locker-container">
-    <div class="locker-header">
-        <h1 class="locker-title">File Locker</h1>
-        <p class="locker-subtitle">Store and manage your documents, presentations, and files</p>
-    </div>
+<div class="teacher-locker-content">
+    <div class="locker-wrapper">
+        <div class="locker-header">
+            <h1 class="locker-title">File Locker</h1>
+            <p class="locker-subtitle">Store and manage your documents, presentations, and files</p>
+        </div>
 
     <div class="locker-actions">
         <button class="upload-btn" id="upload-file-btn">
@@ -98,6 +99,7 @@ ob_start();
         </svg>
         <h3>No files yet</h3>
         <p>Upload your first file to get started</p>
+    </div>
     </div>
 </div>
 

@@ -61,7 +61,7 @@ class teacherStudentInformationView {
                 $secondQ = !is_null($grade['2nd']) ? $grade['2nd'] : '';
                 $thirdQ = !is_null($grade['3rd']) ? $grade['3rd'] : '';
                 $fourthQ = !is_null($grade['4th']) ? $grade['4th'] : '';
-                echo $this->tableTemplate->returnHorizontalRows([$grade['Subject_Name'],$firstQ,$secondQ,$thirdQ.$fourthQ]);
+                echo $this->tableTemplate->returnHorizontalRows([$grade['Subject_Name'],$firstQ,$secondQ,$thirdQ,$fourthQ]);
             }    
             echo '</tbody></table>';
         }

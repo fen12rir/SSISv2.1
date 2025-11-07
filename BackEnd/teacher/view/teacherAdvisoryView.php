@@ -3,7 +3,6 @@ declare(strict_types=1);
 require_once __DIR__ . '/../controller/teacherAdvisoryController.php';
 require_once __DIR__ . '/../../core/tableDataTemplate.php';
 require_once __DIR__ . '/../../core/safeHTML.php';
-session_start();
 
 class teacherAdvisoryView {
     protected $conn;
@@ -26,13 +25,18 @@ class teacherAdvisoryView {
                 </div>';
         }
         else {
-            echo '<div class="advisory-button-wrapper"> <a href="masterlist.php?section='.$this->id.'">Generate Master list </a> </div>';
+            echo '<div class="advisory-header">';
             echo '<div class="advisory-name-wrapper"><h1 class="advisory-name">'.$this->returnSectionName().'</h1></div>';
+            echo '<div class="advisory-button-wrapper"> <a href="masterlist.php?section='.$this->id.'">Generate Master list </a> </div>';
+            echo '</div>';
             echo '<div class="students-wrapper">
                 <h1> Students List </h1>
+                <div class="students-list-wrapper">
                 '.$this->returnAdvisoryStudents().'
+                </div>
             </div>';
-            echo '<div class="subejcts-wrapper">'
+            echo '<div class="subjects-wrapper">
+                <h1> Section Subjects </h1>'
                 .$this->returnSectionSubjects().
             '</div>';
         }
@@ -45,14 +49,14 @@ class teacherAdvisoryView {
         }
         else {
             $html = '<table class="students-list">';
-            $html .= $this->tableTemplate->returnHorizontalTitles( ['Student Name'],'students-title');
+            $html .= $this->tableTemplate->returnHorizontalTitles( ['Student Name', 'Action'],'students-title');
             $html .= '<tbody>';
             foreach($students['data'] as $index =>$student) {
                 $lastName =  htmlspecialchars($student['Last_Name'] ?? '');
                 $firstName = htmlspecialchars($student['First_Name'] ?? '');
                 $middleName =  htmlspecialchars($student['Middle_Name'] ?? '');
                 $fullName = new safeHTML('<span>'. ($index+1) . '. </span>' . $lastName .', '. $firstName .' '. $middleName);
-                $button = new safeHTML('<td class="view-student-button-wrapper"><button class="view-student-button" data-id="'. $student['Student_Id'] .'">View Information</button>');
+                $button = new safeHTML('<div class="view-student-button-wrapper"><button class="view-student-button" data-id="'. $student['Student_Id'] .'">View Information</button></div>');
                 $isNotNullName = (!empty($lastName) || !empty($firstName)) ? $fullName : '';
                 $html .= $this->tableTemplate->returnHorizontalRows([
                     $isNotNullName, $button],'students-data');

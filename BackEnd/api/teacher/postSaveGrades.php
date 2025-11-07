@@ -29,7 +29,7 @@ register_shutdown_function(function() {
 });
 
 require_once __DIR__ . '/../../teacher/controller/teacherGradesController.php';
-require_once  __DIR__ . '/../../Exceptions/IdNotFoundException.php';
+require_once __DIR__ . '/../../Exceptions/IdNotFoundException.php';
 
 if(session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -39,35 +39,31 @@ header('Content-Type: application/json');
 
 try {
     $staffId = isset($_SESSION['Staff']['Staff-Id']) ? (int) $_SESSION['Staff']['Staff-Id'] : null;
-    $sectionSubjectId = isset($_GET['secSubId']) ? (int) $_GET['secSubId'] : null;
-    
-    if(is_null($sectionSubjectId) || $sectionSubjectId <= 0) {
-        throw new IdNotFoundException('Unrecognized section subject. Unable to view Students.');
-    }
     
     if(is_null($staffId) || $staffId <= 0) {
-        throw new IdNotFoundException('Unauthorized access! Cannot access Student grades.');
-    }
-    
-    try {
-        $controller = new teacherGradesController();
-        $response = $controller->apiFetchSectionSubjectStudents($sectionSubjectId, $staffId);
-        
-        // Log if response is empty or invalid for debugging
-        if (empty($response) || !is_array($response)) {
-            error_log('Empty or invalid response from controller. SectionSubjectId: ' . $sectionSubjectId . ', StaffId: ' . $staffId);
-            $response = [
-                'httpcode' => 500,
-                'success' => false,
-                'message' => 'Controller returned empty or invalid response',
-                'data' => []
-            ];
-        }
-    } catch (Throwable $controllerError) {
-        error_log('Controller error: ' . $controllerError->getMessage() . ' in ' . $controllerError->getFile() . ':' . $controllerError->getLine());
-        throw $controllerError;
+        throw new IdNotFoundException('Unauthorized access! Cannot save grades.');
     }
 
+    $input = json_decode(file_get_contents('php://input'), true);
+    
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        throw new Exception('Invalid JSON in request body: ' . json_last_error_msg());
+    }
+    
+    if (!isset($input['sectionSubjectId']) || !isset($input['grades']) || !is_array($input['grades'])) {
+        throw new Exception('Invalid request data: sectionSubjectId and grades array are required');
+    }
+
+    $sectionSubjectId = (int)$input['sectionSubjectId'];
+    $grades = $input['grades'];
+    
+    if ($sectionSubjectId <= 0) {
+        throw new Exception('Invalid sectionSubjectId');
+    }
+
+    $controller = new teacherGradesController();
+    $response = $controller->apiSaveGrades($sectionSubjectId, $staffId, $grades);
+    
     // Ensure response has all required fields
     if (!is_array($response)) {
         $response = [
@@ -98,9 +94,6 @@ try {
     ob_clean();
     http_response_code($response['httpcode']);
     
-    // Log response for debugging
-    error_log('Sending response: ' . print_r($response, true));
-    
     $jsonResponse = json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR);
     if ($jsonResponse === false) {
         error_log('JSON encode error: ' . json_last_error_msg() . ' - Response: ' . print_r($response, true));
@@ -122,8 +115,6 @@ try {
     }
     
     echo $jsonResponse;
-    $outputLength = ob_get_length();
-    error_log('Output length before flush: ' . $outputLength);
     ob_end_flush();
     exit();
 }
@@ -131,23 +122,24 @@ catch(IdNotFoundException $e) {
     ob_clean();
     http_response_code(403);
     echo json_encode([
-        'success'=> false,
-        'message'=> $e->getMessage(), 
-        'data'=> []
+        'success' => false, 
+        'message' => $e->getMessage(),
+        'data' => []
     ], JSON_UNESCAPED_UNICODE);
     ob_end_flush();
     exit();
 }
 catch(Throwable $e) {
     ob_clean();
-    error_log('fetchSectionSubjectStudents Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+    error_log('postSaveGrades Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
     error_log('Stack trace: ' . $e->getTraceAsString());
     http_response_code(500);
     echo json_encode([
-        'success'=> false, 
-        'message'=> 'An error occurred while fetching students: ' . $e->getMessage(),
-        'data'=> []
+        'success' => false, 
+        'message' => 'An error occurred while saving grades: ' . $e->getMessage(),
+        'data' => []
     ], JSON_UNESCAPED_UNICODE);
     ob_end_flush();
     exit();
 }
+

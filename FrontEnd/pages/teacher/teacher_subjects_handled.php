@@ -12,9 +12,13 @@ $pageJs = '<script src="../../assets/js/teacher/teacher-subjects-handled.js" def
 ?>
 
 <div class="teacher-subjects-handled-content">
-    <h1> Your Subjects Handled</h1>
-    <div class="subjects-list-wrapper">
+    <div class="subjects-handled-wrapper">
+        <div class="subjects-handled-header">
+            <h1>Your Subjects Handled</h1>
+        </div>
+        <div class="subjects-list-wrapper">
             <?php $view->displaySubjects(); ?>
+        </div>
     </div>
 </div>
 <?php

@@ -59,9 +59,9 @@ class teacherSectionAdvisersModel {
     public function getSectionAdviserName(int $sectionId) : array {
         try {
             $sql = "SELECT staff.Staff_First_Name, staff.Staff_Last_Name, staff.Staff_Middle_Name FROM section_advisers AS sa
-                LEFT JOIN staffs AS staff ON sa.Staff_Id = staff.Staff_Id WHERE sa.Section_Id = :id";
+                LEFT JOIN staffs AS staff ON sa.Staff_Id = staff.Staff_Id WHERE sa.Section_Id = :sectionId";
             $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':sectionId', $sectionId, PDO::PARAM_INT);
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -85,36 +85,37 @@ class teacherSectionAdvisersModel {
             throw new DatabaseException('Failed to fetch section students',0,$e);
         } 
     }
-    public function getSectionMaleStudents($id) {
-        $sql = "SELECT s.Section_Id, st.Section_Id, e.Student_First_Name, e.Student_Middle_Name, e.Student_Last_Name FROM sections AS s 
-                LEFT JOIN students AS st ON s.Section_Id = st.Section_Id 
-                LEFT JOIN enrollee AS e ON st.Enrollee_Id = e.Enrollee_Id WHERE st.Section_Id = :id And st.Sex = 'Male'";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        if($result) {
-            return $result;
+    public function getSectionMaleStudents(int $sectionId): array {
+        try {
+            $sql = "SELECT s.Section_Id, st.Section_Id, e.Student_First_Name, e.Student_Middle_Name, e.Student_Last_Name FROM sections AS s 
+                    LEFT JOIN students AS st ON s.Section_Id = st.Section_Id 
+                    LEFT JOIN enrollee AS e ON st.Enrollee_Id = e.Enrollee_Id WHERE st.Section_Id = :sectionId AND st.Sex = 'Male'";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':sectionId', $sectionId, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            return $result ?: [];
         }
-        else {
-            return false;
+        catch(PDOException $e) {
+            throw new DatabaseException('Failed to fetch male students', 0, $e);
         }
     }
-    public function getSectionFemaleStudents($id) {
-        $sql = "SELECT s.Section_Id, st.Section_Id, e.Student_First_Name, e.Student_Middle_Name, e.Student_Last_Name FROM sections AS s 
-                LEFT JOIN students AS st ON s.Section_Id = st.Section_Id 
-                LEFT JOIN enrollee AS e ON st.Enrollee_Id = e.Enrollee_Id WHERE st.Section_Id = :id And st.Sex = 'Female'";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        if($result) {
-            return $result;
+    
+    public function getSectionFemaleStudents(int $sectionId): array {
+        try {
+            $sql = "SELECT s.Section_Id, st.Section_Id, e.Student_First_Name, e.Student_Middle_Name, e.Student_Last_Name FROM sections AS s 
+                    LEFT JOIN students AS st ON s.Section_Id = st.Section_Id 
+                    LEFT JOIN enrollee AS e ON st.Enrollee_Id = e.Enrollee_Id WHERE st.Section_Id = :sectionId AND st.Sex = 'Female'";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':sectionId', $sectionId, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            return $result ?: [];
         }
-        else {
-            return false;
+        catch(PDOException $e) {
+            throw new DatabaseException('Failed to fetch female students', 0, $e);
         }
     }
 }

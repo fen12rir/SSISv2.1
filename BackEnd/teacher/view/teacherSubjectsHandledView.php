@@ -18,28 +18,38 @@ class teacherSubjectsHandledView {
         $stringEqual = '';
         switch($day) {
             case 1:
-                $stringEqual = 'monday';
+                $stringEqual = 'Monday';
                 break;
             case 2:
-                $stringEqual = 'tuesday';
+                $stringEqual = 'Tuesday';
                 break;
             case 3: 
-                $stringEqual = 'wednesday';
+                $stringEqual = 'Wednesday';
                 break;
             case 4: 
-                $stringEqual = 'thursday';
+                $stringEqual = 'Thursday';
                 break;
             case 5: 
-                $stringEqual = 'friday';
+                $stringEqual = 'Friday';
                 break;
             case 6: 
-                $stringEqual = 'saturday';
+                $stringEqual = 'Saturday';
                 break;
             case 7: 
-                $stringEqual = 'sunday';
+                $stringEqual = 'Sunday';
                 break;
         }
         return $stringEqual;
+    }
+    
+    private function formatTime(?string $timeStart, ?string $timeEnd) : string {
+        if (empty($timeStart) || empty($timeEnd)) {
+            return 'No Scheduled time yet';
+        }
+        // Format time to be more readable (e.g., "08:00:00" -> "8:00 AM")
+        $start = date('g:i A', strtotime($timeStart));
+        $end = date('g:i A', strtotime($timeEnd));
+        return $start . ' - ' . $end;
     }
     public function displaySubjects() { 
         try {
@@ -59,8 +69,10 @@ class teacherSubjectsHandledView {
                         $subjectName = !empty($rows['Subject_Name']) ? $rows['Subject_Name'] : 'No Subject name yet';
                         $sectionName = !empty($rows['Section_Name']) ? $rows['Section_Name'] : 'No Section name yet';
                         $day = !empty($rows['Schedule_Day']) ? $this->dayConvertToString($rows['Schedule_Day']) :  'No Scheduled day yet';
-                        $time = (!empty($rows['Time_Start']) && !empty($rows['Time_End'])) ? $rows['Time_Start'] . '-' . $rows['Time_End'] : 'No Scheduled time yet';
-                        $button = new safeHTML('<button> Grade Students</button>');
+                        $time = $this->formatTime($rows['Time_Start'] ?? null, $rows['Time_End'] ?? null);
+                        $sectionSubjectId = !empty($rows['Section_Subjects_Id']) ? (int)$rows['Section_Subjects_Id'] : 0;
+                        $gradeLink = 'teacher_grades.php';
+                        $button = new safeHTML('<div class="action-button-wrapper"><a href="' . htmlspecialchars($gradeLink) . '" class="grade-students-btn">Grade Students</a></div>');
                         echo $this->tableTemplate->returnHorizontalRows( [$subjectName,$day,$time, $sectionName, $button],'subject-details');
                     }
                     echo '</tbody></table>';

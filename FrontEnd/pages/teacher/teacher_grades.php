@@ -1,5 +1,7 @@
-<?php 
-require_once __DIR__ . '/../session_init.php';
+<?php
+if(session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 ob_start();
 require_once __DIR__ . '/../../../BackEnd/teacher/view/teacherGradesView.php';
 $view = new teacherGradesView();
@@ -8,13 +10,15 @@ $pageJs = '<script type="module" src="../../assets/js/teacher/teacher-grades.js"
 $pageCss = '<link rel="stylesheet" href="../../assets/css/teacher/teacher-grades.css">';
 ?>
 <div class="teacher-grades-content">
-    <div class="teacher-grades-header">
-        <h1 class="teacher-grades-header"> Your subjects to grade</h1>
-    </div>
-    <div class="subjects-to-grade-wrapper">
-        <?php 
-            $view->displaySubjectsToGrade();
-        ?>
+    <div class="grades-wrapper">
+        <div class="grades-header">
+            <h1>Your subjects to grade</h1>
+        </div>
+        <div class="subjects-to-grade-wrapper">
+            <?php 
+                $view->displaySubjectsToGrade();
+            ?>
+        </div>
     </div>
     
     <!-- Modal Structure -->

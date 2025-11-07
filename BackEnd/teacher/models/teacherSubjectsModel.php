@@ -13,13 +13,13 @@ class teacherSubjectsModel {
 
     public function getTeacherSubjectsHandled(int $staffId) : array {
         try {
-            $sql = "SELECT su.Subject_Name, s.Section_Name , ssc.Schedule_Day,
+            $sql = "SELECT ss.Section_Subjects_Id, su.Subject_Name, s.Section_Name , ssc.Schedule_Day,
                 DATE_FORMAT(ssc.Time_Start, '%H:%i') AS Time_Start, 
                 DATE_FORMAT(ssc.Time_End, '%H:%i') AS Time_End 
                 FROM section_subjects AS ss
                 LEFT JOIN section_schedules AS ssc ON ssc.Section_Subjects_Id = ss.Section_Subjects_Id
                 LEFT JOIN sections AS s ON ss.Section_Id = s.Section_Id
-                LEFT JOIN subjects AS su ON ss.Subject_Id = su.Subject_Id WHERE Staff_Id = :id";
+                LEFT JOIN subjects AS su ON ss.Subject_Id = su.Subject_Id WHERE ss.Staff_Id = :id";
             $stmt = $this->conn->prepare($sql);
             $stmt->bindParam(':id', $staffId);
             $stmt->execute();

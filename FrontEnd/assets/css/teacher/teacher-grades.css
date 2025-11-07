@@ -63,57 +63,101 @@
     border-radius: 20px;
 }
 
+.subjects-to-grade {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
 /* Make the table header stick to the top while scrolling */
 .subjects-to-grade thead {
     position: sticky;
     top: 0;
-    z-index: 1;
+    z-index: 10;
 }
-
-.subjects-to-grade {
-    width: 100%;
-    table-layout: fixed;
-}
-
 
 .subjects-to-grade-wrapper th {
-    padding: 1rem;
+    padding: 1.2rem 1rem;
     font-weight: 600;
-    letter-spacing: 0.4px;
-    background: rgb(21 182 255 / 27%);
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #3e9ec4 0%, #2d7a9a 100%);
     text-transform: uppercase;
-    text-shadow: 0 1.5px #0967a266;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     color: white;
+    font-size: 0.95rem;
+    border: none;
+}
+
+.subjects-to-grade-wrapper tbody tr {
+    transition: all 0.2s ease;
 }
 
 .subjects-to-grade-wrapper td {
-    padding: 1rem;
-    border-top: 1px solid rgba(63, 166, 210, 0.897);
+    padding: 1.2rem 1rem;
+    border-top: 1px solid rgba(62, 158, 196, 0.2);
     vertical-align: middle;
-    color: black;
-    letter-spacing: 0.5px;
+    color: #333;
+    letter-spacing: 0.3px;
     font-weight: 400;
+    font-size: 0.95rem;
 }
 
-.subjects-to-grade-wrapper tr:hover td {
-  color: var(--hover);
-  transition: all 0.25s ease-in-out; 
+.subjects-to-grade-wrapper tbody tr:hover {
+    background: rgba(62, 158, 196, 0.1) !important;
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.subjects-to-grade-wrapper tr:nth-child(even) td {
-  background:#b2e0f8;
+.subjects-to-grade-wrapper tbody tr:hover td {
+    color: #2d7a9a;
+}
+
+.subjects-to-grade-wrapper tbody tr:nth-child(even) td {
+    background: rgba(178, 224, 248, 0.3);
+}
+
+.subjects-to-grade-wrapper tbody tr:nth-child(odd) td {
+    background: rgba(187, 229, 248, 0.2);
+}
+
+/* Column alignment */
+.subjects-to-grade-wrapper th:first-child,
+.subjects-to-grade-wrapper td:first-child {
+    text-align: left;
+}
+
+.subjects-to-grade-wrapper th:nth-child(2),
+.subjects-to-grade-wrapper td:nth-child(2) {
+    text-align: left;
+}
+
+.subjects-to-grade-wrapper th:nth-child(3),
+.subjects-to-grade-wrapper td:nth-child(3) {
+    text-align: center;
+}
+
+.subjects-to-grade-wrapper th:last-child,
+.subjects-to-grade-wrapper td:last-child {
+    text-align: right;
 }
 
 /* Grade Button Styling */
+.grade-button-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
 #grade-button {
     background: linear-gradient(135deg, #3e9ec4 0%, #2d7a9a 100%);
     color: white;
     border: none;
-    padding: 0.6rem 1.5rem;
+    padding: 0.6rem 1.2rem;
     border-radius: 8px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(62, 158, 196, 0.3);
@@ -195,22 +239,38 @@
 }
 
 .grade-table th {
-    background: #3e9ec4;
+    background: linear-gradient(135deg, #3e9ec4 0%, #2d7a9a 100%);
     color: white;
     padding: 0.75rem;
-    text-align: left;
+    text-align: center;
     font-weight: 600;
-    border: 1px solid #2d7a9a;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.grade-table th:first-child {
+    text-align: left;
 }
 
 .grade-table td {
     padding: 0.75rem;
-    border: 1px solid #ddd;
+    border: 1px solid rgba(62, 158, 196, 0.2);
     background: white;
+    text-align: center;
+}
+
+.grade-table td:first-child {
+    text-align: left;
+    font-weight: 500;
+    color: #2d7a9a;
 }
 
 .grade-table tr:nth-child(even) td {
     background: #f8f9fa;
+}
+
+.grade-table tbody tr:hover td {
+    background: rgba(62, 158, 196, 0.1);
 }
 
 .grade-table input[type="number"] {
@@ -231,12 +291,32 @@
 .save-grades-btn {
     width: 100%;
     margin-top: 1rem;
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, #3e9ec4 0%, #2d7a9a 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(62, 158, 196, 0.3);
+    letter-spacing: 0.5px;
 }
 
 .save-grades-btn:hover {
-    background: #2d7a9a !important;
+    background: linear-gradient(135deg, #2d7a9a 0%, #1f5a73 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(62, 158, 196, 0.5);
 }
 
 .save-grades-btn:active {
-    transform: scale(0.98);
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(62, 158, 196, 0.3);
+}
+
+.save-grades-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }

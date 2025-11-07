@@ -34,7 +34,7 @@ class teacherGradesView {
                 foreach($data['data'] as $rows) {
                     $subjectName = !empty($rows['Subject_Name']) ? $rows['Subject_Name'] : 'No Subject name';
                     $sectionName = !empty($rows['Section_Name']) ? $rows['Section_Name'] : 'No section name';
-                    $button = new safeHTML('<button id="grade-button" data-id="'.$rows['Section_Subjects_Id'].'"> Grade </button>');
+                    $button = new safeHTML('<div class="grade-button-wrapper"><button id="grade-button" data-id="'.$rows['Section_Subjects_Id'].'"> Grade </button></div>');
                     echo $this->tableTemplate->returnHorizontalRows([
                         $subjectName, $sectionName, $rows['Student_Count'], $button
                     ],'subjects-to-grade-data');

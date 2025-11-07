@@ -50,8 +50,8 @@ class teacherDashboardView {
                 </div>
                 <img src="../../assets/imgs/subjects-logo.png" alt="Locker" class="stat-icon">
             </a>
-            <?php if($stats['is_adviser']): ?>
-            <a href="./teacher_advisory.php" class="stat-card">
+            <?php if($stats['is_adviser'] && !empty($stats['advisory_section_id'])): ?>
+            <a href="./teacher_advisory.php?adv_id=<?php echo htmlspecialchars((string)$stats['advisory_section_id']); ?>" class="stat-card">
                 <div class="stat-card-content">
                     <h2 class="stat-title">Advisory Class</h2>
                     <span class="stat-value">Active</span>

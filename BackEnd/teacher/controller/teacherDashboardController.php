@@ -16,6 +16,7 @@ class teacherDashboardController {
             $studentsCount = $this->model->getTotalStudentsToGrade($staffId);
             $lockerFilesCount = $this->model->getLockerFilesCount($staffId);
             $isAdviser = $this->model->isAdviser($staffId);
+            $advisorySectionId = $isAdviser ? $this->model->getAdvisorySectionId($staffId) : null;
 
             return [
                 'success' => true,
@@ -23,7 +24,8 @@ class teacherDashboardController {
                     'subjects_count' => $subjectsCount,
                     'students_count' => $studentsCount,
                     'locker_files_count' => $lockerFilesCount,
-                    'is_adviser' => $isAdviser
+                    'is_adviser' => $isAdviser,
+                    'advisory_section_id' => $advisorySectionId
                 ]
             ];
         }

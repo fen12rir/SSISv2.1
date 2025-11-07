@@ -14,10 +14,43 @@ class teacherAdvisoryView {
     public function __construct() {
         $this->advisoryController = new teacherAdvisoryController();
         $this->tableTemplate = new TableCreator();
-        if(isset($_GET['adv_id'])) $this->id = (int)$_GET['adv_id']; //this is the section id
-        if(isset($_SESSION['Staff']['Staff-Id'])) $this->staffId = (int)$_SESSION['Staff']['Staff-Id'];
+        $this->id = null;
+        $this->staffId = null;
+        
+        if(isset($_GET['adv_id']) && !empty($_GET['adv_id'])) {
+            $this->id = (int)$_GET['adv_id']; //this is the section id
+        }
+        if(isset($_SESSION['Staff']['Staff-Id']) && !empty($_SESSION['Staff']['Staff-Id'])) {
+            $this->staffId = (int)$_SESSION['Staff']['Staff-Id'];
+        }
+        
+        // If section ID is not provided but staff ID is, try to get it automatically
+        if (is_null($this->id) && !is_null($this->staffId) && $this->staffId > 0) {
+            require_once __DIR__ . '/../models/teacherSectionAdvisersModel.php';
+            $sectionAdviserModel = new teacherSectionAdvisersModel();
+            $adviserData = $sectionAdviserModel->checkIfAdviser($this->staffId);
+            if ($adviserData && isset($adviserData['Section_Id'])) {
+                $this->id = (int)$adviserData['Section_Id'];
+            }
+        }
     }
     public function displayAdvisoryPage() {
+        // Check if section ID is provided
+        if (is_null($this->id) || $this->id <= 0) {
+            echo '<div class="advisory-content"> 
+                    <p>Section ID not provided. Please select an advisory section.</p>
+                </div>';
+            return;
+        }
+        
+        // Check if staff ID is provided
+        if (is_null($this->staffId) || $this->staffId <= 0) {
+            echo '<div class="advisory-content"> 
+                    <p>Staff ID not found. Please log in again.</p>
+                </div>';
+            return;
+        }
+        
         $isAdviser = $this->advisoryController->viewCheckIfAdvisory($this->staffId, $this->id);
         if(!$isAdviser['success']) {
             echo '<div class="advisory-content"> 
@@ -42,6 +75,10 @@ class teacherAdvisoryView {
         }
     }
     public function returnAdvisoryStudents() {
+        if (is_null($this->id) || $this->id <= 0) {
+            return '<div class="error-message">Section ID not provided.</div>';
+        }
+        
         $students = $this->advisoryController->viewSectionStudents($this->id);
         $html = '';
         if(!$students['success']) {
@@ -67,6 +104,10 @@ class teacherAdvisoryView {
     }
     public function returnSectionName() {
         try {
+            if (is_null($this->id) || $this->id <= 0) {
+                return 'Section ID not provided';
+            }
+            
             $sectionName = $this->advisoryController->viewSectionName($this->id);
 
             if (!$sectionName['success']) {
@@ -81,6 +122,10 @@ class teacherAdvisoryView {
         }
     }
     public function returnSectionSubjects() {
+        if (is_null($this->id) || $this->id <= 0) {
+            return '<div class="error-message">Section ID not provided.</div>';
+        }
+        
         $html = '';
         $subjects = $this->advisoryController->viewSectionSubjects($this->id);
         if(!$subjects['success']) {

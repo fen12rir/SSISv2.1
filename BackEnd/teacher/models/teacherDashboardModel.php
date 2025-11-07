@@ -72,5 +72,19 @@ class teacherDashboardModel {
             throw new DatabaseException('Failed to check if adviser', 0, $e);
         }
     }
+
+    public function getAdvisorySectionId(int $staffId): ?int {
+        try {
+            $sql = "SELECT Section_Id FROM section_advisers WHERE Staff_Id = :staffId LIMIT 1";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':staffId', $staffId, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchColumn();
+            return $result ? (int)$result : null;
+        }
+        catch(PDOException $e) {
+            throw new DatabaseException('Failed to get advisory section ID', 0, $e);
+        }
+    }
 }
 
